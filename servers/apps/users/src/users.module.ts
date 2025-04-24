@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UsersResolver } from './users.resolver';
+import { EmailModule } from './email/email.module';
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
@@ -15,6 +16,7 @@ import { UsersResolver } from './users.resolver';
         federation: 2,
       },
     }),
+    EmailModule,
   ],
   controllers: [],
   providers: [UsersService, ConfigService, JwtService, PrismaService, UsersResolver],

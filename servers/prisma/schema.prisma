@@ -30,9 +30,13 @@ model User {
   id        String @id @default(uuid())
   name      String
   email     String @unique
+  phone_number Float @unique
+  address   String?
   password  String
   role      Role   @default(User)
   avatar    Avatar?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// name,email,password,role,phone_number,address, 

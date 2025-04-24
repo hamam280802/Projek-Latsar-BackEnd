@@ -17,6 +17,11 @@ export class RegisterDto {
     @IsNotEmpty({ message: 'Email is required' })
     @IsEmail({}, { message: 'Email must be a valid email address' })
     email: string;
+
+    @Field()
+    @IsNotEmpty({ message: 'Phone number is required' })
+    @Min(12, { message: 'Phone number must be at least 12 characters long' })
+    phone_number: number;
 }
 
 @InputType()
