@@ -27,6 +27,10 @@ export class User {
     avatar?: Avatars | null;
     @Field()
     role: string;
+    @Field(() => String, {nullable: true })
+    address: string | null;
+    @Field({nullable: true })
+    phone_number: number;
     @Field()
     createdAt: Date;
     @Field()

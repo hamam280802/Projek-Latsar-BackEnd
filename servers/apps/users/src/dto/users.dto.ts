@@ -4,45 +4,45 @@ import { IsEmail, IsNotEmpty, IsString, Min } from 'class-validator';
 @InputType()
 export class RegisterDto {
     @Field()
-    @IsNotEmpty({ message: 'Name is required' })
-    @IsString({ message: 'Name must be a string' })
+    @IsNotEmpty({ message: 'Nama belum diisi' })
+    @IsString({ message: 'Nama harus berupa teks' })
     name: string;
 
     @Field()
-    @IsNotEmpty ({ message: 'Password is required' })
-    @Min(8, { message: 'Password must be at least 8 characters long' })
+    @IsNotEmpty ({ message: 'Password belum diisi' })
+    @Min(8, { message: 'Password diisi minimal 8 karakter' })
     password: string;
 
     @Field()
-    @IsNotEmpty({ message: 'Email is required' })
-    @IsEmail({}, { message: 'Email must be a valid email address' })
+    @IsNotEmpty({ message: 'Email belum diisi' })
+    @IsEmail({}, { message: 'Format Email tidak sesuai' })
     email: string;
 
     @Field()
-    @IsNotEmpty({ message: 'Phone number is required' })
-    @Min(12, { message: 'Phone number must be at least 12 characters long' })
+    @IsNotEmpty({ message: 'Nomor Telepon belum diisi' })
+    @Min(12, { message: 'Nomor Telepon diisi minimal 12 angka' })
     phone_number: number;
 }
 
 @InputType()
 export class ActivationDto {
     @Field()
-    @IsNotEmpty({ message: 'Activation Token is required' })
+    @IsNotEmpty({ message: 'Token Aktivasi harus diisi' })
     activationToken: string;
     
     @Field()
-    @IsNotEmpty({ message: 'Activation Code is required' })
+    @IsNotEmpty({ message: 'Kode Aktivasi harus diisi' })
     activationCode: string;
 }
 
 @InputType()
 export class LoginDto {
     @Field()
-    @IsNotEmpty({ message: 'Email is required' })
-    @IsEmail({}, { message: 'Email must be a valid email address' })
+    @IsNotEmpty({ message: 'Email harus diisi' })
+    @IsEmail({}, { message: 'Format Email tidak sesuai' })
     email: string;
 
     @Field()
-    @IsNotEmpty ({ message: 'Password is required' })
+    @IsNotEmpty ({ message: 'Password harus diisi' })
     password: string;
 }

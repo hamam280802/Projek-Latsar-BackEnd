@@ -7,8 +7,6 @@ import { Response } from 'express';
 import * as bcrypt from 'bcryptjs';
 import { EmailService } from './email/email.service';
 import { TokenSender } from './utils/sendToken';
-import { access } from 'fs';
-import { error } from 'console';
 
 interface UserData {
   name: string;
@@ -43,11 +41,11 @@ export class UsersService {
     });
 
     if (isPhoneNumberExist) {
-      throw new BadRequestException('User already exist with this phone number!');
+      throw new BadRequestException('Nomor telepon ini sudah dipakai!');
     }
 
     if(isEmailExist) {
-      throw new BadRequestException('User already exist with this email!');
+      throw new BadRequestException('Email ini sudah dipakai!');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -63,7 +61,7 @@ export class UsersService {
 
     await this.emailService.sendMail({
       email,
-      subject: 'Activate your account',
+      subject: 'Aktivasi akun mu',
       template: './activation-mail',
       name,
       activationCode,
@@ -78,7 +76,7 @@ export class UsersService {
       {user, activationCode},
       {
         secret: this.configService.get<string>('ACTIVATION_SECRET'),
-        expiresIn: '10m',
+        expiresIn: '5m',
       }
     );  
     return {token, activationCode};
@@ -94,7 +92,7 @@ export class UsersService {
     ) as {user: UserData, activationCode: string};
 
     if(newUser.activationCode !== activationCode) {
-      throw new BadRequestException('Invalid activation code!');
+      throw new BadRequestException('Kode Aktivasi tidak sesuai!');
     }
 
     const {name, email, password, phone_number} = newUser.user;
@@ -105,7 +103,7 @@ export class UsersService {
     });
 
     if(existUser) {
-      throw new BadRequestException('User already exist with this email!');
+      throw new BadRequestException('Akun ini sudah tersedia!');
     }
 
     const user = await this.prisma.user.create({
@@ -139,7 +137,7 @@ export class UsersService {
         accessToken: null,
         refreshToken: null,
         error: {
-          message: 'Invalid email or password!',
+          message: 'Email atau Password tidak sesuai!',
         },
       };
     }
@@ -149,6 +147,15 @@ export class UsersService {
   async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
     return await bcrypt.compare(password, hashedPassword);
   }
+
+  //get logged in user
+  async getLoggedInUser(req:any) {
+    const user = req.user;
+    const accessToken = req.accesstoken;
+    const refreshToken = req.refreshtoken;
+    console.log({user, accessToken, refreshToken});
+    return {user, accessToken, refreshToken};
+  } 
 
   // get all users service
   async getUsers() {

@@ -31,13 +31,13 @@ export class ActivationResponse {
 @ObjectType()
 export class LoginResponse {
     @Field(() => User, {nullable: true })
-    user: User | null;
+    user?: User | null;
 
-    @Field({nullable: true })
-    accessToken: string | null;
+    @Field(() => String, {nullable: true })
+    accessToken?: string | null;
 
-    @Field({nullable: true })
-    refreshToken: string | null;
+    @Field(() => String, {nullable: true })
+    refreshToken?: string | null;
     
     @Field(() => ErrorType, { nullable: true })
     error?: ErrorType;

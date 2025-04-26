@@ -1,10 +1,11 @@
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, UseGuards } from "@nestjs/common";
 import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { UsersService } from "./users.service";
 import { ActivationResponse, LoginResponse, RegisterResponse } from "./types/users.types";
 import { ActivationDto, RegisterDto } from "./dto/users.dto";
 import { User } from "./entities/users.entity";
 import { Response } from "express";
+import { AuthGuard } from "./guards/auth.guard";
 
 
 
@@ -20,7 +21,7 @@ export class UsersResolver {
         @Context() context: {res: Response},
     ) : Promise<RegisterResponse> {
         if(!registerDto.name || !registerDto.email || !registerDto.password) {
-            throw new BadRequestException('Please fill all fields!');
+            throw new BadRequestException('Tolong isi semua kolom yang tersedia!');
         }
 
         const { activation_token } = await this.usersService.register(registerDto, context.res);
@@ -42,6 +43,12 @@ export class UsersResolver {
         @Args('password') password: string,
     ): Promise<LoginResponse> {
         return await this.usersService.Login({email, password});
+    }
+
+    @Query(() => LoginResponse)
+    @UseGuards(AuthGuard)
+    async getLoggedInUser(@Context() context: {req: Request}) {
+        return await this.usersService.getLoggedInUser(context.req);
     }
 
     @Query(() => [User])
