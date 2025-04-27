@@ -153,9 +153,16 @@ export class UsersService {
     const user = req.user;
     const accessToken = req.accesstoken;
     const refreshToken = req.refreshtoken;
-    console.log({user, accessToken, refreshToken});
     return {user, accessToken, refreshToken};
   } 
+
+  //log out user
+  async Logout(req:any) {
+    req.user = null;
+    req.accesstoken = null;
+    req.refreshtoken = null;
+    return {message: 'Logout berhasil!'};
+  }
 
   // get all users service
   async getUsers() {
