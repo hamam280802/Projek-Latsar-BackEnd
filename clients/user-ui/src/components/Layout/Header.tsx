@@ -1,6 +1,7 @@
 import React from 'react'
 import ProfileDropDown from '../ProfileDropDown'
 import { SideBar } from './SideBar'
+import Calendar from './Calendar'
 
 export const Header = () => {
   return (
@@ -8,6 +9,7 @@ export const Header = () => {
         <div className="w-[90%] m-auto flex items-center justify-end">
             <ProfileDropDown />
             <SideBar/>
+            <Calendar/>
         </div>
     </header>
   )

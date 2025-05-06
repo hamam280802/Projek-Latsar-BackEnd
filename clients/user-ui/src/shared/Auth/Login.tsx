@@ -1,13 +1,91 @@
 import styles from '@/src/utils/style'
-import React from 'react'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {AiFillGithub, AiOutlineEye, AiOutlineEyeInvisible} from 'react-icons/ai';
+import {FcGoogle} from "react-icons/fc";
+import { useState } from 'react';
 
-const Login = () => {
+const formSchema = z.object({
+  email: z.string().email({ message: 'Email tidak valid' }),
+  password: z.string().min(8, { message: 'Password minimal 8 karakter' }),
+})
+
+type LoginSchema = z.infer<typeof formSchema>;
+
+const Login = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
+
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<LoginSchema>({
+    resolver: zodResolver(formSchema),
+  });
+
+  const [show, setShow] = useState(false);
+
+  const onSubmit = (data: LoginSchema) => {
+    console.log(data);
+    reset();
+  }
+
   return (
-    <div>
+    <div className='py-2 px-4 space-y-5'>
+      <h1 className={`${styles.title}`}>
+        Silahkan Login!!
+      </h1>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <label className={`${styles.label}`}>
+          Masukkan emailmu
+        </label>
+        <input {...register("email")} type="email" placeholder='muaraenim@gmail.com' className={`${styles.input}`} />
+        {
+          errors.email && (
+            <span className='text-red-500 block mt-1'>
+              {`${errors.email.message}`}
+            </span>
+          )
+        }
+        <div className='w-full mt-5 relative mb-1'>
+          <label htmlFor="password" className={`${styles.label}`}>
+            Masukkan Passwordmu
+          </label>
+          <input {...register("password")} type={!show ? 'password' : 'text'} placeholder='qwerty12345' className={`${styles.input}`} />
+          {
+            errors.password && (
+              <span className='text-red-500 block mt-1'>
+                {`${errors.password.message}`}
+              </span>
+            )
+          }
+          {!show ? (
+            <AiOutlineEyeInvisible
+             className='absolute bottom-3 right-2 z-1 cursor-pointer'
+             size={20}
+             onClick={() => setShow(true)}
+            />
+          ) : (
+            <AiOutlineEye
+             className='absolute bottom-3 right-2 z-1 cursor-pointer'
+             size={20}
+             onClick={() => setShow(false)}
+            />
+          )}
+        </div>
+        <div className='w-full mt-5'>
+          <a href="#" className={`${styles.label} text-xs text-[#2190ff] block text-right cursor-pointer`}>Lupa Paswword?</a>
+          <input type="submit" value="Login" disabled={isSubmitting} className={`${styles.button} my-2`} />
+        </div>
+        <h5 className='text-center pt-6 font-Poppins text-[14px] text-white'>
+          Or join with
+        </h5>
+        <div className='flex items-center justify-center my-2'>
+          <FcGoogle size={30} className='cursor-pointer mr-2'/>
+          <AiFillGithub size={30} className='cursor-pointer ml-2'/>
+        </div>
+        <h5 className='text-center pt-2 font-Poppins text-[14px]'>
+          Belum punya akun?
+          <span className='text-[#2190ff] pl-1 cursor-pointer' onClick={() => setActiveState('Signup')}>Daftar</span>
+        </h5>
         <br />
-        <h1 className={`${styles.title}`}>
-            Silahkan Login!!
-        </h1>
+      </form>
     </div>
   )
 }
