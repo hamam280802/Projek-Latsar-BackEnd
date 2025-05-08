@@ -1,7 +1,7 @@
 "use client"
 
 import prisma from "../lib/prismaDb";
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 const generateRandomPassword = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+';

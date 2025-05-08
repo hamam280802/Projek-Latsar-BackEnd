@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import {Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from '@heroui/react'
 import { Avatar } from '@heroui/avatar'
 import { useEffect, useState } from 'react'
@@ -49,7 +49,7 @@ const ProfileDropDown = () => {
                         <Avatar
                         as='button'
                         className='transition-transform'
-                        src={user?.avatar?.url}
+                        src={data?.user ? data.user.image : user.image}
                         />
                     </DropdownTrigger>
                     <DropdownMenu aria-label='Profile Actions' variant='flat' className='border rounded-lg bg-white shadow-md text-black'>
@@ -58,7 +58,7 @@ const ProfileDropDown = () => {
                                 Nama Petugas
                             </p>
                             <p className='font-semibold'>
-                                {user?.name}
+                                {data?.user ? data.user.name : user.name}
                             </p>
                         </DropdownItem>
                         <DropdownItem key="settings">Profil Saya</DropdownItem>
