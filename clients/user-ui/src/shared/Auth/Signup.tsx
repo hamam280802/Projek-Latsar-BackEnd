@@ -2,22 +2,33 @@ import styles from '@/src/utils/style'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {AiFillGithub, AiOutlineEye, AiOutlineEyeInvisible} from 'react-icons/ai';
-import {FcGoogle} from "react-icons/fc";
+import {AiOutlineEye, AiOutlineEyeInvisible} from 'react-icons/ai';
 import { useState } from 'react';
+import { useMutation } from '@apollo/client';
+import { REGISTER_USER } from '@/src/graphql/actions/register.action';
+import toast from 'react-hot-toast';
 
 const formSchema = z.object({
     name: z.string().min(3, {message: 'Tuliskan nama minimal 3 karakter'}),
     email: z.string().email({ message: 'Email tidak valid' }),
     password: z.string().min(8, { message: 'Password minimal 8 karakter' }),
-    passwordConfirm: z.string().min(8, {message: 'Passwor minimal 8 karakter'}),
+    passwordConfirm: z.string(),
     phone: z.number().min(12, {message: 'Nomor Telepon minimal 12 angka'}),
+  }).superRefine((data, ctx) =>{
+    if (data.password !== data.passwordConfirm) {
+      ctx.addIssue({
+        path: ['passwordConfirm'],
+        code: z.ZodIssueCode.custom,
+        message: 'Password tidak sama',
+      })
+    }
   })
   
   type SignUpSchema = z.infer<typeof formSchema>;
 
 const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
 
+    const [registerUserMutation, {loading }] = useMutation(REGISTER_USER);
     const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<SignUpSchema>({
         resolver: zodResolver(formSchema),
       });
@@ -25,9 +36,18 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     
-      const onSubmit = (data: SignUpSchema) => {
-        console.log(data);
-        reset();
+      const onSubmit = async (data: SignUpSchema) => {
+        try {
+          const response = await registerUserMutation({
+            variables: data,
+          });
+          localStorage.setItem('activation_token', response.data.register.activation_token);
+          toast.success('Silahkan aktivasi akun anda melalui email!');
+          reset();
+          setActiveState('Verification');
+        } catch (error:any) {
+          toast.error(error.message);
+        }
       }
 
   return (
@@ -66,7 +86,7 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
             <label className={`${styles.label}`}>
             Masukkan nomor teleponmu
             </label>
-            <input {...register("phone")} type="number" placeholder='+62537.....' className={`${styles.input}`} />
+            <input {...register("phone", {valueAsNumber: true})} type="number" placeholder='+62537.....' className={`${styles.input}`} />
             {
             errors.phone && (
                 <span className='text-red-500 block mt-1'>
@@ -80,13 +100,6 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
             Masukkan Passwordmu
           </label>
           <input {...register("password")} type={!show ? 'password' : 'text'} placeholder='qwerty12345' className={`${styles.input}`} />
-          {
-            errors.password && (
-              <span className='text-red-500'>
-                {`${errors.password.message}`}
-              </span>
-            )
-          }
           {!show ? (
             <AiOutlineEyeInvisible
              className='absolute bottom-3 right-2 z-1 cursor-pointer'
@@ -101,18 +114,18 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
             />
           )}
         </div>
+        {
+          errors.password && (
+            <span className='text-red-500 mt-1'>
+              {`${errors.password.message}`}
+            </span>
+          )
+        }
         <div className='w-full mt-5 relative mb-1'>
-          <label htmlFor="password" className={`${styles.label}`}>
+          <label htmlFor="passwordConfirm" className={`${styles.label}`}>
             Konfirmasi Passwordmu
           </label>
           <input {...register("passwordConfirm")} type={!show2 ? 'password' : 'text'} placeholder='qwerty12345' className={`${styles.input}`} />
-          {
-            errors.passwordConfirm && (
-              <span className='text-red-500 block mt-1'>
-                {`${errors.passwordConfirm.message}`}
-              </span>
-            )
-          }
           {!show2 ? (
             <AiOutlineEyeInvisible
              className='absolute bottom-3 right-2 z-1 cursor-pointer'
@@ -127,8 +140,15 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
             />
           )}
         </div>
+        {
+          errors.passwordConfirm && (
+            <span className='text-red-500 block mt-1'>
+              {`${errors.passwordConfirm.message}`}
+            </span>
+          )
+        }
         <div className='w-full mt-5'>
-          <input type="submit" value="Daftar" disabled={isSubmitting} className={`${styles.button} my-2`} />
+          <input type="submit" value="Daftar" disabled={isSubmitting || loading} className={`${styles.button} my-2`} />
         </div>
         <h5 className='text-center pt-2 font-Poppins text-[14px]'>
           Sudah punya akun?

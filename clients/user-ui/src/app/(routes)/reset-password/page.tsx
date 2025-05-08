@@ -1,10 +1,17 @@
-import React from 'react'
+'use client'
 
-const Page = ({searchParams,}: {searchParams: {[key: string]: string | string[] | undefined;};}) => {
-  const activationToken = searchParams["verify"] ?? "";
+import { useSearchParams } from 'next/navigation';
+import ResetPassword from '@/src/shared/Auth/ResetPassword';
+
+const Page = () => {
+  const searchParams = useSearchParams();
+  const activationToken = searchParams.get("verify") ?? "";
+
   return (
-    <div>page</div>
-  )
-}
+    <div>
+      <ResetPassword activationToken={activationToken} />
+    </div>
+  );
+};
 
-export default Page
+export default Page;

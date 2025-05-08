@@ -6,6 +6,11 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(UsersModule);
 
+  app.enableCors({
+    origin: '*', // alamat frontend kamu (Next.js)
+    credentials: true, // aktifkan kalau pakai cookie/session
+  });
+  
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views/email-templates'));
   app.setViewEngine('ejs');

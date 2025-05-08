@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers/HeroUIProvider";
+import { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default function RootLayout({
         <Providers>
         {children}
         </Providers>
+        <Toaster position="top-center" reverseOrder={false}></Toaster>
       </body>
     </html>
   );

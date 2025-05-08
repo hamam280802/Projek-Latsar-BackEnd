@@ -46,3 +46,23 @@ export class LoginDto {
     @IsNotEmpty ({ message: 'Password harus diisi' })
     password: string;
 }
+
+@InputType()
+export class ForgotPasswordDto {
+    @Field()
+    @IsNotEmpty({ message: 'Email harus diisi' })
+    @IsEmail({}, { message: 'Format Email tidak sesuai' })
+    email: string;
+}
+
+@InputType()
+export class ResetPasswordDto {
+    @Field()
+    @IsNotEmpty({ message: 'Password baru harus diisi' })
+    @Min(8, { message: 'Password baru diisi minimal 8 karakter' })
+    password: string;
+
+    @Field()
+    @IsNotEmpty({ message: 'Kode Aktivasi harus diisi' })
+    activationToken: string;
+}
