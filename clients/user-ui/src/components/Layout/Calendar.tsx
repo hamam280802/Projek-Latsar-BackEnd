@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { Fragment, SyntheticEvent, useState, useEffect } from 'react'
+import { Fragment, SyntheticEvent, useState, useEffect, useRef } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import axios from 'axios'
 import Datetime from "react-datetime"
@@ -35,6 +35,28 @@ export default function Calendar() {
     allDay: false,
     id: 0
   })
+
+  const calendarRef = useRef<any>(null)
+  const months = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ]
+  const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 5 + i)
+
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+
+  function handleDateChange(month: number | null, year: number | null) {
+    const newMonth = month !== null ? month : selectedMonth
+    const newYear = year !== null ? year : selectedYear
+
+    setSelectedMonth(newMonth)
+    setSelectedYear(newYear)
+
+    const newDate = new Date(newYear, newMonth, 1)
+    const calendarApi = calendarRef.current?.getApi()
+    calendarApi?.gotoDate(newDate)
+  }
 
   const [title, setTitle] = useState("");
   const [start, setStart] = useState<Date | string>(new Date());
@@ -160,32 +182,57 @@ export default function Calendar() {
       {showCalendar && (
         <div className="absolute top-[60px] right-0 w-full md:w-3/4 lg:w-2/3 h-[calc(100vh-60px)] bg-white text-black shadow-lg z-20 overflow-auto">
           <div className="p-4">
-            <button 
-              onClick={toggleCalendar}
-              className="mb-4 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
-            >
-              Tutup Kalender
-            </button>
+            <div className='flex justify-between items-center'>
+              <button 
+                onClick={toggleCalendar}
+                className="mb-4 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+              >
+                Tutup Kalender
+              </button>
+              <div className="flex gap-2 mb-4">
+                <select
+                  onChange={(e) => handleDateChange(parseInt(e.target.value), null)}
+                  className="border rounded p-2 bg-white focus:border-1"
+                  defaultValue={new Date().getMonth()}
+                >
+                  {months.map((month, idx) => (
+                    <option value={idx} key={idx}>{month}</option>
+                  ))}
+                </select>
+                <select
+                  onChange={(e) => handleDateChange(null, parseInt(e.target.value))}
+                  className="border rounded p-2 bg-white focus:border-1"
+                  defaultValue={new Date().getFullYear()}
+                >
+                  {years.map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
             <div className="mt-4">
               <FullCalendar
+                ref={calendarRef}
                 plugins={[
                   dayGridPlugin,
                   interactionPlugin,
                   timeGridPlugin
                 ]}
                 headerToolbar={{
-                  left: 'prev,next today',
-                  center: 'title',
-                  right: 'timeGridWeek,dayGridMonth'
+                  left: '',
+                  center: '',
+                  right: ''
                 }}
                 events={data}
-                initialView='timeGridWeek'
+                initialView='dayGridMonth'
                 nowIndicator={true}
                 selectable={true}
                 selectMirror={true}
                 select={handleDateRangeSelect}
                 eventClick={(data) => handleDeleteModal(data)}
                 height="auto"
+                locale={'id'}
+                titleFormat={{year: 'numeric', month: 'long'}}
               />
             </div>
           </div>

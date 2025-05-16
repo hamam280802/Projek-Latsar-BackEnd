@@ -19,8 +19,12 @@ const sideItems = [
         url: '/issue',
     },
     {
-        title: 'Daftar Mitra',
+        title: 'ST Petugas',
         url: '/partners',
+    },
+    {
+        title: 'Pengajuan SPJ',
+        url: '/spj',
     },
     {
         title: 'Tentang Kami',
