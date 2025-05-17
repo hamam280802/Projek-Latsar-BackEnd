@@ -8,13 +8,15 @@ import { Dialog, Transition } from '@headlessui/react'
 import axios from 'axios'
 import Datetime from "react-datetime"
 import 'react-datetime/css/react-datetime.css'
+import { AnimatePresence, motion } from 'framer-motion'
 
-interface Event {
+interface CalendarEvent {
   title: string;
   start: Date | string;
   end: Date | string;
   allDay: boolean;
-  id: number;
+  id: string;
+  _id?: number;
 }
 
 function formatDateTime(date: Date | string) {
@@ -26,14 +28,14 @@ export default function Calendar() {
   const [showCalendar, setShowCalendar] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [idToDelete, setIdToDelete] = useState<number | null>(null)
+  const [idToDelete, setIdToDelete] = useState<string | null>(null)
   const [titleToDelete, setTitleToDelete] = useState('')
-  const [newEvent, setNewEvent] = useState<Event>({
+  const [newEvent, setNewEvent] = useState<CalendarEvent>({
     title: '',
     start: '',
     end: '',
     allDay: false,
-    id: 0
+    id: '',
   })
 
   const calendarRef = useRef<any>(null)
@@ -60,62 +62,96 @@ export default function Calendar() {
 
   const [title, setTitle] = useState("");
   const [start, setStart] = useState<Date | string>(new Date());
-  const [end, setEnd] = useState<Date | string | moment.Moment>(new Date());
+  const [end, setEnd] = useState<Date | string>(new Date());
   const [allDay, setAllDay] = useState(false);
-  const [id, setId] = useState(0);
+  const [id, setId] = useState("");
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState([]);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
 
-  useEffect(()=>{
-    async function getCalendar() {
-        try {
-            const res = await axios.get('../../../../api/cals', { headers: { 'Cache-Control': 'no-store' } });
-            const fullData = res.data;
-            if (res.status !== 200) {
-                throw new Error("Gagal terhubung ke database")
-            }
-            setData(fullData.cals);
-        } catch (error) {
-            console.log("Error memuat database: ", error);
-            return null
-        }
+  const fetchEvents = async () => {
+    try {
+      const res = await axios.get('../../../../api/cals', { 
+        headers: { 'Cache-Control': 'no-store' } 
+      });
+      
+      if (res.status !== 200) {
+        throw new Error("Gagal terhubung ke database")
+      }
+      
+      // Convert numeric ids to strings for FullCalendar compatibility
+      const formattedEvents = res.data.cals.map((event: any) => ({
+        ...event,
+        id: String(event.id)
+      }));
+      
+      setEvents(formattedEvents);
+    } catch (error) {
+      console.log("Error memuat database: ", error);
     }
-    getCalendar();
+  }
+
+  useEffect(() => {
+    fetchEvents();
   }, [])
 
   function handleDateRangeSelect(arg: { start: Date, end: Date, allDay: boolean}) {
-    setNewEvent({ ...newEvent, start: arg.start, end: arg.end, allDay: arg.allDay, id: new Date().getTime()})
-    setShowModal(true)
+    const newId = String(new Date().getTime());
+    setNewEvent({ 
+      title: '', 
+      start: arg.start, 
+      end: arg.end, 
+      allDay: arg.allDay, 
+      id: newId
+    })
     setStart(arg.start)
     setEnd(arg.end)
     setAllDay(arg.allDay)
-    setId(new Date().getTime())
+    setId(newId)
+    setTitle('')
+    setShowModal(true)
   }
 
   function handleDeleteModal(data: { event: { id: string, title: string } }) {
     setShowDeleteModal(true)
-    setIdToDelete(Number(data.event.id))
+    setIdToDelete(data.event.id)
     setTitleToDelete(data.event.title)
   }
 
-  async function repeat(){
-    data.map((eventcal:{id: number, _id:number})=>(
-      eventcal.id === idToDelete ? handleDelete(eventcal._id) : ''
-    ))
-    setShowDeleteModal(false)
-    setIdToDelete(null)
-    location.reload();
-  }
-
-  async function handleDelete(id: number) {
+  async function handleDeleteEvent() {
+    if (!idToDelete) return;
+    
+    // Find the event to delete
+    const eventToDelete = events.find(event => event.id === idToDelete);
+    console.error("Event to delete:", eventToDelete);
+    if (!eventToDelete || !eventToDelete._id) {
+      setShowDeleteModal(false);
+      setIdToDelete(null);
+      return;
+    }
+    
     try {
-      const res = await axios.delete(`../api/cals?id=${id}`, { headers: { 'Cache-Control': 'no-store' } })
-      if (res.status !== 200){
-        throw new Error('Gagal menghapus list')
+      const res = await axios.delete(`../api/cals?id=${eventToDelete._id}`, { 
+        headers: { 'Cache-Control': 'no-store' } 
+      });
+      
+      if (res.status === 200) {
+        // Update local state to remove the deleted event
+        setEvents(prev => prev.filter(event => event.id !== idToDelete));
+        
+        // Update calendar display
+        const calendarApi = calendarRef.current?.getApi();
+        const eventObj = calendarApi.getEventById(idToDelete);
+        if (eventObj) {
+          eventObj.remove();
+        }
+      } else {
+        throw new Error('Gagal menghapus jadwal');
       }
     } catch (error) {
-      console.log("Error memuat database: ", error);
-      return null
+      console.error("Error deleting event:", error);
+    } finally {
+      setShowDeleteModal(false);
+      setIdToDelete(null);
     }
   }
 
@@ -126,7 +162,7 @@ export default function Calendar() {
       start: '',
       end: '',
       allDay: false,
-      id: 0
+      id: ''
     })
     setShowDeleteModal(false)
     setIdToDelete(null)
@@ -142,27 +178,51 @@ export default function Calendar() {
 
   async function handleSubmit(e: SyntheticEvent) {
     e.preventDefault()
+    
     try {
-        const data = {title, start, end, allDay, id}
-        const res = await axios.post("../../../../api/cals", data, { headers: { 'Cache-Control': 'no-store' } });
+      const eventData = { title, start, end, allDay, id };
+      const res = await axios.post("../../../../api/cals", eventData, { 
+        headers: { 'Cache-Control': 'no-store' } 
+      });
 
-        if(res.status !== 201){
-            throw new Error("Gagal membuat list");
-        }
+      if (res.status === 201) {
+        // Add the new event to our local state with the database ID
+        const newEventWithId: CalendarEvent = {
+          title,
+          start,
+          end,
+          allDay,
+          id,
+          _id: res.data._id // Assuming the API returns the created document with _id
+        };
+        
+        setEvents(prev => [...prev, newEventWithId]);
+        
+        // Refresh the calendar
+        const calendarApi = calendarRef.current?.getApi();
+        calendarApi.addEvent({
+          id,
+          title,
+          start,
+          end,
+          allDay,
+        });
+      } else {
+        throw new Error("Gagal membuat jadwal");
+      }
     } catch (error) {
-        console.log("Error memuat database: ", error);
-        return null
-    }
-      setShowModal(false)
+      console.error("Error creating event:", error);
+    } finally {
+      setShowModal(false);
       setNewEvent({
         title: '',
         start: '',
         end: '',
         allDay: false,
-        id: 0
-      })
-      location.reload();
+        id: ''
+      });
     }
+  }
 
   const toggleCalendar = () => {
     setShowCalendar(!showCalendar);
@@ -179,17 +239,29 @@ export default function Calendar() {
         </svg>
       </button>
 
+      <AnimatePresence>
       {showCalendar && (
-        <div className="absolute top-[60px] right-0 w-full md:w-3/4 lg:w-2/3 h-[calc(100vh-60px)] bg-white text-black shadow-lg z-20 overflow-auto">
+        <motion.div
+          initial={{ opacity: 0, width: 0 }}
+          animate={{ opacity: 1, width: 600 }}
+          exit={{ opacity: 0,width: 0 }}
+          transition={{ duration: 0.2 }}
+          onAnimationComplete={() => {
+            const api = calendarRef.current?.getApi();
+            if (api) {
+              api.updateSize(); // Pastikan FullCalendar tahu ukuran baru
+            }
+          }}
+        className="absolute top-[60px] right-0 w-full md:w-[500px] lg:w-[600px] h-[calc(100vh-60px)] bg-white text-black shadow-lg z-20 overflow-auto">
           <div className="p-4">
             <div className='flex justify-between items-center'>
               <button 
                 onClick={toggleCalendar}
-                className="mb-4 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
               >
                 Tutup Kalender
               </button>
-              <div className="flex gap-2 mb-4">
+              <div className="flex gap-2">
                 <select
                   onChange={(e) => handleDateChange(parseInt(e.target.value), null)}
                   className="border rounded p-2 bg-white focus:border-1"
@@ -210,7 +282,7 @@ export default function Calendar() {
                 </select>
               </div>
             </div>
-            <div className="mt-4">
+            <div>
               <FullCalendar
                 ref={calendarRef}
                 plugins={[
@@ -223,7 +295,7 @@ export default function Calendar() {
                   center: '',
                   right: ''
                 }}
-                events={data}
+                events={events}
                 initialView='dayGridMonth'
                 nowIndicator={true}
                 selectable={true}
@@ -236,8 +308,9 @@ export default function Calendar() {
               />
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
         
       <Transition.Root show={showDeleteModal} as={Fragment}>
         <Dialog as="div" className="relative z-30" onClose={setShowDeleteModal}>
@@ -282,12 +355,18 @@ export default function Calendar() {
                     </div>
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                    <button type="button" className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm 
-                    font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto" onClick={repeat}>
+                    <button 
+                      type="button" 
+                      className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm 
+                      font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto" 
+                      onClick={handleDeleteEvent}
+                    >
                       Hapus
                     </button>
-                    <button type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 
-                    shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                    <button 
+                      type="button" 
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 
+                      shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                       onClick={handleCloseModal}
                     >
                       Batal
@@ -347,7 +426,21 @@ export default function Calendar() {
                         </div>
                         <div className={`justify-center space-y-2 mt-4 ${open === true ? 'mb-48' : ''}`}>
                           <label className='text-black'>Tentukan rentang waktu</label>
-                          <Datetime onOpen={()=>setOpen(true)} closeOnSelect onClose={()=>setOpen(false)} className='border rounded-md p-2 w-full justify-between flex text-sm' value={end} onChange={(date)=>setEnd(date)}/>
+                          <Datetime 
+                            onOpen={()=>setOpen(true)} 
+                            closeOnSelect 
+                            onClose={()=>setOpen(false)} 
+                            className='border rounded-md p-2 w-full justify-between flex text-sm' 
+                            value={end} 
+                            onChange={(date) => {
+                              // Ensure date is always a Date object, not a Moment
+                              if (typeof date === 'object' && 'toDate' in date) {
+                                setEnd(date.toDate());
+                              } else {
+                                setEnd(date as Date | string);
+                              }
+                            }}
+                          />
                         </div>
                         <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                           <button
