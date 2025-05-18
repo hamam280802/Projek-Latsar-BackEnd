@@ -36,7 +36,7 @@ const ForgotPassword = ({setActiveState}:{setActiveState: (e: string) => void;})
   return (
     <div className='py-2 px-4 space-y-5'>
         <form onSubmit={handleSubmit(onSubmit)}>
-            <label htmlFor="email" className={`${styles.label}`}>Masukkan emailmu</label>
+            <label htmlFor="email" className={`${styles.label} text-white`}>Masukkan emailmu</label>
             <input {...register("email")} type="email" placeholder="Email" className={`${styles.input}`}/>
             {
                 errors.email && (
@@ -46,9 +46,9 @@ const ForgotPassword = ({setActiveState}:{setActiveState: (e: string) => void;})
                 )
             }
             <br /><br />
-            <input type="submit" value="Kirim" disabled={isSubmitting || loading} className={`${styles.button} my-2`}/>
+            <input type="submit" value="Kirim" disabled={isSubmitting || loading} className={`${styles.button} my-2 text-white`}/>
             <br />
-            <h5 className='text-center pt-4 font-Poppins text-[14px]'>
+            <h5 className='text-center pt-4 font-Poppins text-[14px] text-white'>
                 Atau kembali ke <span className='text-[#2190ff] cursor-pointer' onClick={() => setActiveState('Login')}>Login</span>
             </h5>
         </form>

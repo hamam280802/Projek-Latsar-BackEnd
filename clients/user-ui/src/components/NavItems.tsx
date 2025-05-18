@@ -9,13 +9,15 @@ const navItems: {
     title: string;
     url: string;
     style?: string;
+    hovertitle?: string;
     unhover?: boolean;
     dataprogress?: { title: string; url: string }[];
     logo?: LucideIcon;
 }[] = [
     {
         title: 'Beranda',
-        url: '/',
+        hovertitle: 'Beranda',
+        url: '/beranda',
         style: 'border-b-2 border-t-2 border-white py-2',
         logo: House,
     },
@@ -26,7 +28,8 @@ const navItems: {
     },
     {
         title: 'Progres',
-        url: '#progreslapangan',
+        url: '/progres',
+        hovertitle: 'Progres',
         logo: ChartNoAxesCombined,
         dataprogress: [
             {
@@ -74,11 +77,13 @@ const navItems: {
     {
         title: 'Monitoring Petugas',
         url: '/monitoringstaff',
+        hovertitle: 'Monitoring Petugas',
         logo: MonitorCheck,
     },
     {
         title: 'Kendala',
         url: '/issue',
+        hovertitle: 'Kendala',
         style: 'border-b-2 border-white pb-2',
         logo: TriangleAlert,
     },
@@ -90,28 +95,34 @@ const navItems: {
     {
         title: 'ST Petugas',
         url: '/partners',
+        hovertitle: 'ST Petugas',
         logo: Users,
     },
     {
         title: 'Pengajuan SPJ',
         url: '/spj',
+        hovertitle: 'Pengajuan SPJ',
         logo: FileText,
     },
     {
         title: 'Tentang Kami',
         url: '/about',
+        hovertitle: 'Tentang Kami',
         logo: Contact
     },
 ]
 
 const NavItems = ({activeItem = 0, isMinimized = false}:{activeItem?:number, isMinimized?: boolean}) => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [openMinDropdown, setOpenMinDropdown] = useState<number | null>(null);
+  const [activeSubItem, setActiveSubItem] = useState<number | null>(null);
 
   const toggleDropdown = (index: number) => {
     setOpenDropdown(openDropdown === index ? null : index);
   };
+
   return (
-    <div className="h-screen overflow-y-auto pr-2 pb-6">
+    <div className="h-screen overflow-y-auto pb-6">
         <div className='flex flex-col space-y-2'>
             {
                 navItems.map((item, index) => (
@@ -119,31 +130,32 @@ const NavItems = ({activeItem = 0, isMinimized = false}:{activeItem?:number, isM
                     {item.dataprogress ? (
                         <button
                         onClick={() => toggleDropdown(index)}
-                        className={`w-full text-left px-5 text-[15px] font-Poppins font-[500] flex items-center justify-between py-2 hover:font-semibold ${
-                            activeItem === index && 'bg-[#ffffff2a] font-bold'
-                        }`}
+                        className={`w-full text-left px-5 text-[15px] font-Poppins font-[500] flex items-center justify-between py-2 hover:font-semibold 
+                            ${activeItem === index && 'bg-[#ffffff2a] font-bold'}
+                        `}
                         >
                         {isMinimized ? (
-                            <div className="items-center">{item.logo && <item.logo size={20}/>}</div>
+                            <div className="items-center" title={item.hovertitle}>{item.logo && <item.logo size={20} className="text-white"/>}</div>
                         ) : (
                             <div className="flex items-center space-x-2">
-                                {item.logo && <item.logo size={20}/>} <span className="mt-1">{item.title}</span>
+                                {item.logo && <item.logo size={20} className="text-white"/>} <span className="mt-1 text-white">{item.title}</span>
                             </div>
                         )}
-                        {!isMinimized && (openDropdown === index ? <ChevronDown size={16} /> : <ChevronRight size={16} />)}
+                        {!isMinimized && (openDropdown === index ? <ChevronDown size={16} className="mt-1 text-white"/> : <ChevronRight size={16} className="mt-1 text-white"/>)}
                         </button>
                     ) : (
                         <Link
                         href={item.url}
-                        className={`px-5 text-[15px] font-Poppins font-[500] block ${
-                            !item.unhover ? 'hover:font-semibold py-2' : 'font-bold cursor-default'
-                        } ${activeItem === index && 'bg-[#ffffff2a] font-bold'}`}
+                        className={`px-5 text-[15px] font-Poppins font-[500] block 
+                            ${!item.unhover ? 'hover:font-semibold py-2' : 'font-bold cursor-default'} 
+                            ${activeItem === index && 'bg-[#ffffff2a] font-bold'}
+                        `}
                         >
                         {isMinimized ? (
-                            <div className="items-center">{item.logo && <item.logo size={20}/>}</div> // Placeholder kecil
+                            <div className="items-center" title={item.hovertitle}>{item.logo && <item.logo size={20} className="text-white"/>}</div>
                         ) : (
                             <div className="flex items-center space-x-2">
-                                {item.logo && <item.logo size={20}/>} <span className="mt-1">{item.title}</span>
+                                {item.logo && <item.logo size={20} className="text-white"/>} <span className="mt-1 text-white">{item.title}</span>
                             </div>
                         )}
                         </Link>
@@ -158,13 +170,14 @@ const NavItems = ({activeItem = 0, isMinimized = false}:{activeItem?:number, isM
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.25 }}
                         >
-                        {item.dataprogress.map((sub) => (
+                        {item.dataprogress.map((sub, subIndex) => (
                             <Link
                             key={sub.url}
                             href={sub.url}
-                            className="block text-sm px-2 py-1 hover:font-semibold text-gray-300"
+                            className={`block text-sm px-2 py-1 hover:font-semibold text-white ${activeSubItem === subIndex && 'font-bold'}`}
+                            onClick={() => setActiveSubItem(subIndex)}
                             >
-                            • {sub.title}
+                            {activeSubItem === subIndex ? '>' : '•'} {sub.title}
                             </Link>
                         ))}
                         </motion.div>
@@ -172,8 +185,33 @@ const NavItems = ({activeItem = 0, isMinimized = false}:{activeItem?:number, isM
                     </AnimatePresence>
                     </div>
                 ))
-
             }
+            { isMinimized && (
+                <AnimatePresence>
+                    {openDropdown && navItems[2].dataprogress && (
+                        <div onMouseLeave={() => setOpenDropdown(null)} className="absolute bg-orange-800 p-2 w-[150px] ml-[65px] top-[100px] rounded-md shadow-lg z-10">
+                        <motion.div
+                        className="space-y-1"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        >
+                        {navItems[2].dataprogress.map((sub, subIndex) => (
+                            <Link
+                            key={sub.url}
+                            href={sub.url}
+                            className={`block text-sm px-2 py-1 hover:font-semibold text-white ${activeSubItem === subIndex && 'font-bold'}`}
+                            onClick={() => setActiveSubItem(subIndex)}
+                            >
+                            {activeSubItem === subIndex ? '>' : '•'} {sub.title}
+                            </Link>
+                        ))}
+                        </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+            )}
         </div>
     </div>
   )

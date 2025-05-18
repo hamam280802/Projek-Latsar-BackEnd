@@ -1,12 +1,21 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import NavItems from '../NavItems'
 import styles from '@/src/utils/style'
-import { AlignJustify, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlignJustify, ChevronLeft } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export const SideBar = () => {
-  const [isMinimized, setIsMinimized] = useState(true);
+  const [isMinimized, setIsMinimized] = useState(false);
+
+  useEffect(() => {
+    sessionStorage.setItem('isMinimized', isMinimized.toString())
+
+    const event = new CustomEvent('sidebar-toggle', {
+      detail: isMinimized
+    });
+    window.dispatchEvent(event);
+  }, [isMinimized])
 
   return (
     <AnimatePresence>
@@ -32,7 +41,7 @@ export const SideBar = () => {
             </button>
           </div>
         ) : (
-          <h1 className={`w-[90%] m-auto h-[44px] flex px-16 pb-4 text-2xl ${styles.logo}`}>
+          <h1 className={`w-[90%] m-auto h-[44px] flex px-16 pb-4 text-2xl text-white ${styles.logo}`}>
                 SiCepat
           </h1>
         )}

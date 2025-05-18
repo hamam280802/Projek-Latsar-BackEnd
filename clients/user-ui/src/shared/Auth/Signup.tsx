@@ -52,7 +52,7 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
 
   return (
     <div className='py-2 px-4 space-y-5'>
-      <h1 className={`${styles.title}`}>
+      <h1 className={`${styles.title} text-white`}>
         Silahkan Daftar!!
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -148,9 +148,9 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
           )
         }
         <div className='w-full mt-5'>
-          <input type="submit" value="Daftar" disabled={isSubmitting || loading} className={`${styles.button} my-2`} />
+          <input type="submit" value="Daftar" disabled={isSubmitting || loading} className={`${styles.button} my-2 text-white`} />
         </div>
-        <h5 className='text-center pt-2 font-Poppins text-[14px]'>
+        <h5 className='text-center pt-2 font-Poppins text-[14px] text-white'>
           Sudah punya akun?
           <span className='text-[#2190ff] pl-1 cursor-pointer' onClick={() => setActiveState('Login')}>Masuk</span>
         </h5>

@@ -48,7 +48,7 @@ const ProfileDropDown = () => {
                     <DropdownTrigger>
                         <Avatar
                         as='button'
-                        className='transition-transform'
+                        className='transition-transform text-white'
                         src={data?.user ? data.user.image : user.image}
                         />
                     </DropdownTrigger>
@@ -69,7 +69,7 @@ const ProfileDropDown = () => {
             ) : (
                 <Avatar
                     as='button'
-                    className='transition-transform'
+                    className='transition-transform text-white'
                     onClick={() => setOpen(!open)}
                 />
             )

@@ -122,7 +122,6 @@ export default function Calendar() {
     
     // Find the event to delete
     const eventToDelete = events.find(event => event.id === idToDelete);
-    console.error("Event to delete:", eventToDelete);
     if (!eventToDelete || !eventToDelete._id) {
       setShowDeleteModal(false);
       setIdToDelete(null);
@@ -187,13 +186,14 @@ export default function Calendar() {
 
       if (res.status === 201) {
         // Add the new event to our local state with the database ID
+        const dbId = res.data._id;
         const newEventWithId: CalendarEvent = {
           title,
           start,
           end,
           allDay,
           id,
-          _id: res.data._id // Assuming the API returns the created document with _id
+          _id: dbId // Assuming the API returns the created document with _id
         };
         
         setEvents(prev => [...prev, newEventWithId]);
@@ -206,6 +206,7 @@ export default function Calendar() {
           start,
           end,
           allDay,
+          extendedProps: { _id: dbId },
         });
       } else {
         throw new Error("Gagal membuat jadwal");
@@ -221,6 +222,7 @@ export default function Calendar() {
         allDay: false,
         id: ''
       });
+      fetchEvents();
     }
   }
 
@@ -252,7 +254,7 @@ export default function Calendar() {
               api.updateSize(); // Pastikan FullCalendar tahu ukuran baru
             }
           }}
-        className="absolute top-[60px] right-0 w-full md:w-[500px] lg:w-[600px] h-[calc(100vh-60px)] bg-white text-black shadow-lg z-20 overflow-auto">
+        className="absolute top-[60px] right-0 w-full md:w-[600px] lg:w-[700px] h-[calc(100vh-60px)] bg-white text-black shadow-lg z-20 overflow-auto">
           <div className="p-4">
             <div className='flex justify-between items-center'>
               <button 

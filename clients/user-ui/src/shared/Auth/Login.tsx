@@ -49,7 +49,7 @@ const Login = ({setActiveState, setOpen}:{setActiveState: (e: string) => void, s
 
   return (
     <div className='py-2 px-4 space-y-5'>
-      <h1 className={`${styles.title}`}>
+      <h1 className={`${styles.title} text-white`}>
         Silahkan Login!!
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -92,7 +92,7 @@ const Login = ({setActiveState, setOpen}:{setActiveState: (e: string) => void, s
         </div>
         <div className='w-full mt-5'>
           <a onClick={() => setActiveState('ForgotPassword')} className={`${styles.label} text-xs text-[#2190ff] block text-right cursor-pointer`}>Lupa Paswword?</a>
-          <input type="submit" value="Login" disabled={isSubmitting || loading} className={`${styles.button} my-2`} />
+          <input type="submit" value="Login" disabled={isSubmitting || loading} className={`${styles.button} my-2 text-white`} />
         </div>
         <h5 className='text-center pt-6 font-Poppins text-[14px] text-white'>
           Or join with
@@ -101,7 +101,7 @@ const Login = ({setActiveState, setOpen}:{setActiveState: (e: string) => void, s
           <FcGoogle size={30} className='cursor-pointer mr-2'/>
           <AiFillGithub size={30} className='cursor-pointer ml-2'/>
         </div>
-        <h5 className='text-center pt-2 font-Poppins text-[14px]'>
+        <h5 className='text-center pt-2 font-Poppins text-[14px] text-white'>
           Belum punya akun?
           <span className='text-[#2190ff] pl-1 cursor-pointer' onClick={() => setActiveState('Signup')}>Daftar</span>
         </h5>

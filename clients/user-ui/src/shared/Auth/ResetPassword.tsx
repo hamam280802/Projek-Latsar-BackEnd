@@ -50,10 +50,10 @@ const ResetPassword = ({activationToken}: {activationToken: string|string[];}) =
     return (
         <div className="w-full flex justify-center items-center h-screen bg-white">
             <div className="md:w-[500px] w-full p-4 bg-orange-500 rounded-lg border-1 shadow-lg">
-                <h1 className={`${styles.title}`}>Reset Passwordmu</h1>
+                <h1 className={`${styles.title} text-white`}>Reset Passwordmu</h1>
                 <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="w-full mt-5 relative mb-1">
-                    <label htmlFor="password" className={`${styles.label}`}>
+                    <label htmlFor="password" className={`${styles.label} text-white`}>
                     Masukkan passwordmu
                     </label>
                     <input
@@ -80,7 +80,7 @@ const ResetPassword = ({activationToken}: {activationToken: string|string[];}) =
                     <span className="text-red-500">{`${errors.password.message}`}</span>
                 )}
                 <div className="w-full mt-5 relative mb-1">
-                    <label htmlFor="confirmPassword" className={`${styles.label}`}>
+                    <label htmlFor="confirmPassword" className={`${styles.label} text-white`}>
                     Konfirmasi passwordmu 
                     </label>
                     <input
@@ -111,7 +111,7 @@ const ResetPassword = ({activationToken}: {activationToken: string|string[];}) =
                     type="submit"
                     value="Submit"
                     disabled={isSubmitting || loading}
-                    className={`${styles.button} mt-3`}
+                    className={`${styles.button} mt-3 text-white`}
                 />
                 <br />
                 </form>

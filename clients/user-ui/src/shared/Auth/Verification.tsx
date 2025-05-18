@@ -72,7 +72,7 @@ const Verification: FC<Props> = ({ setActiveState }) => {
 
     return (
         <div>
-          <h1 className={styles.title}>Verifikasi akunmu</h1>
+          <h1 className={`${styles.title} text-white`}>Verifikasi akunmu</h1>
           <br />
           <div className="w-full flex items-center justify-center mt-2">
             <div className="w-[80px] h-[80px] rounded-full bg-[#497DF2] flex items-center justify-center">
@@ -101,7 +101,7 @@ const Verification: FC<Props> = ({ setActiveState }) => {
           <br />
           <div className="w-full flex justify-center">
             <button
-              className={styles.button}
+              className={`${styles.button} text-white`}
               disabled={loading}
               onClick={verificationHandler}
             >
