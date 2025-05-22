@@ -1,8 +1,47 @@
-import React from 'react'
+'use client'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
 
-function Beranda() {
+interface CalendarEvent {
+    title: string;
+    start: Date | string;
+    end: Date | string;
+    allDay: boolean;
+    id: string;
+    _id?: number;
+  }
+
+function Dashboard() {
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
+
+    const fetchEvents = async () => {
+    try {
+        const res = await axios.get('../../../../api/cals', { 
+        headers: { 'Cache-Control': 'no-store' } 
+        });
+        
+        if (res.status !== 200) {
+        throw new Error("Gagal terhubung ke database")
+        }
+        
+        // Convert numeric ids to strings for FullCalendar compatibility
+        const formattedEvents = res.data.cals.map((event: any) => ({
+        ...event,
+        id: String(event.id)
+        }));
+        
+        setEvents(formattedEvents);
+    } catch (error) {
+        console.log("Error memuat database: ", error);
+    }
+    }
+
+    useEffect(() => {
+        fetchEvents();
+    }, [])
+    
   return (
-    <div className='px-4 py-2 space-y-2'>
+    <div className='px-8 py-4 space-y-4 font-Poppins'>
         <div className='bg-orange-50 rounded-lg p-2 font-bold text-xl flex justify-between shadow-md'>
             Beranda
         </div>
@@ -35,48 +74,22 @@ function Beranda() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr className="bg-white border-b border-gray-200">
-                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                            Apple MacBook Pro 17"
-                        </th>
-                        <td className="px-6 py-4">
-                            Silver
-                        </td>
-                        <td className="px-6 py-4">
-                            Laptop
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                            <a href="#" className="font-medium text-blue-600 hover:underline">Edit</a>
-                        </td>
-                    </tr>
-                    <tr className="bg-white border-b border-gray-200">
-                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                            Microsoft Surface Pro
-                        </th>
-                        <td className="px-6 py-4">
-                            White
-                        </td>
-                        <td className="px-6 py-4">
-                            Laptop PC
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                            <a href="#" className="font-medium text-blue-600 hover:underline">Edit</a>
-                        </td>
-                    </tr>
-                    <tr className="bg-white">
-                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                            Magic Mouse 2
-                        </th>
-                        <td className="px-6 py-4">
-                            Black
-                        </td>
-                        <td className="px-6 py-4">
-                            Accessories
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                            <a href="#" className="font-medium text-blue-600 hover:underline">Edit</a>
-                        </td>
-                    </tr>
+                    {events.map((event) => (
+                        <tr key={event.id} className="bg-white border-b border-gray-200">
+                            <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                {event.title}
+                            </th>
+                            <td className="px-6 py-4">
+                                {new Date(event.start).toLocaleDateString()} - {new Date(event.end).toLocaleDateString()}
+                            </td>
+                            <td className="px-6 py-4">
+                                {event.allDay ? "All Day" : "Partial"}
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                                <a href="#" className="font-medium text-blue-600 hover:underline">Edit</a>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>
@@ -84,4 +97,4 @@ function Beranda() {
   )
 }
 
-export default Beranda
+export default Dashboard

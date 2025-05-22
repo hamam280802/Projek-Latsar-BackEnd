@@ -431,8 +431,8 @@ export default function Calendar() {
                           <Datetime 
                             onOpen={()=>setOpen(true)} 
                             closeOnSelect 
-                            onClose={()=>setOpen(false)} 
-                            className='border rounded-md p-2 w-full justify-between flex text-sm' 
+                            onClose={()=>setOpen(false)}
+                            className='border rounded-md p-2 w-full justify-between flex text-sm text-black' 
                             value={end} 
                             onChange={(date) => {
                               // Ensure date is always a Date object, not a Moment

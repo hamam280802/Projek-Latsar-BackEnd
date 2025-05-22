@@ -72,7 +72,7 @@ const Verification: FC<Props> = ({ setActiveState }) => {
 
     return (
         <div>
-          <h1 className={`${styles.title} text-white`}>Verifikasi akunmu</h1>
+          <h1 className={`${styles.title}`}>Verifikasi akunmu</h1>
           <br />
           <div className="w-full flex items-center justify-center mt-2">
             <div className="w-[80px] h-[80px] rounded-full bg-[#497DF2] flex items-center justify-center">
@@ -87,7 +87,7 @@ const Verification: FC<Props> = ({ setActiveState }) => {
                 type="number"
                 key={key}
                 ref={inputRefs[index]}
-                className={`w-[65px] h-[65px] bg-transparent border-[3px] rounded-[10px] flex items-center text-white justify-center text-[18px] font-Poppins outline-none text-center ${
+                className={`w-[65px] h-[65px] bg-transparent border-[3px] rounded-[10px] flex items-center justify-center text-[18px] font-Poppins outline-none text-center ${
                   invalidError ? "shake border-red-500" : "border-white"
                 }`}
                 placeholder=""
@@ -109,7 +109,7 @@ const Verification: FC<Props> = ({ setActiveState }) => {
             </button>
           </div>
           <br />
-          <h5 className="text-center pt-4 font-Poppins text-[14px] text-white">
+          <h5 className="text-center pt-4 font-Poppins text-[14px]">
             Sudah punya akun?
             <span
               className="text-[#2190ff] pl-1 cursor-pointer"

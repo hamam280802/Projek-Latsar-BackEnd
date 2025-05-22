@@ -18,7 +18,7 @@ const formSchema = z.object({
 
 type LoginSchema = z.infer<typeof formSchema>;
 
-const Login = ({setActiveState, setOpen}:{setActiveState: (e: string) => void, setOpen: (e: boolean) => void;}) => {
+const Login = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
   const[Login,{loading}] = useMutation(LOGIN_USER)
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<LoginSchema>({
     resolver: zodResolver(formSchema),
@@ -39,7 +39,6 @@ const Login = ({setActiveState, setOpen}:{setActiveState: (e: string) => void, s
       toast.success('Login Berhasil!');
       Cookies.set("refresh_token", response.data.Login.refreshToken);
       Cookies.set("access_token", response.data.Login.accessToken);
-      setOpen(false);
       reset();
       window.location.reload();
     } else {
@@ -49,14 +48,14 @@ const Login = ({setActiveState, setOpen}:{setActiveState: (e: string) => void, s
 
   return (
     <div className='py-2 px-4 space-y-5'>
-      <h1 className={`${styles.title} text-white`}>
+      <h1 className={`${styles.title}`}>
         Silahkan Login!!
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className={`${styles.label}`}>
+        <label className='text-[16px] font-Poppins'>
           Masukkan emailmu
         </label>
-        <input {...register("email")} type="email" placeholder='muaraenim@gmail.com' className={`${styles.input}`} />
+        <input {...register("email")} type="email" placeholder='muaraenim@gmail.com' className={`${styles.input} shadow-sm`} />
         {
           errors.email && (
             <span className='text-red-500 block mt-1'>
@@ -65,10 +64,10 @@ const Login = ({setActiveState, setOpen}:{setActiveState: (e: string) => void, s
           )
         }
         <div className='w-full mt-5 relative mb-1'>
-          <label htmlFor="password" className={`${styles.label}`}>
+          <label htmlFor="password" className='text-[16px] font-Poppins'>
             Masukkan Passwordmu
           </label>
-          <input {...register("password")} type={!show ? 'password' : 'text'} placeholder='qwerty12345' className={`${styles.input}`} />
+          <input {...register("password")} type={!show ? 'password' : 'text'} placeholder='qwerty12345' className={`${styles.input} shadow-sm`} />
           {
             errors.password && (
               <span className='text-red-500 block mt-1'>
@@ -91,17 +90,17 @@ const Login = ({setActiveState, setOpen}:{setActiveState: (e: string) => void, s
           )}
         </div>
         <div className='w-full mt-5'>
-          <a onClick={() => setActiveState('ForgotPassword')} className={`${styles.label} text-xs text-[#2190ff] block text-right cursor-pointer`}>Lupa Paswword?</a>
+          <a onClick={() => setActiveState('ForgotPassword')} className={'text-[16px] font-Poppins text-xs text-[#2190ff] block text-right cursor-pointer'}>Lupa Paswword?</a>
           <input type="submit" value="Login" disabled={isSubmitting || loading} className={`${styles.button} my-2 text-white`} />
         </div>
-        <h5 className='text-center pt-6 font-Poppins text-[14px] text-white'>
+        <h5 className='text-center pt-6 font-Poppins text-[14px]'>
           Or join with
         </h5>
         <div className='flex items-center justify-center my-2' onClick={() => signIn()}>
           <FcGoogle size={30} className='cursor-pointer mr-2'/>
           <AiFillGithub size={30} className='cursor-pointer ml-2'/>
         </div>
-        <h5 className='text-center pt-2 font-Poppins text-[14px] text-white'>
+        <h5 className='text-center pt-2 font-Poppins text-[14px] '>
           Belum punya akun?
           <span className='text-[#2190ff] pl-1 cursor-pointer' onClick={() => setActiveState('Signup')}>Daftar</span>
         </h5>

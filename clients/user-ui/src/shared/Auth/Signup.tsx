@@ -52,15 +52,15 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
 
   return (
     <div className='py-2 px-4 space-y-5'>
-      <h1 className={`${styles.title} text-white`}>
+      <h1 className={`${styles.title}`}>
         Silahkan Daftar!!
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='w-full relative mb-3'>
-            <label className={`${styles.label}`}>
+            <label className='text-[16px] font-Poppins'>
             Masukkan namamu
             </label>
-            <input {...register("name")} type="text" placeholder='Marc Spector' className={`${styles.input}`} />
+            <input {...register("name")} type="text" placeholder='Marc Spector' className={`${styles.input} shadow-sm`} />
             {
             errors.name && (
                 <span className='text-red-500 block mt-1'>
@@ -70,10 +70,10 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
             }
         </div>
         <div className='w-full relative mb-3'>
-            <label className={`${styles.label}`}>
+            <label className='text-[16px] font-Poppins'>
             Masukkan emailmu
             </label>
-            <input {...register("email")} type="email" placeholder='muaraenim@gmail.com' className={`${styles.input}`} />
+            <input {...register("email")} type="email" placeholder='muaraenim@gmail.com' className={`${styles.input} shadow-sm`} />
             {
             errors.email && (
                 <span className='text-red-500 block mt-1'>
@@ -83,10 +83,10 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
             }
         </div>
         <div>
-            <label className={`${styles.label}`}>
+            <label className='text-[16px] font-Poppins'>
             Masukkan nomor teleponmu
             </label>
-            <input {...register("phone", {valueAsNumber: true})} type="number" placeholder='+62537.....' className={`${styles.input}`} />
+            <input {...register("phone", {valueAsNumber: true})} type="number" placeholder='+62537.....' className={`${styles.input} shadow-sm`} />
             {
             errors.phone && (
                 <span className='text-red-500 block mt-1'>
@@ -96,10 +96,10 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
             }
         </div>
         <div className='w-full mt-5 relative mb-1'>
-          <label htmlFor="password" className={`${styles.label}`}>
+          <label htmlFor="password" className='text-[16px] font-Poppins'>
             Masukkan Passwordmu
           </label>
-          <input {...register("password")} type={!show ? 'password' : 'text'} placeholder='qwerty12345' className={`${styles.input}`} />
+          <input {...register("password")} type={!show ? 'password' : 'text'} placeholder='qwerty12345' className={`${styles.input} shadow-sm`} />
           {!show ? (
             <AiOutlineEyeInvisible
              className='absolute bottom-3 right-2 z-1 cursor-pointer'
@@ -122,10 +122,10 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
           )
         }
         <div className='w-full mt-5 relative mb-1'>
-          <label htmlFor="passwordConfirm" className={`${styles.label}`}>
+          <label htmlFor="passwordConfirm" className='text-[16px] font-Poppins'>
             Konfirmasi Passwordmu
           </label>
-          <input {...register("passwordConfirm")} type={!show2 ? 'password' : 'text'} placeholder='qwerty12345' className={`${styles.input}`} />
+          <input {...register("passwordConfirm")} type={!show2 ? 'password' : 'text'} placeholder='qwerty12345' className={`${styles.input} shadow-sm`} />
           {!show2 ? (
             <AiOutlineEyeInvisible
              className='absolute bottom-3 right-2 z-1 cursor-pointer'
@@ -150,7 +150,7 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
         <div className='w-full mt-5'>
           <input type="submit" value="Daftar" disabled={isSubmitting || loading} className={`${styles.button} my-2 text-white`} />
         </div>
-        <h5 className='text-center pt-2 font-Poppins text-[14px] text-white'>
+        <h5 className='text-center pt-2 font-Poppins text-[14px]'>
           Sudah punya akun?
           <span className='text-[#2190ff] pl-1 cursor-pointer' onClick={() => setActiveState('Login')}>Masuk</span>
         </h5>

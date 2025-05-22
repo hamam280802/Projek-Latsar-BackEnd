@@ -2,8 +2,8 @@ import React from 'react'
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-white text-gray-800">
-        <div className="max-w-4xl mx-auto py-6 px-6">
+    <div className="min-h-screen bg-white text-gray-800 font-Poppins">
+        <div className="py-6 px-6">
         <h1 className="text-4xl font-bold mb-6">Tentang Kami</h1>
         <p className="text-lg leading-relaxed mb-4">
             Kami adalah tim pengembang aplikasi yang berfokus pada penyediaan solusi digital untuk kebutuhan statistik dan pemantauan data lapangan. Dengan semangat inovasi dan akurasi, kami berupaya menghadirkan aplikasi yang andal dan mudah digunakan untuk membantu berbagai pihak dalam pengambilan keputusan berbasis data.
