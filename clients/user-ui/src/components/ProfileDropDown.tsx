@@ -30,8 +30,8 @@ const ProfileDropDown = () => {
     } else {
         Cookies.remove('access_token');
         Cookies.remove('refresh_token');
+        window.location.href = '/';
         toast.success('Logout Berhasil!');
-        window.location.reload();
     }
   };
 

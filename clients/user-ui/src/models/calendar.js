@@ -6,7 +6,9 @@ const calSchema = new Schema(
         start: Date,
         end: Date,
         allDay: Boolean,
-        id: Number
+        id: Number,
+        info: String,
+        surveyEvent: String,
     },
     {
         timestamps: true,

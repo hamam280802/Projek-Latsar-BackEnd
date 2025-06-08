@@ -4,9 +4,9 @@ import connectMongoDB from "../../../libs/mongodb";
 
 export async function PUT(request, {params}) {
     const {id} = params;
-    const {newTitle: title, newStart: start, newEnd: end, newAllDay: allDay, newEveId:eveId} = await request.json();
+    const {newTitle: title, newStart: start, newEnd: end, newAllDay: allDay, newInfo: info, newEveId:eveId} = await request.json();
     await connectMongoDB();
-    await Calendar.findByIdAndUpdate(id, {title, start, end, allDay, eveId});
+    await Calendar.findByIdAndUpdate(id, {title, start, end, allDay, info, eveId});
     return NextResponse.json({message: "Calendar updated"}, {status: 200})
 }
 

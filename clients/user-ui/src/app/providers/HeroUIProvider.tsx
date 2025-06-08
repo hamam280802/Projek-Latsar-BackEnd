@@ -12,7 +12,7 @@ export function Providers({children}: { children: React.ReactNode }) {
     <ApolloProvider client={graphqlClient}>
       <SessionProvider>
         <HeroUIProvider>
-          <NextThemesProvider attribute='class' defaultTheme='dark'>
+          <NextThemesProvider attribute='class'>
             {children}
           </NextThemesProvider>
         </HeroUIProvider>

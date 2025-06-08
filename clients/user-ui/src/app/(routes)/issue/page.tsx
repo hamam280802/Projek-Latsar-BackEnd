@@ -79,22 +79,20 @@ const Issue = () => {
                 </div>
 
             </div>
-                <table className='w-full text-md text-center text-gray-500 rounded-lg shadow-md space-y-8'>
-                    <div className='bg-orange-50 flex justify-between w-full'>
-                        <thead>
-                            <tr>
-                                <th scope='col' className='py-3 w-[20%]'>NAMA PETUGAS</th>
-                                <th scope='col' className='py-3 w-[20%]'>WILAYAH</th>
-                                <th scope='col' className='py-3 w-[20%]'>JENIS SURVEI</th>
-                                <th scope='col' className='py-3 w-[20%]'>STATUS</th>
-                                <th scope='col' className='py-3 w-[20%]'>AKSI</th>
-                            </tr>
-                        </thead>
-                    </div>
-                    <div>
-                        <tbody></tbody>
-                    </div>
+            <div className='overflow-x-auto relative shadow-md sm:rounded-lg'>
+                <table className='w-full text-md text-center text-gray-500'>
+                    <thead className='rounded-lg bg-orange-50 text-gray-700 uppercase'>
+                        <tr>
+                            <th scope='col' className='py-3 px-6'>NAMA PETUGAS</th>
+                            <th scope='col' className='py-3 px-6'>WILAYAH</th>
+                            <th scope='col' className='py-3 px-6'>JENIS SURVEI</th>
+                            <th scope='col' className='py-3 px-6'>STATUS</th>
+                            <th scope='col' className='py-3 px-6'>AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
                 </table>
+            </div>
         </div>
     </div>
   )

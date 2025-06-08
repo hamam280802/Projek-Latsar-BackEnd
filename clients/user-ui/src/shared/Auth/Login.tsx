@@ -36,11 +36,10 @@ const Login = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
     });
 
     if (response.data.Login.user) {
-      toast.success('Login Berhasil!');
       Cookies.set("refresh_token", response.data.Login.refreshToken);
       Cookies.set("access_token", response.data.Login.accessToken);
-      reset();
-      window.location.reload();
+      window.location.href = '/dashboard';
+      toast.success('Login Berhasil!');
     } else {
       toast.error(response.data.Login.error.message);
     }

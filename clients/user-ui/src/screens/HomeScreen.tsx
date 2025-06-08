@@ -11,7 +11,7 @@ function HomeScreen() {
             <h1>Badan Pusat Statistik <br /> Kabupaten Muara Enim</h1>
           </div>
       </div>
-      <div className='fixed bg-orange-500 w-full min-h-full flex justify-between py-[100px] px-[200px]'>
+      <div className='bg-orange-500 w-full min-h-screen flex justify-between py-[100px] px-[100px]'>
         <div className='px-4 py-20 space-y-8'>
             <h1 className='text-white text-4xl font-semibold font-Poppins'>Selamat Datang di Aplikasi SiCepat!</h1>
             <span className='text-white text-xl font-Poppins'>Sistem Akronim apolah gitukan</span>
