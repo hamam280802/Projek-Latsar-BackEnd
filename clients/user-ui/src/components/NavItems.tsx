@@ -125,16 +125,13 @@ const navItems: {
 ];
 
 const NavItems = ({
-  activeItem = 0,
   isMinimized = false,
 }: {
-  activeItem?: number;
   isMinimized?: boolean;
 }) => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [activeSubItem, setActiveSubItem] = useState<number | null>(null);
   const pathname = usePathname();
-  const isSubActive = (subUrl: string) => pathname.startsWith(subUrl);
 
   const toggleDropdown = (index: number) => {
     setOpenDropdown(openDropdown === index ? null : index);
