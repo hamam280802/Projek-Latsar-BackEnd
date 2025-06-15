@@ -1,7 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtVerifyOptions } from '@nestjs/jwt';
-import { ActivationDto, ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDto } from './dto/users.dto';
+import {
+  ActivationDto,
+  ForgotPasswordDto,
+  LoginDto,
+  RegisterDto,
+  ResetPasswordDto,
+  UpdateSurveyActivityDto,
+} from './dto/users.dto';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { Response } from 'express';
 import * as bcrypt from 'bcryptjs';
@@ -20,14 +27,14 @@ interface UserData {
 export class UsersService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly prisma:PrismaService,
+    private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
-  ){}
+  ) {}
 
   // register user
   async register(registerDto: RegisterDto, response: Response) {
-    const {name, email, phone_number, password} = registerDto;
+    const { name, email, phone_number, password } = registerDto;
     const isEmailExist = await this.prisma.user.findUnique({
       where: {
         email,
@@ -44,16 +51,16 @@ export class UsersService {
       throw new BadRequestException('Nomor telepon ini sudah dipakai!');
     }
 
-    if(isEmailExist) {
+    if (isEmailExist) {
       throw new BadRequestException('Email ini sudah dipakai!');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = {
-        name,
-        email,
-        phone_number,
-        password: hashedPassword,
+      name,
+      email,
+      phone_number,
+      password: hashedPassword,
     };
     const activationToken = await this.createActivationToken(user);
     const activationCode = activationToken.activationCode;
@@ -65,44 +72,44 @@ export class UsersService {
       template: './activation-mail',
       name,
       activationCode,
-    })
-    return {activation_token, response};
+    });
+    return { activation_token, response };
   }
 
   // create activation token
   async createActivationToken(user: UserData) {
     const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
     const token = this.jwtService.sign(
-      {user, activationCode},
+      { user, activationCode },
       {
         secret: this.configService.get<string>('ACTIVATION_SECRET'),
         expiresIn: '5m',
-      }
-    );  
-    return {token, activationCode};
+      },
+    );
+    return { token, activationCode };
   }
 
   // activation user
-  async activateUser (activationDto:ActivationDto, response: Response) {
-    const {activationToken, activationCode} = activationDto;
+  async activateUser(activationDto: ActivationDto, response: Response) {
+    const { activationToken, activationCode } = activationDto;
 
-    const newUser: {user: UserData, activationCode: string} = this.jwtService.verify(
-      activationToken,
-      {secret: this.configService.get<string>('ACTIVATION_SECRET')} as JwtVerifyOptions
-    ) as {user: UserData, activationCode: string};
+    const newUser: { user: UserData; activationCode: string } =
+      this.jwtService.verify(activationToken, {
+        secret: this.configService.get<string>('ACTIVATION_SECRET'),
+      } as JwtVerifyOptions) as { user: UserData; activationCode: string };
 
-    if(newUser.activationCode !== activationCode) {
+    if (newUser.activationCode !== activationCode) {
       throw new BadRequestException('Kode Aktivasi tidak sesuai!');
     }
 
-    const {name, email, password, phone_number} = newUser.user;
+    const { name, email, password, phone_number } = newUser.user;
     const existUser = await this.prisma.user.findUnique({
       where: {
         email,
       },
     });
 
-    if(existUser) {
+    if (existUser) {
       throw new BadRequestException('Akun ini sudah tersedia!');
     }
 
@@ -115,12 +122,12 @@ export class UsersService {
       },
     });
 
-    return {user, response};
+    return { user, response };
   }
 
   // login service
-  async Login(LoginDto:LoginDto) {
-    const {email, password} = LoginDto;
+  async Login(LoginDto: LoginDto) {
+    const { email, password } = LoginDto;
 
     const user = await this.prisma.user.findUnique({
       where: {
@@ -128,7 +135,7 @@ export class UsersService {
       },
     });
 
-    if(user && (await this.comparePassword(password, user.password))) {
+    if (user && (await this.comparePassword(password, user.password))) {
       const tokenSender = new TokenSender(this.configService, this.jwtService);
       return tokenSender.sendToken(user);
     } else {
@@ -144,7 +151,10 @@ export class UsersService {
   }
 
   //compare with hashed password
-  async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
+  async comparePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
     return await bcrypt.compare(password, hashedPassword);
   }
 
@@ -215,23 +225,33 @@ export class UsersService {
   }
 
   //get logged in user
-  async getLoggedInUser(req:any) {
+  async getLoggedInUser(req: any) {
     const user = req.user;
     const accessToken = req.accesstoken;
     const refreshToken = req.refreshtoken;
-    return {user, accessToken, refreshToken};
-  } 
+    return { user, accessToken, refreshToken };
+  }
 
   //log out user
-  async Logout(req:any) {
+  async Logout(req: any) {
     req.user = null;
     req.accesstoken = null;
     req.refreshtoken = null;
-    return {message: 'Logout berhasil!'};
+    return { message: 'Logout berhasil!' };
   }
 
   // get all users service
   async getUsers() {
     return this.prisma.user.findMany({});
+  }
+
+  async updateUserSurveyInfo(userId: string, updateSurveyActivityDto: UpdateSurveyActivityDto) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        surveyActivityId: updateSurveyActivityDto.surveyActivityId,
+        region: updateSurveyActivityDto.region,
+      },
+    });
   }
 }

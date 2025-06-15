@@ -1,5 +1,5 @@
 import {InputType, Field} from '@nestjs/graphql';
-import { IsEmail, IsNotEmpty, IsString, Min } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsUUID, Min } from 'class-validator';
 
 @InputType()
 export class RegisterDto {
@@ -22,6 +22,10 @@ export class RegisterDto {
     @IsNotEmpty({ message: 'Nomor Telepon belum diisi' })
     @Min(12, { message: 'Nomor Telepon diisi minimal 12 angka' })
     phone_number: number;
+
+    @Field()
+    @IsNotEmpty({ message: 'Alamat belum diisi' })
+    address: string;
 }
 
 @InputType()
@@ -65,4 +69,16 @@ export class ResetPasswordDto {
     @Field()
     @IsNotEmpty({ message: 'Kode Aktivasi harus diisi' })
     activationToken: string;
+}
+
+@InputType()
+export class UpdateSurveyActivityDto {
+    @Field()
+    @IsUUID('4', { message: 'ID kegiatan survei harus berupa UUID yang valid' })
+    @IsNotEmpty({ message: 'Kegiatan Survey belum diisi' })
+    surveyActivityId: string
+
+    @Field()
+    @IsNotEmpty({ message: 'Wilayah kerja belum diisi' })
+    region: string
 }
