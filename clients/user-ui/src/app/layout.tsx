@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SiCepat",
+  title: "SIMANIS",
   description: "Siap Membantu & Melayani",
 };
 

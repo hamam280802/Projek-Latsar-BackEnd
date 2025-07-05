@@ -21,6 +21,7 @@ interface UserData {
   email: string;
   password: string;
   phone_number: number;
+  address: string;
 }
 
 @Injectable()
@@ -34,7 +35,7 @@ export class UsersService {
 
   // register user
   async register(registerDto: RegisterDto, response: Response) {
-    const { name, email, phone_number, password } = registerDto;
+    const { name, email, phone_number, password, address } = registerDto;
     const isEmailExist = await this.prisma.user.findUnique({
       where: {
         email,
@@ -61,6 +62,7 @@ export class UsersService {
       email,
       phone_number,
       password: hashedPassword,
+      address,
     };
     const activationToken = await this.createActivationToken(user);
     const activationCode = activationToken.activationCode;

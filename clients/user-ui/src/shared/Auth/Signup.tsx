@@ -14,6 +14,7 @@ const formSchema = z.object({
     password: z.string().min(8, { message: 'Password minimal 8 karakter' }),
     passwordConfirm: z.string(),
     phone: z.number().min(12, {message: 'Nomor Telepon minimal 12 angka'}),
+    address: z.string().min(5, {message: 'Alamat minimal 5 karakter'}),
   }).superRefine((data, ctx) =>{
     if (data.password !== data.passwordConfirm) {
       ctx.addIssue({
@@ -94,6 +95,19 @@ const Signup = ({setActiveState}:{setActiveState: (e: string) => void;}) => {
                 </span>
             )
             }
+        </div>
+        <div>
+          <label className='text-[16px] font-Poppins'>
+            Masukkan alamatmu
+          </label>
+          <input {...register("address")} type="text" placeholder='Jl. Bersamamu' className={`${styles.input} shadow-sm`} />
+          {
+            errors.address && (
+              <span className='text-red-500 block mt-1'>
+                {`${errors.address.message}`}
+              </span>
+            )
+          }
         </div>
         <div className='w-full mt-5 relative mb-1'>
           <label htmlFor="password" className='text-[16px] font-Poppins'>
