@@ -30,7 +30,7 @@ model User {
   id        String @id @default(uuid())
   name      String
   email     String @unique
-  phone_number Float?
+  phone_number String
   address   String?
   password  String
   role      Role   @default(User)

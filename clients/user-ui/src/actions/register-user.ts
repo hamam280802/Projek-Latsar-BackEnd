@@ -1,5 +1,3 @@
-"use client"
-
 import prisma from "../lib/prismaDb";
 import * as bcrypt from 'bcryptjs';
 
@@ -39,6 +37,8 @@ export const registerUser = async (userData: any) => {
             name: userData.name,
             email: userData.email,
             password: hashedPassword,
+            phone_number: userData.phone_number || '000000000000',
+            address: userData.address,
             role: "User",
         },
     });

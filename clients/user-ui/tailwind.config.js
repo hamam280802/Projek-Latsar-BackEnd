@@ -11,7 +11,7 @@ module.exports = {
       Poppins: ["var(--font-poppins)"],
     }
   },
-  darkMode: 'class',
+  //darkMode: 'class',
   plugins: [
     require('@heroui/theme'),
   ],
