@@ -18,25 +18,69 @@ enum Role {
   Admin
 }
 
+enum IssueStatus {
+  Waiting
+  InProgress
+  Resolved
+}
+
 model Avatar {
   id       String @id @default(uuid())
   publicId String
   url      String
   userId   String @unique
-  user     User @relation(fields: [userId], references: [id])
+  user     User   @relation(fields: [userId], references: [id])
+}
+
+model SurveyActivity {
+  id     String  @id @default(uuid())
+  name   String
+  issues Issue[]
+  User   User[]
 }
 
 model User {
-  id        String @id @default(uuid())
-  name      String
-  email     String @unique
-  phone_number String
-  address   String?
-  password  String
-  role      Role   @default(User)
-  avatar    Avatar?
+  id               String          @id @default(uuid())
+  name             String
+  email            String          @unique
+  phone_number     String
+  address          String?
+  password         String
+  role             Role            @default(User)
+  avatar           Avatar?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  surveyActivityId String?
+  region           String?
+  surveyActivity   SurveyActivity? @relation(fields: [surveyActivityId], references: [id])
+
+  issues Issue[]
+
+  issueComments IssueComment[]
+}
+
+model Issue {
+  id               String         @id @default(uuid())
+  content          String
+  status           IssueStatus    @default(Waiting)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  userId           String
+  user             User           @relation(fields: [userId], references: [id])
+  surveyActivityId String
+  surveyActivity   SurveyActivity @relation(fields: [surveyActivityId], references: [id])
+  region           String
+  issueComments    IssueComment[]
+}
+
+model IssueComment {
+  id        String   @id @default(uuid())
+  content   String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  userId    String
+  issueId   String
+  user      User     @relation(fields: [userId], references: [id])
+  issues    Issue    @relation(fields: [issueId], references: [id])
 }
 
 // name,email,password,role,phone_number,address, 

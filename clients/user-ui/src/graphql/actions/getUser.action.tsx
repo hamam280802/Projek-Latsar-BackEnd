@@ -9,11 +9,13 @@ query{
       id
       name
       email
+      phone_number
       address
-      password
     }
     accessToken
     refreshToken
   }
 }
 `;
+
+// ada password di sini

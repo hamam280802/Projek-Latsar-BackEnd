@@ -11,7 +11,6 @@ import useUser from "../hooks/useUser";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { signOut, useSession } from "next-auth/react";
-import { registerUser } from "../actions/register-user";
 
 const ProfileDropDown = () => {
   const [signedIn, setsignedIn] = useState(false);
@@ -31,7 +30,12 @@ const ProfileDropDown = () => {
 
   const handleLogOut = () => {
     if (data?.user) {
-      signOut();
+      signOut().then(() => {
+        Cookies.remove("access_token")
+        Cookies.remove("refresh_token")
+        window.location.href = "/"
+        toast.success("Logout Berhasil!")
+      });
     } else {
       Cookies.remove("access_token");
       Cookies.remove("refresh_token");
@@ -42,7 +46,7 @@ const ProfileDropDown = () => {
 
   const addUser = async (user: any) => {
     try {
-      await fetch("/api/register", {
+      const res = await fetch("/api/register", {
         method: "POST",
         body: JSON.stringify({
           name: user.name,
@@ -53,10 +57,21 @@ const ProfileDropDown = () => {
           "Content-Type": "application/json",
         },
       });
+      const result = await res.json();
+
+      if (result.created) {
+        console.log("User baru dibuat:", result.user);
+      } else {
+        console.log("User sudah ada:", result.user);
+      }
     } catch (err) {
       console.error("Gagal mendaftarkan user:", err);
     }
   };
+
+  const openProfile = () => {
+    window.location.href = "/profile";
+  }
 
   return (
     <div className="flex items-center gap-4">
@@ -80,7 +95,7 @@ const ProfileDropDown = () => {
                 {data?.user ? data.user.name : user.name}
               </p>
             </DropdownItem>
-            <DropdownItem key="settings">Profil Saya</DropdownItem>
+            <DropdownItem key="profile settings" onClick={() => openProfile()}>Profil Saya</DropdownItem>
             <DropdownItem key="achievement">Notifikasi</DropdownItem>
             <DropdownItem key="logout" onClick={() => handleLogOut()}>
               Log Out

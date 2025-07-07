@@ -25,7 +25,7 @@ export const registerUser = async (userData: any) => {
     });
 
     if (isUserExist) {
-        return isUserExist;
+        return { user: isUserExist, created: false };
     }
 
     const password = generateRandomPassword();
@@ -37,11 +37,11 @@ export const registerUser = async (userData: any) => {
             name: userData.name,
             email: userData.email,
             password: hashedPassword,
-            phone_number: userData.phone_number || '000000000000',
-            address: userData.address,
+            phone_number: userData.phone_number || "000000000000",
+            address: userData.address || "Alamat belum diketahui",
             role: "User",
         },
     });
 
-    return user;
+    return { user, created: true };
 }

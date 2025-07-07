@@ -29,21 +29,23 @@ function Dashboard() {
   };
 
   const toggleAllTables = (close: boolean) => {
-  const newState: Record<string, boolean> = {};
-  Object.keys(
-    filteredEvents.reduce<Record<string, CalendarEvent[]>>((groups, event) => {
-      const key = event.surveyEvent;
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(event);
-      return groups;
-    }, {})
-  ).forEach((key) => {
-    newState[key] = close;
-  });
+    const newState: Record<string, boolean> = {};
+    Object.keys(
+      filteredEvents.reduce<Record<string, CalendarEvent[]>>(
+        (groups, event) => {
+          const key = event.surveyEvent;
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(event);
+          return groups;
+        },
+        {}
+      )
+    ).forEach((key) => {
+      newState[key] = close;
+    });
 
-  setIsMinimized(newState);
-};
-
+    setIsMinimized(newState);
+  };
 
   const fetchEvents = async () => {
     try {

@@ -21,7 +21,7 @@ export class RegisterDto {
     @Field()
     @IsNotEmpty({ message: 'Nomor Telepon belum diisi' })
     @Min(12, { message: 'Nomor Telepon diisi minimal 12 angka' })
-    phone_number: number;
+    phone_number: string;
 
     @Field()
     @IsNotEmpty({ message: 'Alamat belum diisi' })

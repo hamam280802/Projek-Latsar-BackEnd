@@ -12,7 +12,6 @@ mutation LoginUser($email: String!,$password: String!) {
       id
       name
       email
-      password
       address
       phone_number
     }
@@ -24,3 +23,5 @@ mutation LoginUser($email: String!,$password: String!) {
     }
 }
 `;
+
+// ada password di sini

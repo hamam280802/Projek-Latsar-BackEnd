@@ -20,7 +20,7 @@ interface UserData {
   name: string;
   email: string;
   password: string;
-  phone_number: number;
+  phone_number: string;
   address: string;
 }
 
@@ -42,15 +42,15 @@ export class UsersService {
       },
     });
 
-    const isPhoneNumberExist = await this.prisma.user.findUnique({
-      where: {
-        phone_number,
-      },
-    });
+    // const isPhoneNumberExist = await this.prisma.user.findUnique({
+    //   where: {
+    //     phone_number,
+    //   },
+    // });
 
-    if (isPhoneNumberExist) {
-      throw new BadRequestException('Nomor telepon ini sudah dipakai!');
-    }
+    // if (isPhoneNumberExist) {
+    //   throw new BadRequestException('Nomor telepon ini sudah dipakai!');
+    // }
 
     if (isEmailExist) {
       throw new BadRequestException('Email ini sudah dipakai!');
@@ -104,7 +104,7 @@ export class UsersService {
       throw new BadRequestException('Kode Aktivasi tidak sesuai!');
     }
 
-    const { name, email, password, phone_number } = newUser.user;
+    const { name, email, password, phone_number, address } = newUser.user;
     const existUser = await this.prisma.user.findUnique({
       where: {
         email,
@@ -121,6 +121,7 @@ export class UsersService {
         email,
         password,
         phone_number,
+        address,
       },
     });
 

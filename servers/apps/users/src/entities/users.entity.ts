@@ -39,7 +39,7 @@ export class User {
   @Field(() => String, { nullable: true })
   address?: string | null;
   @Field({ nullable: true })
-  phone_number: number;
+  phone_number: string;
   @Field(() => String, {nullable: true})
   region?: string | null;
   @Field(() => SurveyActivity, { nullable: true })

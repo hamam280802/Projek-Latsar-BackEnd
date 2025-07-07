@@ -7,7 +7,7 @@ mutation RegisterUser(
     $name: String!
     $email: String!
     $password: String!
-    $phone: Float!
+    $phone: String!
     $address: String!
 ) {
     register(registerDto: {
