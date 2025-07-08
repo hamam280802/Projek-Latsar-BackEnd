@@ -2,10 +2,11 @@ import { BadRequestException, UseGuards } from "@nestjs/common";
 import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { UsersService } from "./users.service";
 import { ActivationResponse, ForgotPasswordResponse, LoginResponse, LogoutResponse, RegisterResponse, ResetPasswordResponse } from "./types/users.types";
-import { ActivationDto, ForgotPasswordDto, RegisterDto, ResetPasswordDto } from "./dto/users.dto";
+import { ActivationDto, ForgotPasswordDto, RegisterDto, ResetPasswordDto, UpdateUserDto } from "./dto/users.dto";
 import { User } from "./entities/users.entity";
 import { Response } from "express";
 import { AuthGuard } from "./guards/auth.guard";
+import { CurrentUser } from "./decorators/current-user.decorator";
 
 
 
@@ -70,5 +71,14 @@ export class UsersResolver {
     @Query(() => [User])
     async getUsers() {
         return this.usersService.getUsers();
+    }
+
+    @Mutation(() => User)
+    @UseGuards(AuthGuard)
+    async updateProfile(
+        @CurrentUser() user: User,
+        @Args('input') input: UpdateUserDto,
+    ): Promise<User> {
+        return this.usersService.updateUserProfile(user.id, input);
     }
 }

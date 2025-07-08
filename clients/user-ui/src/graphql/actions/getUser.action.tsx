@@ -11,6 +11,8 @@ query{
       email
       phone_number
       address
+      role
+      region
     }
     accessToken
     refreshToken

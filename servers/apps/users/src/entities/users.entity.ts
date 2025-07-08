@@ -1,4 +1,10 @@
-import { ObjectType, Field, Directive } from '@nestjs/graphql';
+import { ObjectType, Field, Directive, registerEnumType } from '@nestjs/graphql';
+import { Role } from '@prisma/client';
+
+registerEnumType(Role, {
+  name: 'Role', // harus sama dengan yang akan dipakai di @Field(() => Role)
+  description: 'User role enum',
+});
 
 @ObjectType()
 @Directive('@key(fields: "id")')
@@ -34,8 +40,8 @@ export class User {
   password: string;
   @Field(() => Avatars, { nullable: true })
   avatar?: Avatars | null;
-  @Field()
-  role: string;
+  @Field(() => Role)
+  role: Role;
   @Field(() => String, { nullable: true })
   address?: string | null;
   @Field({ nullable: true })

@@ -8,6 +8,7 @@ import {
   RegisterDto,
   ResetPasswordDto,
   UpdateSurveyActivityDto,
+  UpdateUserDto,
 } from './dto/users.dto';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { Response } from 'express';
@@ -255,6 +256,14 @@ export class UsersService {
         surveyActivityId: updateSurveyActivityDto.surveyActivityId,
         region: updateSurveyActivityDto.region,
       },
+    });
+  }
+
+  // update user profile
+  async updateUserProfile(userId: string, updateData: UpdateUserDto): Promise<User> {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: updateData,
     });
   }
 }

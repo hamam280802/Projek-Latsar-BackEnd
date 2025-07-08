@@ -21,7 +21,7 @@ export default function RouteLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <Header/>
-      <main className={`fixed pt-[60px] ${isMinimized ? 'pl-[60px]' : 'pl-[250px]'} min-h-screen w-full`}>
+      <main className={`pt-[60px] ${isMinimized ? 'pl-[60px]' : 'pl-[250px]'} min-h-screen w-full`}>
         {children}
       </main>
     </>
