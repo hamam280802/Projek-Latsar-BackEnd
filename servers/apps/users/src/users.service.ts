@@ -249,7 +249,10 @@ export class UsersService {
     return this.prisma.user.findMany({});
   }
 
-  async updateUserSurveyInfo(userId: string, updateSurveyActivityDto: UpdateSurveyActivityDto) {
+  async updateUserSurveyInfo(
+    userId: string,
+    updateSurveyActivityDto: UpdateSurveyActivityDto,
+  ) {
     return this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -260,10 +263,16 @@ export class UsersService {
   }
 
   // update user profile
-  async updateUserProfile(userId: string, updateData: UpdateUserDto): Promise<User> {
+  async updateUserProfile(
+    userId: string,
+    updateData: UpdateUserDto,
+  ): Promise<User> {
+    const cleanedData = Object.fromEntries(
+      Object.entries(updateData).filter(([_, value]) => value !== null),
+    );
     return this.prisma.user.update({
       where: { id: userId },
-      data: updateData,
+      data: cleanedData,
     });
   }
 }

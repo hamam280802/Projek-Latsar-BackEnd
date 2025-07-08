@@ -4,33 +4,49 @@ import useUser from "@/src/hooks/useUser";
 import { useMutation } from "@apollo/client";
 import { useSession } from "next-auth/react";
 import { UPDATE_PROFILE } from "@/src/graphql/actions/update-user.action";
-import React from "react";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 function Profile() {
   const { user } = useUser();
   const { data } = useSession();
-  const [updateProfile] = useMutation(UPDATE_PROFILE);
+  const [updateProfile, { loading }] = useMutation(UPDATE_PROFILE);
+  const [formState, setFormState] = React.useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    phone_number: user?.phone_number || "",
+    address: user?.address || "",
+    role: user?.role || "",
+    region: user?.region || "",
+  });
 
+  React.useEffect(() => {
+    if (user) {
+      setFormState({
+        name: user.name || "",
+        email: user.email || "",
+        phone_number: user.phone_number || "",
+        address: user.address || "",
+        role: user.role || "",
+        region: user.region || "",
+      });
+    }
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-
-    const input = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone_number: formData.get("phone"),
-      address: formData.get("address"),
-      role: formData.get("role"),
-      region: formData.get("region"),
-    };
-
     try {
-      await updateProfile({ variables: { input } });
-      alert("Profil berhasil diperbarui!");
+      const input = {
+        ...formState,
+        role: formState.role
+      };
+
+      const { data } = await updateProfile({ variables: { input } });
+      console.log("✅ Profil diperbarui:", data);
+      toast.success("Profil berhasil diperbarui!");
     } catch (err) {
-      console.error(err);
-      alert("Gagal memperbarui profil.");
+      console.error("❌ Gagal update:", err);
+      toast.error("Gagal memperbarui profil.");
     }
   };
 
@@ -83,7 +99,10 @@ function Profile() {
               <input
                 type="text"
                 id="name"
-                defaultValue={user?.name}
+                value={formState.name}
+                onChange={(e) =>
+                  setFormState((prev) => ({ ...prev, name: e.target.value }))
+                }
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
@@ -94,7 +113,10 @@ function Profile() {
               <input
                 type="email"
                 id="email"
-                defaultValue={user?.email}
+                value={formState.email}
+                onChange={(e) =>
+                  setFormState((prev) => ({ ...prev, email: e.target.value }))
+                }
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
@@ -105,7 +127,13 @@ function Profile() {
               <input
                 type="tel"
                 id="phone"
-                defaultValue={user?.phone_number}
+                value={formState.phone_number}
+                onChange={(e) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    phone_number: e.target.value,
+                  }))
+                }
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
@@ -116,7 +144,10 @@ function Profile() {
               <input
                 type="text"
                 id="address"
-                defaultValue={user?.address}
+                value={formState.address}
+                onChange={(e) =>
+                  setFormState((prev) => ({ ...prev, address: e.target.value }))
+                }
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
@@ -127,7 +158,10 @@ function Profile() {
               <input
                 type="text"
                 id="role"
-                defaultValue={user?.role}
+                value={formState.role}
+                onChange={(e) =>
+                  setFormState((prev) => ({ ...prev, role: e.target.value }))
+                }
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
@@ -138,16 +172,25 @@ function Profile() {
               <input
                 type="text"
                 id="region"
-                defaultValue={user?.region}
+                value={formState.region}
+                onChange={(e) =>
+                  setFormState((prev) => ({ ...prev, region: e.target.value }))
+                }
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
             <button
+              disabled={loading}
               type="submit"
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
             >
-              Perbarui
+              {loading ? "Menyimpan..." : "Perbarui"}
             </button>
+            {loading && (
+              <p className="text-sm text-gray-500 italic">
+                Menyimpan perubahan...
+              </p>
+            )}
           </form>
         </div>
       </div>

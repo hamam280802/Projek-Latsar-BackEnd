@@ -20,6 +20,7 @@ import { EmailService } from './email/email.service';
       autoSchemaFile: {
         federation: 2,
       },
+      context: ({ req }) => ({ req }),
     }),
     EmailModule,
   ],
