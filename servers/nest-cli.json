@@ -27,6 +27,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/users/tsconfig.app.json"
       }
+    },
+    "surveyact": {
+      "type": "application",
+      "root": "apps/surveyact",
+      "entryFile": "main",
+      "sourceRoot": "apps/surveyact/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/surveyact/tsconfig.app.json"
+      }
     }
   }
 }

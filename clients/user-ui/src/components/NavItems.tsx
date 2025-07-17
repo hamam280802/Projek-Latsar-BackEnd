@@ -11,6 +11,7 @@ import {
   LucideIcon,
   MonitorCheck,
   TriangleAlert,
+  User,
   Users,
 } from "lucide-react";
 import { useState } from "react";
@@ -32,6 +33,13 @@ const navItems: {
     url: "/dashboard",
     style: "border-b-2 border-t-2 border-white py-2",
     logo: House,
+  },
+  {
+    title: "Admin",
+    hovertitle: "Admin",
+    url: "/admin",
+    logo: User,
+    style: "border-b-2 border-white pb-2",
   },
   {
     title: "KEGIATAN LAPANGAN",

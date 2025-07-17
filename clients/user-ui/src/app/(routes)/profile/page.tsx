@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { UPDATE_PROFILE } from "@/src/graphql/actions/update-user.action";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import styles from "@/src/utils/style";
 
 function Profile() {
   const { user } = useUser();
@@ -182,7 +183,7 @@ function Profile() {
             <button
               disabled={loading}
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+              className={`${styles.button} my-2 text-white`}
             >
               {loading ? "Menyimpan..." : "Perbarui"}
             </button>

@@ -33,26 +33,37 @@ model Avatar {
 }
 
 model SurveyActivity {
-  id     String  @id @default(uuid())
-  name   String
-  issues Issue[]
-  User   User[]
+  id   String @id @default(uuid())
+  name String
+  slug String @unique
+
+  SubSurveyActivity SubSurveyActivity[]
+}
+
+model SubSurveyActivity {
+  id               String         @id @default(uuid())
+  name             String
+  slug             String         @unique
+  surveyActivityId String
+  surveyActivity   SurveyActivity @relation(fields: [surveyActivityId], references: [id])
+  issues           Issue[]
+  User             User[]
 }
 
 model User {
-  id               String          @id @default(uuid())
-  name             String
-  email            String          @unique
-  phone_number     String
-  address          String?
-  password         String
-  role             Role            @default(User)
-  avatar           Avatar?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  surveyActivityId String?
-  region           String?
-  surveyActivity   SurveyActivity? @relation(fields: [surveyActivityId], references: [id])
+  id                  String             @id @default(uuid())
+  name                String
+  email               String             @unique
+  phone_number        String
+  address             String?
+  password            String
+  role                Role               @default(User)
+  avatar              Avatar?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  region              String?
+  subSurveyActivityId String?
+  subSurveyActivity   SubSurveyActivity? @relation(fields: [subSurveyActivityId], references: [id])
 
   issues Issue[]
 
@@ -60,17 +71,17 @@ model User {
 }
 
 model Issue {
-  id               String         @id @default(uuid())
-  content          String
-  status           IssueStatus    @default(Waiting)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  userId           String
-  user             User           @relation(fields: [userId], references: [id])
-  surveyActivityId String
-  surveyActivity   SurveyActivity @relation(fields: [surveyActivityId], references: [id])
-  region           String
-  issueComments    IssueComment[]
+  id                  String            @id @default(uuid())
+  content             String
+  status              IssueStatus       @default(Waiting)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  userId              String
+  user                User              @relation(fields: [userId], references: [id])
+  subSurveyActivityId String
+  subSurveyActivity   SubSurveyActivity @relation(fields: [subSurveyActivityId], references: [id])
+  region              String
+  issueComments       IssueComment[]
 }
 
 model IssueComment {
