@@ -6,7 +6,7 @@ const Issue = () => {
   return (
     <div className='px-8 py-4 space-y-4 font-Poppins'>
         <div className='bg-orange-50 rounded-lg p-2 font-bold text-xl flex justify-between shadow-md'>
-            Kendala
+            Feedback
         </div>
         <div className='bg-orange-50 rounded-lg p-4 shadow-md space-y-8'>
             <h2 className='font-bold text-xl'>Filter Petugas</h2>

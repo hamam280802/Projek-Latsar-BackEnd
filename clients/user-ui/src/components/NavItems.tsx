@@ -106,6 +106,16 @@ const navItems: {
     hovertitle: "Kendala",
     style: "border-b-2 border-white pb-2",
     logo: TriangleAlert,
+    dataprogress: [
+      {
+        title: "Pelaporan",
+        url: "/issue/pelaporan",
+      },
+      {
+        title: "Feedback",
+        url: "/issue/feedback",
+      },
+    ],
   },
   {
     title: "ADMINISTRASI",
