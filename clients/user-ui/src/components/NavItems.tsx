@@ -17,139 +17,106 @@ import {
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { GET_ALL_SURVEY_ACTIVITIES } from "@/src/graphql/actions/find-allsurveyact.action";
+import { useQuery } from "@apollo/client";
 
-const navItems: {
-  title: string;
-  url: string;
-  style?: string;
-  hovertitle?: string;
-  unhover?: boolean;
-  dataprogress?: { title: string; url: string }[];
-  logo?: LucideIcon;
-}[] = [
-  {
-    title: "Beranda",
-    hovertitle: "Beranda",
-    url: "/dashboard",
-    style: "border-b-2 border-t-2 border-white py-2",
-    logo: House,
-  },
-  {
-    title: "Admin",
-    hovertitle: "Admin",
-    url: "/admin",
-    logo: User,
-    style: "border-b-2 border-white pb-2",
-  },
-  {
-    title: "KEGIATAN LAPANGAN",
-    url: "#kegiatanlapangan",
-    unhover: true,
-  },
-  {
-    title: "Progres",
-    url: "/progress",
-    hovertitle: "Progres",
-    logo: ChartNoAxesCombined,
-    dataprogress: [
-      {
-        title: "Industri & PEK",
-        url: "/progress/industri",
-      },
-      {
-        title: "Kesra & Hansos",
-        url: "/progress/kesra",
-      },
-      {
-        title: "IPD & JRS",
-        url: "/progress/ipd",
-      },
-      {
-        title: "Duknaker",
-        url: "/progress/duknaker",
-      },
-      {
-        title: "Pertanian",
-        url: "/progress/pertanian",
-      },
-      {
-        title: "Distribusi",
-        url: "/progress/distribusi",
-      },
-      {
-        title: "Neraca",
-        url: "/progress/neraca",
-      },
-      {
-        title: "Harga",
-        url: "/progress/harga",
-      },
-      {
-        title: "KTIP",
-        url: "/progress/ktip",
-      },
-      {
-        title: "DLS",
-        url: "/progress/dls",
-      },
-    ],
-  },
-  {
-    title: "Monitoring Petugas",
-    url: "/monitoringstuff",
-    hovertitle: "Monitoring Petugas",
-    logo: MonitorCheck,
-  },
-  {
-    title: "Kendala",
-    url: "/issue",
-    hovertitle: "Kendala",
-    style: "border-b-2 border-white pb-2",
-    logo: TriangleAlert,
-    dataprogress: [
-      {
-        title: "Pelaporan",
-        url: "/issue/pelaporan",
-      },
-      {
-        title: "Feedback",
-        url: "/issue/feedback",
-      },
-    ],
-  },
-  {
-    title: "ADMINISTRASI",
-    url: "#administrasi",
-    unhover: true,
-  },
-  {
-    title: "ST Petugas",
-    url: "/partners",
-    hovertitle: "ST Petugas",
-    logo: Users,
-  },
-  {
-    title: "Pengajuan SPJ",
-    url: "/spj",
-    hovertitle: "Pengajuan SPJ",
-    logo: FileText,
-  },
-  {
-    title: "Tentang Kami",
-    url: "/about",
-    hovertitle: "Tentang Kami",
-    logo: Contact,
-  },
-];
-
-const NavItems = ({
-  isMinimized = false,
-}: {
-  isMinimized?: boolean;
-}) => {
+const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [activeSubItem, setActiveSubItem] = useState<number | null>(null);
   const pathname = usePathname();
+
+  const { data, loading } = useQuery(GET_ALL_SURVEY_ACTIVITIES);
+
+  const dynamiSurveyProgress = data?.allSurveyActivities?.map(
+    (item: { name: any; slug: any }) => ({
+      title: item.name,
+      url: `/progress/${item.slug}`,
+    })
+  );
+  console.log("Data from Apollo:", data);
+
+  const navItems: {
+    title: string;
+    url: string;
+    style?: string;
+    hovertitle?: string;
+    unhover?: boolean;
+    dataprogress?: { title: string; url: string }[];
+    logo?: LucideIcon;
+  }[] = [
+    {
+      title: "Beranda",
+      hovertitle: "Beranda",
+      url: "/dashboard",
+      style: "border-b-2 border-t-2 border-white py-2",
+      logo: House,
+    },
+    {
+      title: "Admin",
+      hovertitle: "Admin",
+      url: "/admin",
+      logo: User,
+      style: "border-b-2 border-white pb-2",
+    },
+    {
+      title: "KEGIATAN LAPANGAN",
+      url: "#kegiatanlapangan",
+      unhover: true,
+    },
+    {
+      title: "Progres",
+      url: "/progress",
+      hovertitle: "Progres",
+      logo: ChartNoAxesCombined,
+      dataprogress: dynamiSurveyProgress,
+    },
+    {
+      title: "Monitoring Petugas",
+      url: "/monitoringstuff",
+      hovertitle: "Monitoring Petugas",
+      logo: MonitorCheck,
+    },
+    {
+      title: "Kendala",
+      url: "/issue",
+      hovertitle: "Kendala",
+      style: "border-b-2 border-white pb-2",
+      logo: TriangleAlert,
+      dataprogress: [
+        {
+          title: "Pelaporan",
+          url: "/issue/pelaporan",
+        },
+        {
+          title: "Feedback",
+          url: "/issue/feedback",
+        },
+      ],
+    },
+    {
+      title: "ADMINISTRASI",
+      url: "#administrasi",
+      unhover: true,
+    },
+    {
+      title: "ST Petugas",
+      url: "/partners",
+      hovertitle: "ST Petugas",
+      logo: Users,
+    },
+    {
+      title: "Pengajuan SPJ",
+      url: "/spj",
+      hovertitle: "Pengajuan SPJ",
+      logo: FileText,
+    },
+    {
+      title: "Tentang Kami",
+      url: "/about",
+      hovertitle: "Tentang Kami",
+      logo: Contact,
+    },
+  ];
 
   const toggleDropdown = (index: number) => {
     setOpenDropdown(openDropdown === index ? null : index);
