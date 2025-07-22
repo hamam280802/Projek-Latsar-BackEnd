@@ -1,6 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { CreateSubSurveyActivityInput, CreateSurveyActivityDTO } from './dto/surveyact.dto';
+import {
+  CreateSubSurveyActivityInput,
+  CreateSurveyActivityDTO,
+} from './dto/surveyact.dto';
 
 @Injectable()
 export class SurveyActivityService {
@@ -32,13 +35,26 @@ export class SurveyActivityService {
   }
 
   async createSubSurveyActivity(input: CreateSubSurveyActivityInput) {
-  return this.prisma.subSurveyActivity.create({
-    data: {
-      name: input.name,
-      slug: input.slug,
-      surveyActivityId: input.surveyActivityId,
-    },
-  });
-}
+    return this.prisma.subSurveyActivity.create({
+      data: {
+        name: input.name,
+        slug: input.slug,
+        surveyActivityId: input.surveyActivityId,
+      },
+    });
+  }
 
+  async findSubSurveyActivityBySlug(slug: string) {
+    const subSurveyActivity = await this.prisma.subSurveyActivity.findUnique({
+      where: { slug },
+    });
+    if (!subSurveyActivity) throw new NotFoundException('SubSurveyActivity not found');
+    return subSurveyActivity;
+  }
+
+  async findSubSurveyActivityTypeBySurveyActivityId(surveyActivityId: string) {
+    return this.prisma.subSurveyActivity.findMany({
+      where: { surveyActivityId },
+    });
+  }
 }

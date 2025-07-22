@@ -1,5 +1,6 @@
 import { ObjectType, Field, Directive, registerEnumType } from '@nestjs/graphql';
 import { Role } from '@prisma/client';
+import { SubSurveyActivity } from '../../../surveyact/entities/surveyact.entity';
 
 registerEnumType(Role, {
   name: 'Role', // harus sama dengan yang akan dipakai di @Field(() => Role)
@@ -17,15 +18,6 @@ export class Avatars {
   url: string;
   @Field()
   userId: string;
-}
-
-@ObjectType()
-@Directive('@key(fields: "id")')
-export class SurveyActivity {
-  @Field()
-  id: string;
-  @Field()
-  name: string;
 }
 
 @ObjectType()
@@ -48,8 +40,8 @@ export class User {
   phone_number: string;
   @Field(() => String, {nullable: true})
   region?: string | null;
-  @Field(() => SurveyActivity, { nullable: true })
-  surveyActivity?: SurveyActivity;
+  @Field(() => SubSurveyActivity, { nullable: true })
+  subSurveyActivity?: SubSurveyActivity;
   createdAt: Date;
   @Field()
   updatedAt: Date;
@@ -72,9 +64,9 @@ export class Issue {
   @Field(() => User)
   user: User;
   @Field()
-  surveyActivityId: string;
-  @Field(() => SurveyActivity)
-  surveyActivity: SurveyActivity;
+  subSurveyActivityId: string;
+  @Field(() => SubSurveyActivity)
+  surveyActivity: SubSurveyActivity;
   @Field()
   region: string;
 }

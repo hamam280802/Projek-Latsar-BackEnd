@@ -33,7 +33,6 @@ const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
       url: `/progress/${item.slug}`,
     })
   );
-  console.log("Data from Apollo:", data);
 
   const navItems: {
     title: string;

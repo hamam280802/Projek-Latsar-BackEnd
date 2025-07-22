@@ -256,7 +256,7 @@ export class UsersService {
     return this.prisma.user.update({
       where: { id: userId },
       data: {
-        surveyActivityId: updateSurveyActivityDto.surveyActivityId,
+        subSurveyActivityId: updateSurveyActivityDto.subSurveyActivityId,
         region: updateSurveyActivityDto.region,
       },
     });

@@ -1,8 +1,8 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
-export class SurveyActivityType {
-  @Field(() => ID)
+export class SurveyActivity {
+  @Field()
   id: string;
 
   @Field()
@@ -13,8 +13,8 @@ export class SurveyActivityType {
 }
 
 @ObjectType()
-export class SubSurveyActivityType {
-  @Field(() => ID)
+export class SubSurveyActivity {
+  @Field()
   id: string;
 
   @Field()
@@ -23,19 +23,19 @@ export class SubSurveyActivityType {
   @Field()
   slug: string;
 
-  @Field(() => ID)
+  @Field()
   surveyActivityId: string;
 }
 
 @ObjectType()
-export class UserProgressType {
-  @Field(() => ID)
+export class UserProgress {
+  @Field()
   id: string;
 
-  @Field(() => ID)
+  @Field()
   userId: string;
 
-  @Field(() => ID)
+  @Field()
   subSurveyActivityId?: string;
 
   @Field()

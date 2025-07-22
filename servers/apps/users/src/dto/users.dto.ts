@@ -89,7 +89,7 @@ export class UpdateSurveyActivityDto {
   @Field()
   @IsUUID('4', { message: 'ID kegiatan survei harus berupa UUID yang valid' })
   @IsNotEmpty({ message: 'Kegiatan Survey belum diisi' })
-  surveyActivityId: string;
+  subSurveyActivityId: string;
 
   @Field()
   @IsNotEmpty({ message: 'Wilayah kerja belum diisi' })

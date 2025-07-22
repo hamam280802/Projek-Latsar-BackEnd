@@ -1,21 +1,51 @@
 'use client'
 import React, { useState } from 'react'
+import { GET_SURVEY_ACTIVITIES_BY_SLUG } from '@/src/graphql/actions/find-surveyact.action';
+import { GET_ALL_SUB_SURVEY_ACTIVITIES } from '@/src/graphql/actions/find-allsubsurveyact.action';
+import { useParams } from 'next/navigation';
+import { useQuery } from '@apollo/client';
 
 const ProgressTemplate = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { slug } = useParams() as { slug: string }
+  const [selectedSubSurvey, setSelectedSubSurvey] = useState<string | null>(null);
+
+  const { data: surveyData, loading: loadingSurvey} = useQuery(GET_SURVEY_ACTIVITIES_BY_SLUG, {
+    variables: { slug },
+    skip: !slug,
+    fetchPolicy: 'network-only',
+  });
+
+  const surveyActivityId = surveyData?.surveyActivityBySlug?.id;
+  const { data: subSurveyDataAll, loading: loadingSubSurveyAll } = useQuery(GET_ALL_SUB_SURVEY_ACTIVITIES, {
+    variables: { surveyActivityId },
+    skip: !surveyActivityId,
+    fetchPolicy: 'network-only',
+  })
+
+  const subSurveyActivities = subSurveyDataAll?.subSurveyActivityById || [];
+
+  if (loadingSurvey || loadingSubSurveyAll) return <div>Loading...</div>;
+  if (!surveyData || !surveyData.surveyActivityBySlug) {
+    return <div>Data tidak ditemukan.</div>;
+  }
   return (
     <div className='px-8 py-4 space-y-4 font-Poppins'>
       <div className='bg-orange-50 rounded-lg p-2 text-xl font-bold w-full shadow-md'>
-        <h1>Progres</h1>
+        <h1>Progres {surveyData.surveyActivityBySlug.name}</h1>
       </div>
       <div className='bg-orange-50 rounded-lg p-2 w-full shadow-md'>
         <p className='font-semibold text-xl'>Pilih Jenis Survei:</p>
         <div className='space-x-4 p-2 flex justify-start'>
-          <button className='p-2 rounded-md bg-slate-700 text-white border font-semibold hover:bg-orange-500 w-[12%]'>Sakernas Februari</button>
-          <button className='p-2 rounded-md bg-slate-700 text-white border font-semibold hover:bg-orange-500 w-[12%]'>Sakernas TW II</button>
-          <button className='p-2 rounded-md bg-slate-700 text-white border font-semibold hover:bg-orange-500 w-[12%]'>SUPAS</button>
-          <button className='p-2 rounded-md bg-slate-700 text-white border font-semibold hover:bg-orange-500 w-[12%]'>Sakernas Agustus</button>
-          <button className='p-2 rounded-md bg-slate-700 text-white border font-semibold hover:bg-orange-500 w-[12%]'>Sakernas TW IV</button>
+          {subSurveyActivities.map((subSurvey: any) => (
+            <button
+              key={subSurvey.id}
+              onClick={() => setSelectedSubSurvey(subSurvey.slug)}
+              className={`p-2 rounded-md border font-semibold w-[12%] ${selectedSubSurvey === subSurvey.slug ? 'bg-orange-500 text-white' : 'bg-slate-700 text-white hover:bg-orange-500'}`}
+            >
+              {subSurvey.name}
+            </button>
+          ))}
         </div>
       </div>
       <div className='bg-orange-50 rounded-lg p-2 w-full shadow-md'>

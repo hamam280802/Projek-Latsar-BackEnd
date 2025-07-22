@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { SurveyActivityService } from './surveyacts.service';
-import { SubSurveyActivityType, SurveyActivityType } from './types/surveyact.types';
+import { SubSurveyActivityType, SurveyActivityType, UserProgressType } from './types/surveyact.types';
 import { CreateSubSurveyActivityInput, CreateSurveyActivityDTO } from './dto/surveyact.dto';
 
 @Resolver(() => SurveyActivityType)
@@ -27,5 +27,15 @@ export class SurveyActivityResolver {
     @Args('input') input: CreateSubSurveyActivityInput,
   ) {
     return this.service.createSubSurveyActivity(input);
+  }
+
+  @Query(() => [SubSurveyActivityType])
+  async subSurveyActivityById(@Args('surveyActivityId') surveyActivityId: string) {
+    return this.service.findSubSurveyActivityTypeBySurveyActivityId(surveyActivityId);
+  }
+
+  @Query(() => SubSurveyActivityType, { name: 'subSurveyActivityBySlug' })
+  async subSurveyActivityBySlug(@Args('slug') slug: string) {
+    return this.service.findSubSurveyActivityBySlug(slug);
   }
 }
