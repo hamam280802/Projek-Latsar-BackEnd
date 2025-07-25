@@ -1,7 +1,15 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { SurveyActivityService } from './surveyacts.service';
-import { SubSurveyActivityType, SurveyActivityType, UserProgressType } from './types/surveyact.types';
-import { CreateSubSurveyActivityInput, CreateSurveyActivityDTO } from './dto/surveyact.dto';
+import {
+  SubSurveyActivityType,
+  SubSurveyProgressType,
+  SurveyActivityType,
+  UserProgressType,
+} from './types/surveyact.types';
+import {
+  CreateSubSurveyActivityInput,
+  CreateSurveyActivityDTO,
+} from './dto/surveyact.dto';
 
 @Resolver(() => SurveyActivityType)
 export class SurveyActivityResolver {
@@ -30,12 +38,23 @@ export class SurveyActivityResolver {
   }
 
   @Query(() => [SubSurveyActivityType])
-  async subSurveyActivityById(@Args('surveyActivityId') surveyActivityId: string) {
-    return this.service.findSubSurveyActivityTypeBySurveyActivityId(surveyActivityId);
+  async subSurveyActivityById(
+    @Args('surveyActivityId') surveyActivityId: string,
+  ) {
+    return this.service.findSubSurveyActivityTypeBySurveyActivityId(
+      surveyActivityId,
+    );
   }
 
   @Query(() => SubSurveyActivityType, { name: 'subSurveyActivityBySlug' })
   async subSurveyActivityBySlug(@Args('slug') slug: string) {
     return this.service.findSubSurveyActivityBySlug(slug);
+  }
+
+  @Query(() => SubSurveyProgressType)
+  async subSurveyProgress(
+    @Args('subSurveyActivityId') subSurveyActivityId: string,
+  ) {
+    return this.service.getSubSurveyProgress(subSurveyActivityId);
   }
 }

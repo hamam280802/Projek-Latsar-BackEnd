@@ -1,4 +1,4 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, Int } from '@nestjs/graphql';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 @InputType()
@@ -24,4 +24,13 @@ export class CreateSubSurveyActivityInput {
 
   @Field()
   surveyActivityId: string;
+
+  @Field(() => Date, { nullable: true })
+  startDate?: Date;
+
+  @Field(() => Date, { nullable: true })
+  endDate?: Date;
+
+  @Field(() => Int, { nullable: true })
+  targetSample?: number;
 }

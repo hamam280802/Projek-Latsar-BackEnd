@@ -57,4 +57,29 @@ export class SurveyActivityService {
       where: { surveyActivityId },
     });
   }
+
+  async getSubSurveyProgress(subSurveyActivityId: string) {
+  const subSurvey = await this.subSurveyRepo.findOne({
+    where: { id: subSurveyActivityId },
+    relations: ['progresses'],
+  });
+
+  const totalPetugas = await this.userRepo.count({
+    where: { subSurveyActivityId },
+  });
+
+  const submitCount = subSurvey.progresses.reduce((acc, p) => acc + p.submitCount, 0);
+  const approvedCount = subSurvey.progresses.reduce((acc, p) => acc + p.approvedCount, 0);
+  const rejectedCount = subSurvey.progresses.reduce((acc, p) => acc + p.rejectedCount, 0);
+
+  return {
+    startDate: subSurvey.startDate,
+    endDate: subSurvey.endDate,
+    targetSample: subSurvey.targetSample,
+    totalPetugas,
+    submitCount,
+    approvedCount,
+    rejectedCount,
+  };
+}
 }

@@ -14,7 +14,7 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { GET_ALL_SURVEY_ACTIVITIES } from "@/src/graphql/actions/find-allsurveyact.action";
@@ -22,7 +22,13 @@ import { useQuery } from "@apollo/client";
 
 const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
-  const [activeSubItem, setActiveSubItem] = useState<number | null>(null);
+  const [activeSubItem, setActiveSubItem] = useState<string | null>(null);
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [dropdownPosition, setDropdownPosition] = useState<{
+    top: number;
+    left: number;
+  }>({ top: 0, left: 0 });
+
   const pathname = usePathname();
 
   const { data, loading } = useQuery(GET_ALL_SURVEY_ACTIVITIES);
@@ -121,6 +127,12 @@ const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
     setOpenDropdown(openDropdown === index ? null : index);
   };
 
+  useEffect(() => {
+    if (isMinimized) {
+      setOpenDropdown(null);
+    }
+  }, [isMinimized]);
+
   return (
     <div className="h-screen overflow-y-auto pb-6">
       <div className="flex flex-col space-y-2">
@@ -131,7 +143,20 @@ const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
             <div key={item.url} className={`${!isMinimized && item.style}`}>
               {item.dataprogress ? (
                 <button
-                  onClick={() => toggleDropdown(index)}
+                  onClick={(e) => {
+                    toggleDropdown(index);
+                    if (buttonRefs.current[index]) {
+                      const rect =
+                        buttonRefs.current[index]!.getBoundingClientRect();
+                      setDropdownPosition({
+                        top: rect.top + window.scrollY - 5,
+                        left: rect.left + window.scrollX,
+                      });
+                    }
+                  }}
+                  ref={(el) => {
+                    buttonRefs.current[index] = el;
+                  }}
                   className={`w-full text-left px-5 text-[15px] font-Poppins font-[500] flex items-center justify-between py-2 hover:font-semibold 
                             ${isActive && "bg-[#ffffff2a] font-bold"}
                         `}
@@ -160,6 +185,10 @@ const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
               ) : (
                 <Link
                   href={item.url}
+                  onClick={() => {
+                    setActiveSubItem(null);
+                    setOpenDropdown(null);
+                  }}
                   className={`px-5 text-[15px] font-Poppins font-[500] block 
                             ${
                               !item.unhover
@@ -202,11 +231,11 @@ const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
                           key={sub.url}
                           href={sub.url}
                           className={`block text-sm px-2 py-1 hover:font-semibold text-white ${
-                            activeSubItem === subIndex && "font-bold"
+                            activeSubItem === sub.url && "font-bold"
                           }`}
-                          onClick={() => setActiveSubItem(subIndex)}
+                          onClick={() => setActiveSubItem(sub.url)}
                         >
-                          {activeSubItem === subIndex ? ">" : "•"} {sub.title}
+                          {activeSubItem === sub.url ? ">" : "•"} {sub.title}
                         </Link>
                       ))}
                     </motion.div>
@@ -215,12 +244,18 @@ const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
             </div>
           );
         })}
-        {isMinimized && (
-          <AnimatePresence>
-            {openDropdown && navItems[2].dataprogress && (
+        {isMinimized &&
+          openDropdown !== null &&
+          navItems[openDropdown].dataprogress && (
+            <AnimatePresence>
               <div
                 onMouseLeave={() => setOpenDropdown(null)}
                 className="absolute bg-orange-800 p-2 w-[150px] ml-[65px] top-[100px] rounded-md shadow-lg z-10"
+                style={{
+                  top: dropdownPosition.top,
+                  left: dropdownPosition.left,
+                  position: "absolute",
+                }}
               >
                 <motion.div
                   className="space-y-1"
@@ -229,23 +264,22 @@ const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.25 }}
                 >
-                  {navItems[2].dataprogress.map((sub, subIndex) => (
+                  {navItems[openDropdown].dataprogress.map((sub, subIndex) => (
                     <Link
                       key={sub.url}
                       href={sub.url}
                       className={`block text-sm px-2 py-1 hover:font-semibold text-white ${
-                        activeSubItem === subIndex && "font-bold"
+                        activeSubItem === sub.url && "font-bold"
                       }`}
-                      onClick={() => setActiveSubItem(subIndex)}
+                      onClick={() => setActiveSubItem(sub.url)}
                     >
-                      {activeSubItem === subIndex ? ">" : "•"} {sub.title}
+                      {activeSubItem === sub.url ? ">" : "•"} {sub.title}
                     </Link>
                   ))}
                 </motion.div>
               </div>
-            )}
-          </AnimatePresence>
-        )}
+            </AnimatePresence>
+          )}
       </div>
     </div>
   );

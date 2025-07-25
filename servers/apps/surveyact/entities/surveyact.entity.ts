@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 export class SurveyActivity {
@@ -25,6 +25,15 @@ export class SubSurveyActivity {
 
   @Field()
   surveyActivityId: string;
+
+  @Field(() => Date, { nullable: true })
+  startDate?: Date;
+
+  @Field(() => Date, { nullable: true })
+  endDate?: Date;
+
+  @Field(() => Int, { nullable: true })
+  targetSample?: number;
 }
 
 @ObjectType()

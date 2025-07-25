@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 
 @ObjectType()
 export class SurveyActivityType {
@@ -52,4 +52,28 @@ export class UserProgressType {
 
   @Field()
   lastUpdated: Date;
+}
+
+@ObjectType()
+export class SubSurveyProgressType {
+  @Field(() => Date, { nullable: true })
+  startDate?: Date;
+
+  @Field(() => Date, { nullable: true })
+  endDate?: Date;
+
+  @Field(() => Int, { nullable: true })
+  targetSample?: number;
+
+  @Field(() => Int)
+  totalPetugas: number;
+
+  @Field(() => Int)
+  submitCount: number;
+
+  @Field(() => Int)
+  approvedCount: number;
+
+  @Field(() => Int)
+  rejectedCount: number;
 }
