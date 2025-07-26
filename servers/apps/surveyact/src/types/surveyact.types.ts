@@ -25,6 +25,15 @@ export class SubSurveyActivityType {
 
   @Field(() => ID)
   surveyActivityId: string;
+
+  @Field()
+  startDate: Date;
+
+  @Field()
+  endDate: Date;
+
+  @Field()
+  targetSample: number;
 }
 
 @ObjectType()

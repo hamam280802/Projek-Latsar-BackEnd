@@ -249,18 +249,18 @@ export class UsersService {
     return this.prisma.user.findMany({});
   }
 
-  async updateUserSurveyInfo(
-    userId: string,
-    updateSurveyActivityDto: UpdateSurveyActivityDto,
-  ) {
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        subSurveyActivityId: updateSurveyActivityDto.subSurveyActivityId,
-        region: updateSurveyActivityDto.region,
-      },
-    });
-  }
+  // async updateUserSurveyInfo(
+  //   userId: string,
+  //   updateSurveyActivityDto: UpdateSurveyActivityDto,
+  // ) {
+  //   return this.prisma.user.update({
+  //     where: { id: userId },
+  //     data: {
+  //       subSurveyActivityId: updateSurveyActivityDto.subSurveyActivityId,
+  //       region: updateSurveyActivityDto.region,
+  //     },
+  //   });
+  // }
 
   // update user profile
   async updateUserProfile(

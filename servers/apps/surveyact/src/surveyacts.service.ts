@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
-  CreateSubSurveyActivityInput,
+  CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
+  UpdateSubSurveyActivityDTO,
+  UpdateSurveyActivityDTO,
 } from './dto/surveyact.dto';
 
 @Injectable()
@@ -11,6 +13,17 @@ export class SurveyActivityService {
 
   async create(input: CreateSurveyActivityDTO) {
     return this.prisma.surveyActivity.create({ data: input });
+  }
+
+  async update(surveyActivityId: string, updateData: UpdateSurveyActivityDTO) {
+    const cleanedData = Object.fromEntries(
+      Object.entries(updateData).filter(([_, value]) => value != null),
+    );
+
+    return this.prisma.surveyActivity.update({
+      where: { id: surveyActivityId },
+      data: cleanedData,
+    });
   }
 
   // Update survei by id
@@ -34,13 +47,19 @@ export class SurveyActivityService {
     return this.prisma.surveyActivity.findMany();
   }
 
-  async createSubSurveyActivity(input: CreateSubSurveyActivityInput) {
+  async createSubSurveyActivity(input: CreateSubSurveyActivityDTO) {
     return this.prisma.subSurveyActivity.create({
-      data: {
-        name: input.name,
-        slug: input.slug,
-        surveyActivityId: input.surveyActivityId,
-      },
+      data: input,
+    });
+  }
+
+  async updateSubSurveyActivity(subSurveyActivityId: string, updateData: UpdateSubSurveyActivityDTO) {
+    const cleanedData = Object.fromEntries(
+      Object.entries(updateData).filter(([_, value]) => value != null),
+    );
+    return this.prisma.subSurveyActivity.update({
+      where: { id: subSurveyActivityId },
+      data: cleanedData,
     });
   }
 
@@ -48,7 +67,8 @@ export class SurveyActivityService {
     const subSurveyActivity = await this.prisma.subSurveyActivity.findUnique({
       where: { slug },
     });
-    if (!subSurveyActivity) throw new NotFoundException('SubSurveyActivity not found');
+    if (!subSurveyActivity)
+      throw new NotFoundException('SubSurveyActivity not found');
     return subSurveyActivity;
   }
 
@@ -59,27 +79,40 @@ export class SurveyActivityService {
   }
 
   async getSubSurveyProgress(subSurveyActivityId: string) {
-  const subSurvey = await this.subSurveyRepo.findOne({
-    where: { id: subSurveyActivityId },
-    relations: ['progresses'],
-  });
+    const subSurvey = await this.prisma.subSurveyActivity.findUnique({
+      where: { id: subSurveyActivityId },
+      include: {
+        UserProgress: true,
+        User: true,
+      },
+    });
 
-  const totalPetugas = await this.userRepo.count({
-    where: { subSurveyActivityId },
-  });
+    if (!subSurvey) {
+      throw new NotFoundException('SubSurveyActivity tidak ditemukan');
+    }
 
-  const submitCount = subSurvey.progresses.reduce((acc, p) => acc + p.submitCount, 0);
-  const approvedCount = subSurvey.progresses.reduce((acc, p) => acc + p.approvedCount, 0);
-  const rejectedCount = subSurvey.progresses.reduce((acc, p) => acc + p.rejectedCount, 0);
+    const totalPetugas = subSurvey.User.length;
+    const submitCount = subSurvey.UserProgress.reduce(
+      (acc, p) => acc + p.submitCount,
+      0,
+    );
+    const approvedCount = subSurvey.UserProgress.reduce(
+      (acc, p) => acc + p.approvedCount,
+      0,
+    );
+    const rejectedCount = subSurvey.UserProgress.reduce(
+      (acc, p) => acc + p.rejectedCount,
+      0,
+    );
 
-  return {
-    startDate: subSurvey.startDate,
-    endDate: subSurvey.endDate,
-    targetSample: subSurvey.targetSample,
-    totalPetugas,
-    submitCount,
-    approvedCount,
-    rejectedCount,
-  };
-}
+    return {
+      startDate: subSurvey.startDate,
+      endDate: subSurvey.endDate,
+      targetSample: subSurvey.targetSample,
+      totalPetugas,
+      submitCount,
+      approvedCount,
+      rejectedCount,
+    };
+  }
 }

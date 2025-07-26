@@ -46,12 +46,12 @@ model SubSurveyActivity {
   slug             String         @unique
   surveyActivityId String
   surveyActivity   SurveyActivity @relation(fields: [surveyActivityId], references: [id])
-  startDate        DateTime?
-  endDate          DateTime?
-  targetSample     Int?
+  startDate        DateTime
+  endDate          DateTime
+  targetSample     Int
 
-  issues           Issue[]
-  User             User[]
+  issues       Issue[]
+  User         User[]
   UserProgress UserProgress[]
 }
 
@@ -70,9 +70,9 @@ model User {
   subSurveyActivityId String?
   subSurveyActivity   SubSurveyActivity? @relation(fields: [subSurveyActivityId], references: [id])
 
-  issues Issue[]
+  issues        Issue[]
   issueComments IssueComment[]
-  UserProgress UserProgress[]
+  UserProgress  UserProgress[]
 }
 
 model Issue {
@@ -87,7 +87,7 @@ model Issue {
   subSurveyActivity   SubSurveyActivity @relation(fields: [subSurveyActivityId], references: [id])
   region              String
 
-  issueComments       IssueComment[]
+  issueComments IssueComment[]
 }
 
 model IssueComment {

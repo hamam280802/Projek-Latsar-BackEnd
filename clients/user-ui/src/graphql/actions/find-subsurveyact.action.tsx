@@ -8,6 +8,10 @@ export const GET_SUB_SURVEY_ACTIVITIES_BY_SLUG: DocumentNode = gql`
       id
       name
       slug
+      surveyActivityId
+      startDate
+      endDate
+      targetSample
     }
   }
 `;

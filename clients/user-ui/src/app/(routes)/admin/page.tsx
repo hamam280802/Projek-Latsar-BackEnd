@@ -24,10 +24,12 @@ function Admin() {
     name: "",
     slug: "",
     surveyActivityId: "",
+    startDate: "",
+    endDate: "",
+    targetSample: 0,
   });
 
   const { data, loading, refetch } = useQuery(GET_ALL_SURVEY_ACTIVITIES);
-
 
   const [addSurveyActivity, { loading: loading1 }] =
     useMutation(ADD_SURVEY_ACTIVITY);
@@ -79,18 +81,33 @@ function Admin() {
       if (
         !formStateF2.name ||
         !formStateF2.slug ||
-        !formStateF2.surveyActivityId
+        !formStateF2.surveyActivityId ||
+        !formStateF2.startDate ||
+        !formStateF2.endDate ||
+        !formStateF2.targetSample
       ) {
-        toast.error("Nama dan slug wajib diisi!");
+        toast.error("Semua field wajib diisi!");
         return;
       }
       const { data } = await addSubSurveyActivity({
         variables: {
-          input: { ...formStateF2 },
+          input: {
+            ...formStateF2,
+            startDate: new Date(formStateF2.startDate),
+            endDate: new Date(formStateF2.endDate),
+            targetSample: parseInt(formStateF2.targetSample.toString(), 10),
+          },
         },
       });
       toast.success("Kegiatan Survey berhasil ditambahkan!");
-      setFormStateF2({ name: "", slug: "", surveyActivityId: "" });
+      setFormStateF2({
+        name: "",
+        slug: "",
+        surveyActivityId: "",
+        startDate: "",
+        endDate: "",
+        targetSample: 0,
+      });
     } catch (err: any) {
       toast.error("Gagal menambah Kegiatan Survey.");
       console.error("❌ Error create:", err);
@@ -183,6 +200,45 @@ function Admin() {
                 )
               )}
             </select>
+          </div>
+          <div>
+            <label htmlFor="startDate" className="block text-sm font-bold mb-2">
+              Tanggal Mulai
+            </label>
+            <input
+              type="date"
+              id="startDate"
+              value={formStateF2.startDate}
+              onChange={handleChangeF2}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label htmlFor="endDate" className="block text-sm font-bold mb-2">
+              Tanggal Selesai
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              value={formStateF2.endDate}
+              onChange={handleChangeF2}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="targetSample"
+              className="block text-sm font-bold mb-2"
+            >
+              Target Sampel
+            </label>
+            <input
+              type="number"
+              id="targetSample"
+              value={formStateF2.targetSample}
+              onChange={handleChangeF2}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
           </div>
           <button
             disabled={loading2}

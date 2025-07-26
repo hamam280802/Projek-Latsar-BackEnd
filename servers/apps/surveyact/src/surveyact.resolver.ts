@@ -7,8 +7,10 @@ import {
   UserProgressType,
 } from './types/surveyact.types';
 import {
-  CreateSubSurveyActivityInput,
+  CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
+  UpdateSubSurveyActivityDTO,
+  UpdateSurveyActivityDTO,
 } from './dto/surveyact.dto';
 
 @Resolver(() => SurveyActivityType)
@@ -30,11 +32,27 @@ export class SurveyActivityResolver {
     return this.service.create(input);
   }
 
+  @Mutation(() => SurveyActivityType)
+  async updateSurveyActivity(
+    @Args('surveyActivityId') surveyActivityId: string,
+    @Args('input') input: UpdateSurveyActivityDTO,
+  ) {
+    return this.service.update(surveyActivityId, input);
+  }
+
   @Mutation(() => SubSurveyActivityType)
   async createSubSurveyActivity(
-    @Args('input') input: CreateSubSurveyActivityInput,
+    @Args('input') input: CreateSubSurveyActivityDTO,
   ) {
     return this.service.createSubSurveyActivity(input);
+  }
+
+  @Mutation(() => SubSurveyActivityType)
+  async updateSubSurveyActivity(
+    @Args('subSurveyActivityId') subSurveyActivityId: string,
+    @Args('input') input: UpdateSubSurveyActivityDTO,
+  ) {
+    return this.service.updateSubSurveyActivity(subSurveyActivityId, input);
   }
 
   @Query(() => [SubSurveyActivityType])
