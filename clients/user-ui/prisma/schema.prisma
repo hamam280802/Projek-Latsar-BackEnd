@@ -51,7 +51,6 @@ model SubSurveyActivity {
   targetSample     Int
 
   issues       Issue[]
-  User         User[]
   UserProgress UserProgress[]
 }
 
@@ -67,8 +66,6 @@ model User {
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt
   region              String?
-  subSurveyActivityId String?
-  subSurveyActivity   SubSurveyActivity? @relation(fields: [subSurveyActivityId], references: [id])
 
   issues        Issue[]
   issueComments IssueComment[]

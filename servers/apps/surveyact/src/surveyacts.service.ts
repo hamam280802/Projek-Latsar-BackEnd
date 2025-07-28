@@ -3,8 +3,10 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import {
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
+  CreateUserProgressDTO,
   UpdateSubSurveyActivityDTO,
   UpdateSurveyActivityDTO,
+  UpdateUserProgressDTO,
 } from './dto/surveyact.dto';
 
 @Injectable()
@@ -53,7 +55,10 @@ export class SurveyActivityService {
     });
   }
 
-  async updateSubSurveyActivity(subSurveyActivityId: string, updateData: UpdateSubSurveyActivityDTO) {
+  async updateSubSurveyActivity(
+    subSurveyActivityId: string,
+    updateData: UpdateSubSurveyActivityDTO,
+  ) {
     const cleanedData = Object.fromEntries(
       Object.entries(updateData).filter(([_, value]) => value != null),
     );
@@ -78,12 +83,17 @@ export class SurveyActivityService {
     });
   }
 
+  async createUserProgress(input: CreateUserProgressDTO) {
+    return this.prisma.userProgress.create({
+      data: input,
+    });
+  }
+
   async getSubSurveyProgress(subSurveyActivityId: string) {
     const subSurvey = await this.prisma.subSurveyActivity.findUnique({
       where: { id: subSurveyActivityId },
       include: {
         UserProgress: true,
-        User: true,
       },
     });
 
@@ -91,7 +101,7 @@ export class SurveyActivityService {
       throw new NotFoundException('SubSurveyActivity tidak ditemukan');
     }
 
-    const totalPetugas = subSurvey.User.length;
+    const totalPetugas = subSurvey.UserProgress.length;
     const submitCount = subSurvey.UserProgress.reduce(
       (acc, p) => acc + p.submitCount,
       0,
@@ -114,5 +124,19 @@ export class SurveyActivityService {
       approvedCount,
       rejectedCount,
     };
+  }
+
+  async updateUserProgress(
+    surveyProgressId: string,
+    updateData: UpdateUserProgressDTO,
+  ) {
+    const cleanedData = Object.fromEntries(
+      Object.entries(updateData).filter(([_, value]) => value != null),
+    );
+
+    return this.prisma.userProgress.update({
+      where: { id: surveyProgressId },
+      data: cleanedData,
+    });
   }
 }

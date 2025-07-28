@@ -40,8 +40,6 @@ export class User {
   phone_number: string;
   @Field(() => String, {nullable: true})
   region?: string | null;
-  @Field(() => SubSurveyActivity, { nullable: true })
-  subSurveyActivity?: SubSurveyActivity;
   createdAt: Date;
   @Field()
   updatedAt: Date;

@@ -9,8 +9,10 @@ import {
 import {
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
+  CreateUserProgressDTO,
   UpdateSubSurveyActivityDTO,
   UpdateSurveyActivityDTO,
+  UpdateUserProgressDTO,
 } from './dto/surveyact.dto';
 
 @Resolver(() => SurveyActivityType)
@@ -69,10 +71,23 @@ export class SurveyActivityResolver {
     return this.service.findSubSurveyActivityBySlug(slug);
   }
 
+  @Mutation(() => UserProgressType)
+  async createUserProgress(@Args('input') input: CreateUserProgressDTO) {
+    return this.service.createUserProgress(input);
+  }
+
   @Query(() => SubSurveyProgressType)
   async subSurveyProgress(
     @Args('subSurveyActivityId') subSurveyActivityId: string,
   ) {
     return this.service.getSubSurveyProgress(subSurveyActivityId);
+  }
+
+  @Mutation(() => UserProgressType)
+  async updateUserProgress(
+    @Args('surveyProgressId') surveyProgressId: string,
+    @Args('input') input: UpdateUserProgressDTO,
+  ) {
+    return this.service.updateUserProgress(surveyProgressId, input);
   }
 }

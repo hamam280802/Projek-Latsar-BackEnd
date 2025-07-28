@@ -45,7 +45,7 @@ export class UserProgressType {
   userId: string;
 
   @Field(() => ID)
-  subSurveyActivityId?: string;
+  subSurveyActivityId: string;
 
   @Field()
   totalAssigned: number;

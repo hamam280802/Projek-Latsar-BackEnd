@@ -1,4 +1,4 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 @InputType()
@@ -67,4 +67,52 @@ export class UpdateSubSurveyActivityDTO {
 
   @Field()
   targetSample: number;
+}
+
+@InputType()
+export class CreateUserProgressDTO {
+  @Field()
+  subSurveyActivityId: string;
+
+  @Field()
+  userId: string;
+
+  @Field()
+  totalAssigned: number;
+
+  @Field()
+  submitCount: number;
+
+  @Field()
+  approvedCount: number;
+
+  @Field()
+  rejectedCount: number;
+
+  @Field()
+  lastUpdated: Date;
+}
+
+@InputType()
+export class UpdateUserProgressDTO {
+  @Field()
+  subSurveyActivityId: string;
+
+  @Field()
+  userId: string;  
+
+  @Field()
+  totalAssigned: number;
+
+  @Field()
+  submitCount: number;
+
+  @Field()
+  approvedCount: number;
+
+  @Field()
+  rejectedCount: number;
+
+  @Field()
+  lastUpdated: Date;
 }
