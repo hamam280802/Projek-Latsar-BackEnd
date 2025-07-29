@@ -1,12 +1,14 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { SurveyActivityService } from './surveyacts.service';
 import {
+  DistrictType,
   SubSurveyActivityType,
   SubSurveyProgressType,
   SurveyActivityType,
   UserProgressType,
 } from './types/surveyact.types';
 import {
+  CreateDistrictDTO,
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
   CreateUserProgressDTO,
@@ -89,5 +91,15 @@ export class SurveyActivityResolver {
     @Args('input') input: UpdateUserProgressDTO,
   ) {
     return this.service.updateUserProgress(surveyProgressId, input);
+  }
+
+  @Mutation(() => DistrictType)
+  async createDistrict(@Args('input') input: CreateDistrictDTO) {
+    return this.service.createDistrict(input);
+  }
+
+  @Query(() => [DistrictType], { name: 'allDistricts' })
+  async allDistricts() {
+    return this.service.getAllDistricts();
   }
 }

@@ -116,3 +116,12 @@ export class UpdateUserProgressDTO {
   @Field()
   lastUpdated: Date;
 }
+
+@InputType()
+export class CreateDistrictDTO {
+  @Field()
+  city: string;
+
+  @Field()
+  name: string;
+} 

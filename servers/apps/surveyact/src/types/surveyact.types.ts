@@ -86,3 +86,15 @@ export class SubSurveyProgressType {
   @Field(() => Int)
   rejectedCount: number;
 }
+
+@ObjectType()
+export class DistrictType {
+  @Field(() => ID)
+  id: string;
+
+  @Field()
+  city: string;
+
+  @Field()
+  name: string;
+}

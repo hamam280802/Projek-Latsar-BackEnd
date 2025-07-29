@@ -38,7 +38,6 @@ type User = {
   role: string;
   address: string;
   phone_number: string;
-  region: string;
   updatedAt: string;
 };
 

@@ -49,23 +49,24 @@ model SubSurveyActivity {
   startDate        DateTime
   endDate          DateTime
   targetSample     Int
+  districtId       String?
+  district         District?      @relation(fields: [districtId], references: [id])
 
   issues       Issue[]
   UserProgress UserProgress[]
 }
 
 model User {
-  id                  String             @id @default(uuid())
-  name                String
-  email               String             @unique
-  phone_number        String
-  address             String?
-  password            String
-  role                Role               @default(User)
-  avatar              Avatar?
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
-  region              String?
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  phone_number String
+  address      String?
+  password     String
+  role         Role     @default(User)
+  avatar       Avatar?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   issues        Issue[]
   issueComments IssueComment[]
@@ -82,7 +83,6 @@ model Issue {
   user                User              @relation(fields: [userId], references: [id])
   subSurveyActivityId String
   subSurveyActivity   SubSurveyActivity @relation(fields: [subSurveyActivityId], references: [id])
-  region              String
 
   issueComments IssueComment[]
 }
@@ -108,6 +108,18 @@ model UserProgress {
   approvedCount       Int                @default(0)
   rejectedCount       Int                @default(0)
   lastUpdated         DateTime           @updatedAt
+  districtId          String?
+  district            District?          @relation(fields: [districtId], references: [id])
+}
+
+model District {
+  id   String @id @default(uuid())
+  city String
+  name String
+
+  SubSurveyActivity SubSurveyActivity[]
+
+  UserProgress UserProgress[]
 }
 
 // name,email,password,role,phone_number,address, 

@@ -9,7 +9,6 @@ export const UPDATE_PROFILE = gql`
       phone_number
       address
       role
-      region
     }
   }
 `;

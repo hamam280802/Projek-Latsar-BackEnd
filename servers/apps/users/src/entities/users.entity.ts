@@ -38,8 +38,6 @@ export class User {
   address?: string | null;
   @Field({ nullable: true })
   phone_number: string;
-  @Field(() => String, {nullable: true})
-  region?: string | null;
   createdAt: Date;
   @Field()
   updatedAt: Date;
@@ -65,8 +63,6 @@ export class Issue {
   subSurveyActivityId: string;
   @Field(() => SubSurveyActivity)
   surveyActivity: SubSurveyActivity;
-  @Field()
-  region: string;
 }
 
 @ObjectType()

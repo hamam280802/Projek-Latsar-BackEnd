@@ -18,7 +18,6 @@ function Profile() {
     phone_number: user?.phone_number || "",
     address: user?.address || "",
     role: user?.role || "",
-    region: user?.region || "",
   });
 
   React.useEffect(() => {
@@ -29,7 +28,6 @@ function Profile() {
         phone_number: user.phone_number || "",
         address: user.address || "",
         role: user.role || "",
-        region: user.region || "",
       });
     }
   }, [user]);
@@ -81,9 +79,6 @@ function Profile() {
           </p>
           <p>
             <strong>Role:</strong> {user?.role}
-          </p>
-          <p>
-            <strong>Region:</strong> {user?.region}
           </p>
         </div>
       </div>
@@ -162,20 +157,6 @@ function Profile() {
                 value={formState.role}
                 onChange={(e) =>
                   setFormState((prev) => ({ ...prev, role: e.target.value }))
-                }
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-bold mb-2" htmlFor="region">
-                Region
-              </label>
-              <input
-                type="text"
-                id="region"
-                value={formState.region}
-                onChange={(e) =>
-                  setFormState((prev) => ({ ...prev, region: e.target.value }))
                 }
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />

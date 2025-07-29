@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
+  CreateDistrictDTO,
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
   CreateUserProgressDTO,
@@ -138,5 +139,15 @@ export class SurveyActivityService {
       where: { id: surveyProgressId },
       data: cleanedData,
     });
+  }
+
+  async createDistrict(input: CreateDistrictDTO) {
+    return this.prisma.district.create({
+      data: input,
+    });
+  }
+
+  async getAllDistricts() {
+    return this.prisma.district.findMany();
   }
 }

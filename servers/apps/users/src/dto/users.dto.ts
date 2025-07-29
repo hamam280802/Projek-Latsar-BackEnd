@@ -90,10 +90,6 @@ export class UpdateSurveyActivityDto {
   @IsUUID('4', { message: 'ID kegiatan survei harus berupa UUID yang valid' })
   @IsNotEmpty({ message: 'Kegiatan Survey belum diisi' })
   subSurveyActivityId: string;
-
-  @Field()
-  @IsNotEmpty({ message: 'Wilayah kerja belum diisi' })
-  region: string;
 }
 
 @InputType()
@@ -112,7 +108,4 @@ export class UpdateUserDto {
 
   @Field({ nullable: true })
   address?: string;
-
-  @Field({ nullable: true })
-  region?: string;
 }
