@@ -84,7 +84,7 @@ export class SurveyActivityService {
     });
   }
 
-  async createUserProgress(input: CreateUserProgressDTO) {
+  async createUserSurveyProgress(input: CreateUserProgressDTO) {
     return this.prisma.userProgress.create({
       data: input,
     });
@@ -127,8 +127,16 @@ export class SurveyActivityService {
     };
   }
 
+  async getUserProgressBySubSurveyActivityId(
+    subSurveyActivityId: string,
+  ) {
+    return this.prisma.userProgress.findMany({
+      where: { subSurveyActivityId },
+    });
+  }
+
   async updateUserProgress(
-    surveyProgressId: string,
+    userProgressId: string,
     updateData: UpdateUserProgressDTO,
   ) {
     const cleanedData = Object.fromEntries(
@@ -136,7 +144,7 @@ export class SurveyActivityService {
     );
 
     return this.prisma.userProgress.update({
-      where: { id: surveyProgressId },
+      where: { id: userProgressId },
       data: cleanedData,
     });
   }

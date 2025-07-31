@@ -96,12 +96,6 @@ export class CreateUserProgressDTO {
 @InputType()
 export class UpdateUserProgressDTO {
   @Field()
-  subSurveyActivityId: string;
-
-  @Field()
-  userId: string;  
-
-  @Field()
   totalAssigned: number;
 
   @Field()

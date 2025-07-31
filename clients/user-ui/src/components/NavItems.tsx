@@ -75,12 +75,12 @@ const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
       logo: ChartNoAxesCombined,
       dataprogress: dynamiSurveyProgress,
     },
-    {
-      title: "Monitoring Petugas",
-      url: "/monitoringstuff",
-      hovertitle: "Monitoring Petugas",
-      logo: MonitorCheck,
-    },
+    // {
+    //   title: "Monitoring Petugas",
+    //   url: "/monitoringstuff",
+    //   hovertitle: "Monitoring Petugas",
+    //   logo: MonitorCheck,
+    // },
     {
       title: "Kendala",
       url: "/issue",

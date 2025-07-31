@@ -74,8 +74,8 @@ export class SurveyActivityResolver {
   }
 
   @Mutation(() => UserProgressType)
-  async createUserProgress(@Args('input') input: CreateUserProgressDTO) {
-    return this.service.createUserProgress(input);
+  async createUserSurveyProgress(@Args('input') input: CreateUserProgressDTO) {
+    return this.service.createUserSurveyProgress(input);
   }
 
   @Query(() => SubSurveyProgressType)
@@ -85,12 +85,19 @@ export class SurveyActivityResolver {
     return this.service.getSubSurveyProgress(subSurveyActivityId);
   }
 
+  @Query(() => [UserProgressType])
+  async userProgressBySubSurveyActivityId(
+    @Args('subSurveyActivityId') subSurveyActivityId: string,
+  ) {
+    return this.service.getUserProgressBySubSurveyActivityId(subSurveyActivityId);
+  }
+
   @Mutation(() => UserProgressType)
-  async updateUserProgress(
-    @Args('surveyProgressId') surveyProgressId: string,
+  async updateUserSurveyProgress(
+    @Args('userProgressId') userProgressId: string,
     @Args('input') input: UpdateUserProgressDTO,
   ) {
-    return this.service.updateUserProgress(surveyProgressId, input);
+    return this.service.updateUserProgress(userProgressId, input);
   }
 
   @Mutation(() => DistrictType)

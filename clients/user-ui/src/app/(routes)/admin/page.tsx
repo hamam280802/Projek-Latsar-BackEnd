@@ -13,6 +13,7 @@ import { GET_ALL_SUB_SURVEY_ACTIVITIES } from "@/src/graphql/actions/find-allsub
 import { CREATE_USER_PROGRESS } from "@/src/graphql/actions/create-userprogress.action";
 import { UPDATE_USER_PROGRESS } from "@/src/graphql/actions/update-userprogress.action";
 import { GET_ALL_USERS } from "@/src/graphql/actions/find-allusers.action";
+import { GET_USER_PROGRESS_BY_SUBSURVEY_ID } from "@/src/graphql/actions/find-usersurveyprogress";
 
 type SurveyActivity = {
   id: string;
@@ -85,6 +86,7 @@ function Admin() {
   const [userProgressForm, setUserProgressForm] = useState({
     userId: "",
     subSurveyActivityId: "",
+    surveyActivityId: "",
     totalAssigned: 0,
     submitCount: 0,
     approvedCount: 0,
@@ -93,8 +95,9 @@ function Admin() {
   });
 
   const [updateUserProgressForm, setUpdateUserProgressForm] = useState({
-    surveyProgressId: "",
+    userProgressId: "",
     subSurveyActivityId: "",
+    surveyActivityId: "",
     userId: "",
     totalAssigned: 0,
     submitCount: 0,
@@ -104,10 +107,24 @@ function Admin() {
   });
 
   const { data, loading, refetch } = useQuery(GET_ALL_SURVEY_ACTIVITIES);
-  const [fetchSubSurveys, { data: subdata }] = useLazyQuery(
+
+  const [fetchSubForSubSurveys, { data: SubSurveydata }] = useLazyQuery(
     GET_ALL_SUB_SURVEY_ACTIVITIES
   );
+
+  const [fetchSubForSubmitUP, { data: SubmitUPData }] = useLazyQuery(
+    GET_ALL_SUB_SURVEY_ACTIVITIES
+  );
+
+  const [fetchSubForUpdateUP, { data: UpdateUPData }] = useLazyQuery(
+    GET_ALL_SUB_SURVEY_ACTIVITIES
+  );
+
   const { data: userData } = useQuery(GET_ALL_USERS);
+
+  const [ fetchUserProgress, { data: userProgressData }] = useLazyQuery(
+    GET_USER_PROGRESS_BY_SUBSURVEY_ID
+  );
 
   const [addSurveyActivity, { loading: loading1 }] =
     useMutation(ADD_SURVEY_ACTIVITY);
@@ -116,8 +133,8 @@ function Admin() {
   );
   const [updateSurveyActivity] = useMutation(UPDATE_SURVEY_ACTIVITY);
   const [updateSubSurveyActivity] = useMutation(UPDATE_SUB_SURVEY_ACTIVITY);
-  const [createUserProgress] = useMutation(CREATE_USER_PROGRESS);
-  const [updateUserProgress] = useMutation(UPDATE_USER_PROGRESS);
+  const [createUserSurveyProgress] = useMutation(CREATE_USER_PROGRESS);
+  const [updateUserSurveyProgress] = useMutation(UPDATE_USER_PROGRESS);
 
   const handleChangeF1 = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormStateF1((prev) => ({
@@ -306,10 +323,11 @@ function Admin() {
   ) => {
     e.preventDefault();
     try {
-      await createUserProgress({
+      await createUserSurveyProgress({
         variables: {
           input: {
-            ...userProgressForm,
+            userId: userProgressForm.userId,
+            subSurveyActivityId: userProgressForm.subSurveyActivityId,
             totalAssigned: Number(userProgressForm.totalAssigned),
             submitCount: Number(userProgressForm.submitCount),
             approvedCount: Number(userProgressForm.approvedCount),
@@ -320,8 +338,9 @@ function Admin() {
       });
       toast.success("UserProgress berhasil ditambahkan!");
       setUserProgressForm({
-        userId: "",
+        surveyActivityId: "",
         subSurveyActivityId: "",
+        userId: "",
         totalAssigned: 0,
         submitCount: 0,
         approvedCount: 0,
@@ -339,11 +358,10 @@ function Admin() {
   ) => {
     e.preventDefault();
     try {
-      await updateUserProgress({
+      await updateUserSurveyProgress({
         variables: {
-          surveyProgressId: updateUserProgressForm.surveyProgressId,
+          userProgressId: updateUserProgressForm.userProgressId,
           input: {
-            ...updateUserProgressForm,
             totalAssigned: Number(updateUserProgressForm.totalAssigned),
             submitCount: Number(updateUserProgressForm.submitCount),
             approvedCount: Number(updateUserProgressForm.approvedCount),
@@ -363,13 +381,43 @@ function Admin() {
 
   useEffect(() => {
     if (updateStateF2.surveyActivityId) {
-      fetchSubSurveys({
+      fetchSubForSubSurveys({
         variables: {
           surveyActivityId: updateStateF2.surveyActivityId,
         },
       });
     }
-  }, [updateStateF2.surveyActivityId, fetchSubSurveys]);
+  }, [updateStateF2.surveyActivityId, fetchSubForSubSurveys]);
+  
+  useEffect(() => {
+    if (userProgressForm.surveyActivityId) {
+      fetchSubForSubmitUP({
+        variables: {
+          surveyActivityId: userProgressForm.surveyActivityId,
+        },
+      });
+    }
+  }, [userProgressForm.surveyActivityId, fetchSubForSubmitUP]);
+
+  useEffect(() => {
+    if (userProgressForm.surveyActivityId) {
+      fetchSubForUpdateUP({
+        variables: {
+          surveyActivityId: userProgressForm.surveyActivityId,
+        },
+      });
+    }
+  }, [userProgressForm.surveyActivityId, fetchSubForUpdateUP]);
+
+  useEffect(() => {
+    if (updateUserProgressForm.subSurveyActivityId) {
+      fetchUserProgress({
+        variables: {
+          subSurveyActivityId: updateUserProgressForm.subSurveyActivityId,
+        },
+      });
+    }
+  }, [updateUserProgressForm.subSurveyActivityId, fetchUserProgress]);
 
   useEffect(() => {
     setUpdateStateF2((prev) => ({
@@ -573,7 +621,7 @@ function Admin() {
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           >
             <option value="">-- Pilih Kegiatan --</option>
-            {subdata?.subSurveyActivityById?.map((sub: SubSurveyActivity) => (
+            {SubSurveydata?.subSurveyActivityById?.map((sub: SubSurveyActivity) => (
               <option key={sub.id} value={sub.id}>
                 {sub.name}
               </option>
@@ -621,32 +669,55 @@ function Admin() {
           </button>
         </form>
       </div>
-      <div className="bg-green-50 rounded-lg p-4 shadow-md">
+      <div className="bg-orange-50 rounded-lg p-4 shadow-md">
         <h3 className="text-lg font-bold">Tambah UserProgress</h3>
         <form onSubmit={handleSubmitUserProgress} className="space-y-3">
-          <input
-            type="text"
-            id="userId"
-            placeholder="User ID"
-            value={userProgressForm.userId}
+          <select
+            id="surveyActivityId"
+            value={userProgressForm.surveyActivityId}
             onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
-          />
-          <input
-            type="text"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            <option value="">-- Pilih Tim --</option>
+            {data?.allSurveyActivities.map((s: SurveyActivity) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+          <select
             id="subSurveyActivityId"
-            placeholder="SubSurveyActivity ID"
             value={userProgressForm.subSurveyActivityId}
             onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
-          />
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            <option value="">-- Pilih Kegiatan --</option>
+            {SubmitUPData?.subSurveyActivityById?.map((sub: SubSurveyActivity) => (
+              <option key={sub.id} value={sub.id}>
+                {sub.name}
+              </option>
+            ))}
+          </select>
+          <select
+            id="userId"
+            value={userProgressForm.userId}
+            onChange={handleChangeUserProgress}
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            <option value="">-- Pilih Pengguna --</option>
+            {userData?.getUsers?.map((user: User) => (
+              <option key={user.id} value={user.id}>
+                {user.name}
+              </option>
+            ))}
+          </select>
           <input
             type="number"
             id="totalAssigned"
             placeholder="Total Assigned"
             value={userProgressForm.totalAssigned}
             onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <input
             type="number"
@@ -654,7 +725,7 @@ function Admin() {
             placeholder="Submit Count"
             value={userProgressForm.submitCount}
             onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <input
             type="number"
@@ -662,7 +733,7 @@ function Admin() {
             placeholder="Approved Count"
             value={userProgressForm.approvedCount}
             onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <input
             type="number"
@@ -670,14 +741,14 @@ function Admin() {
             placeholder="Rejected Count"
             value={userProgressForm.rejectedCount}
             onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <input
             type="date"
             id="lastUpdated"
             value={userProgressForm.lastUpdated}
             onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <button type="submit" className={`${styles.button} my-2 text-white`}>
             Tambah
@@ -687,22 +758,6 @@ function Admin() {
       <div className="bg-blue-100 rounded-lg p-4 shadow-md">
         <h3 className="text-lg font-bold">Update UserProgress</h3>
         <form onSubmit={handleUpdateUserProgress} className="space-y-3">
-          <input
-            type="text"
-            id="surveyProgressId"
-            placeholder="ID UserProgress"
-            value={updateUserProgressForm.surveyProgressId}
-            onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
-          />
-          <input
-            type="text"
-            id="userId"
-            placeholder="User ID"
-            value={updateUserProgressForm.userId}
-            onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
-          />
           <select
             id="subSurveyActivityId"
             value={updateUserProgressForm.subSurveyActivityId}
@@ -710,9 +765,22 @@ function Admin() {
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           >
             <option value="">-- Pilih Kegiatan --</option>
-            {subdata?.subSurveyActivityById?.map((sub: SubSurveyActivity) => (
+            {UpdateUPData?.subSurveyActivityById?.map((sub: SubSurveyActivity) => (
               <option key={sub.id} value={sub.id}>
                 {sub.name}
+              </option>
+            ))}
+          </select>
+          <select
+            id="userProgressId"
+            value={updateUserProgressForm.userProgressId}
+            onChange={handleChangeUpdateUserProgress}
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            <option value="">-- Pilih UserProgress --</option>
+            {userProgressData?.userProgressBySubSurveyActivityId?.map((up: UserProgress) => (
+              <option key={up.id} value={up.id}>
+                {up.id}
               </option>
             ))}
           </select>
@@ -722,7 +790,7 @@ function Admin() {
             placeholder="Total Assigned"
             value={updateUserProgressForm.totalAssigned}
             onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <input
             type="number"
@@ -730,7 +798,7 @@ function Admin() {
             placeholder="Submit Count"
             value={updateUserProgressForm.submitCount}
             onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <input
             type="number"
@@ -738,7 +806,7 @@ function Admin() {
             placeholder="Approved Count"
             value={updateUserProgressForm.approvedCount}
             onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <input
             type="number"
@@ -746,14 +814,14 @@ function Admin() {
             placeholder="Rejected Count"
             value={updateUserProgressForm.rejectedCount}
             onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <input
             type="date"
             id="lastUpdated"
             value={updateUserProgressForm.lastUpdated}
             onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <button type="submit" className={`${styles.button} my-2 text-white`}>
             Update
