@@ -52,6 +52,8 @@ type UserProgress = {
   rejectedCount: number;
 };
 
+type UserProgressWithUser = UserProgress & { user?: { name: string } };
+
 function Admin() {
   const [formStateF1, setFormStateF1] = useState({
     name: "",
@@ -778,9 +780,9 @@ function Admin() {
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           >
             <option value="">-- Pilih UserProgress --</option>
-            {userProgressData?.userProgressBySubSurveyActivityId?.map((up: UserProgress) => (
+            {userProgressData?.userProgressBySubSurveyActivityId?.map((up: UserProgressWithUser) => (
               <option key={up.id} value={up.id}>
-                {up.id}
+                {up.user?.name}
               </option>
             ))}
           </select>

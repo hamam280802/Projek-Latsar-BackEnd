@@ -11,6 +11,10 @@ export const GET_USER_PROGRESS_BY_SUBSURVEY_ID = gql`
       approvedCount
       rejectedCount
       lastUpdated
+      user {
+        id
+        name
+      }
     }
   }
 `;

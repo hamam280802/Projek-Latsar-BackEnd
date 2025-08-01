@@ -9,10 +9,16 @@ import {
   UpdateSurveyActivityDTO,
   UpdateUserProgressDTO,
 } from './dto/surveyact.dto';
+import { User } from '@prisma/client';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class SurveyActivityService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly httpService: HttpService,
+  ) {}
 
   async create(input: CreateSurveyActivityDTO) {
     return this.prisma.surveyActivity.create({ data: input });
@@ -90,6 +96,12 @@ export class SurveyActivityService {
     });
   }
 
+  async getUser(userId: string) {
+    const response$ = this.httpService.get(`http://localhost:4001/users/${userId}`);
+    const response = await lastValueFrom(response$);
+    return response.data;
+  }
+
   async getSubSurveyProgress(subSurveyActivityId: string) {
     const subSurvey = await this.prisma.subSurveyActivity.findUnique({
       where: { id: subSurveyActivityId },
@@ -127,11 +139,12 @@ export class SurveyActivityService {
     };
   }
 
-  async getUserProgressBySubSurveyActivityId(
-    subSurveyActivityId: string,
-  ) {
+  async getUserProgressBySubSurveyActivityId(subSurveyActivityId: string) {
     return this.prisma.userProgress.findMany({
       where: { subSurveyActivityId },
+      include: {
+        user: true, // Include user data if needed
+      },
     });
   }
 

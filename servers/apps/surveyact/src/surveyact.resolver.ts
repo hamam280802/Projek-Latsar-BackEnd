@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { SurveyActivityService } from './surveyacts.service';
 import {
   DistrictType,
@@ -16,6 +16,8 @@ import {
   UpdateSurveyActivityDTO,
   UpdateUserProgressDTO,
 } from './dto/surveyact.dto';
+import { User } from 'apps/users/src/entities/users.entity';
+import { UserProgress } from '@prisma/client';
 
 @Resolver(() => SurveyActivityType)
 export class SurveyActivityResolver {
@@ -76,6 +78,17 @@ export class SurveyActivityResolver {
   @Mutation(() => UserProgressType)
   async createUserSurveyProgress(@Args('input') input: CreateUserProgressDTO) {
     return this.service.createUserSurveyProgress(input);
+  }
+
+  @ResolveField(() => User, { nullable: true })
+  async user(@Parent() progress: UserProgress): Promise<User | null> {
+    const userId = progress.userId;
+    try {
+      // Ambil data user dari microservice lain (misalnya HTTP)
+      return await this.service.getUser(userId);
+    } catch (e) {
+      return null;
+    }
   }
 
   @Query(() => SubSurveyProgressType)

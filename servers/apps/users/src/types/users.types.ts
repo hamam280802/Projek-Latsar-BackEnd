@@ -1,4 +1,4 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { User } from '../entities/users.entity';
 
 @ObjectType()
@@ -65,4 +65,28 @@ export class ResetPasswordResponse {
 
     @Field(() => ErrorType, { nullable: true })
     error?: ErrorType;
+}
+
+@ObjectType()
+export class UserType {
+    @Field(() => ID)
+    id: string;
+
+    @Field(() => String)
+    name: string;
+
+    @Field(() => String, { nullable: true })
+    email?: string;
+
+    @Field(() => String, { nullable: true })
+    role?: string;
+
+    @Field(() => Boolean, { nullable: true })
+    isActive?: boolean;
+
+    @Field(() => Date, { nullable: true })
+    createdAt?: Date;
+
+    @Field(() => Date, { nullable: true })
+    updatedAt?: Date;
 }

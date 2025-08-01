@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
+import { UserType } from 'apps/users/src/types/users.types';
 
 @ObjectType()
 export class SurveyActivityType {
@@ -40,6 +41,9 @@ export class SubSurveyActivityType {
 export class UserProgressType {
   @Field(() => ID)
   id: string;
+
+  @Field(() => UserType, { nullable: true })
+  user?: UserType;
 
   @Field(() => ID)
   userId: string;
