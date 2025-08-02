@@ -9,9 +9,11 @@ import {
   UpdateSurveyActivityDTO,
   UpdateUserProgressDTO,
 } from './dto/surveyact.dto';
-import { User } from '@prisma/client';
+import { SubmitSPJ, User } from '@prisma/client';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
+import { Parent, ResolveField } from '@nestjs/graphql';
+import { UserType } from 'apps/users/src/types/users.types';
 
 @Injectable()
 export class SurveyActivityService {
@@ -97,7 +99,18 @@ export class SurveyActivityService {
   }
 
   async getUser(userId: string) {
-    const response$ = this.httpService.get(`http://localhost:4001/users/${userId}`);
+    const response$ = this.httpService.get(
+      `http://localhost:4001/users/${userId}`,
+    );
+    const response = await lastValueFrom(response$);
+    return response.data;
+  }
+
+  @ResolveField(() => UserType)
+  async user(@Parent() spj: SubmitSPJ): Promise<UserType> {
+    const response$ = this.httpService.get(
+      `http://localhost:4001/users/${spj.userId}`,
+    );
     const response = await lastValueFrom(response$);
     return response.data;
   }

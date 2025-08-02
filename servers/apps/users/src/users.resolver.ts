@@ -1,7 +1,7 @@
 import { BadRequestException, UseGuards } from "@nestjs/common";
 import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { UsersService } from "./users.service";
-import { ActivationResponse, ForgotPasswordResponse, LoginResponse, LogoutResponse, RegisterResponse, ResetPasswordResponse } from "./types/users.types";
+import { ActivationResponse, ForgotPasswordResponse, LoginResponse, LogoutResponse, RegisterResponse, ResetPasswordResponse, UserType } from "./types/users.types";
 import { ActivationDto, ForgotPasswordDto, RegisterDto, ResetPasswordDto, UpdateUserDto } from "./dto/users.dto";
 import { User } from "./entities/users.entity";
 import { Response } from "express";
@@ -81,4 +81,14 @@ export class UsersResolver {
     ): Promise<User> {
         return this.usersService.updateUserProfile(user.id, input);
     }
+
+    @Query(() => [UserType])
+async getActivePetugas(): Promise<UserType[]> {
+  return this.usersService.findMany({
+    where: {
+      role: 'User',
+    },
+  });
+}
+
 }

@@ -15,7 +15,7 @@ import { Response } from 'express';
 import * as bcrypt from 'bcryptjs';
 import { EmailService } from './email/email.service';
 import { TokenSender } from './utils/sendToken';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 
 interface UserData {
   name: string;
@@ -274,5 +274,9 @@ export class UsersService {
       where: { id: userId },
       data: cleanedData,
     });
+  }
+
+  async findMany(args: Prisma.UserFindManyArgs) {
+    return this.prisma.user.findMany(args);
   }
 }

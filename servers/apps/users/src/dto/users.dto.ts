@@ -2,9 +2,7 @@ import { InputType, Field, registerEnumType } from '@nestjs/graphql';
 import { Role } from '@prisma/client';
 import {
   IsEmail,
-  IsEnum,
   IsNotEmpty,
-  IsOptional,
   IsString,
   IsUUID,
   Min,

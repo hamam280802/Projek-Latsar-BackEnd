@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
+import { AgreeState, StatusST } from '@prisma/client';
 import { UserType } from 'apps/users/src/types/users.types';
 
 @ObjectType()
@@ -101,4 +102,73 @@ export class DistrictType {
 
   @Field()
   name: string;
+}
+
+@ObjectType()
+export class SubmitSPJType {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => ID)
+  userId: string;
+
+  @Field(() => ID)
+  subSurveyActivityId: string;
+
+  @Field()
+  startDate: Date;
+
+  @Field()
+  endDate: Date;
+
+  @Field(() => AgreeState)
+  submitState: AgreeState;
+
+  @Field()
+  submitDate: Date;
+
+  @Field({ nullable: true })
+  approveDate?: Date;
+
+  @Field({ nullable: true })
+  verifyNote?: string;
+
+  @Field({ nullable: true })
+  eviDocumentUrl?: string;
+
+  @Field()
+  createdAt: Date;
+}
+
+@ObjectType()
+export class JobLetterType {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => ID)
+  userId: string;
+
+  @Field(() => ID)
+  subSurveyActivityId: string;
+
+  @Field()
+  region: string;
+
+  @Field(() => StatusST)
+  jobLetterState: StatusST;
+
+  @Field({ nullable: true })
+  submitDate?: Date;
+
+  @Field(() => AgreeState)
+  agreeState: AgreeState;
+
+  @Field({ nullable: true })
+  approveDate?: Date;
+
+  @Field({ nullable: true })
+  rejectNote?: string;
+
+  @Field()
+  createdAt: Date;
 }

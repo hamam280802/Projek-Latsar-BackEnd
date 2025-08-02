@@ -79,10 +79,10 @@ export class UserType {
     email?: string;
 
     @Field(() => String, { nullable: true })
-    role?: string;
+    phone_number?: string;
 
-    @Field(() => Boolean, { nullable: true })
-    isActive?: boolean;
+    @Field(() => String, { nullable: true })
+    role?: string;
 
     @Field(() => Date, { nullable: true })
     createdAt?: Date;

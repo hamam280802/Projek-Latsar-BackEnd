@@ -1,5 +1,5 @@
-import { InputType, Field } from '@nestjs/graphql';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { InputType, Field, ID } from '@nestjs/graphql';
+import { IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 @InputType()
 export class CreateSurveyActivityDTO {
@@ -119,3 +119,47 @@ export class CreateDistrictDTO {
   @Field()
   name: string;
 } 
+
+@InputType()
+export class CreateSPJInput {
+  @Field(() => ID)
+  @IsUUID()
+  userId: string;
+
+  @Field(() => ID)
+  @IsUUID()
+  subSurveyActivityId: string;
+
+  @Field()
+  @IsDateString()
+  startDate: string;
+
+  @Field()
+  @IsDateString()
+  endDate: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  eviDocumentUrl?: string;
+}
+
+@InputType()
+export class CreateJobLetterInput {
+  @Field(() => ID)
+  @IsUUID()
+  userId: string;
+
+  @Field(() => ID)
+  @IsUUID()
+  subSurveyActivityId: string;
+
+  @Field()
+  @IsString()
+  region: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsDateString()
+  submitDate?: string;
+}
