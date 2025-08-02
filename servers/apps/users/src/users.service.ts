@@ -7,7 +7,6 @@ import {
   LoginDto,
   RegisterDto,
   ResetPasswordDto,
-  UpdateSurveyActivityDto,
   UpdateUserDto,
 } from './dto/users.dto';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -278,5 +277,11 @@ export class UsersService {
 
   async findMany(args: Prisma.UserFindManyArgs) {
     return this.prisma.user.findMany(args);
+  }
+
+  async findById(id: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
   }
 }

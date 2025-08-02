@@ -124,17 +124,17 @@ export class SubmitSPJType {
   @Field(() => AgreeState)
   submitState: AgreeState;
 
-  @Field()
-  submitDate: Date;
+  @Field(() => Date, { nullable: true })
+  submitDate: Date | null;
 
-  @Field({ nullable: true })
-  approveDate?: Date;
+  @Field(() => Date, { nullable: true })
+  approveDate: Date | null;
 
-  @Field({ nullable: true })
-  verifyNote?: string;
+  @Field(() => String, { nullable: true })
+  verifyNote: string | null;
 
-  @Field({ nullable: true })
-  eviDocumentUrl?: string;
+  @Field(() => String, { nullable: true })
+  eviDocumentUrl: string | null;
 
   @Field()
   createdAt: Date;
@@ -157,17 +157,17 @@ export class JobLetterType {
   @Field(() => StatusST)
   jobLetterState: StatusST;
 
-  @Field({ nullable: true })
-  submitDate?: Date;
+  @Field(() => Date, { nullable: true })
+  submitDate: Date | null;
 
   @Field(() => AgreeState)
   agreeState: AgreeState;
 
-  @Field({ nullable: true })
-  approveDate?: Date;
+  @Field(() => Date, { nullable: true })
+  approveDate: Date | null;
 
-  @Field({ nullable: true })
-  rejectNote?: string;
+  @Field(() => String, { nullable: true })
+  rejectNote: string | null;
 
   @Field()
   createdAt: Date;

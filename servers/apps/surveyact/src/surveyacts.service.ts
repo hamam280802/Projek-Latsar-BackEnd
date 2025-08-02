@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
   CreateDistrictDTO,
+  CreateJobLetterInput,
+  CreateSPJInput,
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
   CreateUserProgressDTO,
@@ -9,7 +11,7 @@ import {
   UpdateSurveyActivityDTO,
   UpdateUserProgressDTO,
 } from './dto/surveyact.dto';
-import { SubmitSPJ, User } from '@prisma/client';
+import { JobLetter, SubmitSPJ, User } from '@prisma/client';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { Parent, ResolveField } from '@nestjs/graphql';
@@ -183,5 +185,28 @@ export class SurveyActivityService {
 
   async getAllDistricts() {
     return this.prisma.district.findMany();
+  }
+
+  async createSPJ(input: CreateSPJInput): Promise<SubmitSPJ> {
+    return this.prisma.submitSPJ.create({
+      data: {
+        userId: input.userId,
+        subSurveyActivityId: input.subSurveyActivityId,
+        startDate: new Date(input.startDate),
+        endDate: new Date(input.endDate),
+        eviDocumentUrl: input.eviDocumentUrl || null,
+      },
+    });
+  }
+
+  async createJobLetter(input: CreateJobLetterInput): Promise<JobLetter> {
+    return this.prisma.jobLetter.create({
+      data: {
+        userId: input.userId,
+        subSurveyActivityId: input.subSurveyActivityId,
+        region: input.region,
+        submitDate: input.submitDate ? new Date(input.submitDate) : undefined,
+      },
+    });
   }
 }

@@ -2,6 +2,8 @@ import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/g
 import { SurveyActivityService } from './surveyacts.service';
 import {
   DistrictType,
+  JobLetterType,
+  SubmitSPJType,
   SubSurveyActivityType,
   SubSurveyProgressType,
   SurveyActivityType,
@@ -9,6 +11,8 @@ import {
 } from './types/surveyact.types';
 import {
   CreateDistrictDTO,
+  CreateJobLetterInput,
+  CreateSPJInput,
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
   CreateUserProgressDTO,
@@ -122,4 +126,18 @@ export class SurveyActivityResolver {
   async allDistricts() {
     return this.service.getAllDistricts();
   }
+
+  @Mutation(() => SubmitSPJType)
+async createSPJ(
+  @Args('input') input: CreateSPJInput
+): Promise<SubmitSPJType> {
+  return this.service.createSPJ(input);
+}
+
+@Mutation(() => JobLetterType)
+async createJobLetter(
+  @Args('input') input: CreateJobLetterInput
+): Promise<JobLetterType> {
+  return this.service.createJobLetter(input);
+}
 }
