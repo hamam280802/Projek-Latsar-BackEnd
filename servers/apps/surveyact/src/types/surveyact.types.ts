@@ -1,6 +1,14 @@
-import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Int, registerEnumType } from '@nestjs/graphql';
 import { AgreeState, StatusST } from '@prisma/client';
 import { UserType } from 'apps/users/src/types/users.types';
+
+registerEnumType(AgreeState, {
+  name: 'AgreeState', // ini akan muncul di GraphQL schema
+});
+
+registerEnumType(StatusST, {
+  name: 'StatusST',
+})
 
 @ObjectType()
 export class SurveyActivityType {
@@ -109,6 +117,9 @@ export class SubmitSPJType {
   @Field(() => ID)
   id: string;
 
+  @Field(() => UserType, { nullable: true })
+  user?: UserType;
+
   @Field(() => ID)
   userId: string;
 
@@ -145,6 +156,9 @@ export class JobLetterType {
   @Field(() => ID)
   id: string;
 
+  @Field(() => UserType, { nullable: true })
+  user?: UserType;
+  
   @Field(() => ID)
   userId: string;
 

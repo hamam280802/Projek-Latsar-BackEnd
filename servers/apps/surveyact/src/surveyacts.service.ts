@@ -7,6 +7,8 @@ import {
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
   CreateUserProgressDTO,
+  UpdateJobLetterStatusInput,
+  UpdateSPJStatusInput,
   UpdateSubSurveyActivityDTO,
   UpdateSurveyActivityDTO,
   UpdateUserProgressDTO,
@@ -14,8 +16,6 @@ import {
 import { JobLetter, SubmitSPJ, User } from '@prisma/client';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
-import { Parent, ResolveField } from '@nestjs/graphql';
-import { UserType } from 'apps/users/src/types/users.types';
 
 @Injectable()
 export class SurveyActivityService {
@@ -108,15 +108,6 @@ export class SurveyActivityService {
     return response.data;
   }
 
-  @ResolveField(() => UserType)
-  async user(@Parent() spj: SubmitSPJ): Promise<UserType> {
-    const response$ = this.httpService.get(
-      `http://localhost:4001/users/${spj.userId}`,
-    );
-    const response = await lastValueFrom(response$);
-    return response.data;
-  }
-
   async getSubSurveyProgress(subSurveyActivityId: string) {
     const subSurvey = await this.prisma.subSurveyActivity.findUnique({
       where: { id: subSurveyActivityId },
@@ -199,6 +190,24 @@ export class SurveyActivityService {
     });
   }
 
+  async getAllSPJ(): Promise<SubmitSPJ[]> {
+    return this.prisma.submitSPJ.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { user: true, subSurveyActivity: true },
+    });
+  }
+
+  async updateSPJStatus(input: UpdateSPJStatusInput): Promise<SubmitSPJ> {
+    return this.prisma.submitSPJ.update({
+      where: { id: input.id },
+      data: {
+        submitState: input.status,
+        verifyNote: input.verifyNote ?? undefined,
+        approveDate: input.status === 'Disetujui' ? new Date() : undefined,
+      },
+    });
+  }
+
   async createJobLetter(input: CreateJobLetterInput): Promise<JobLetter> {
     return this.prisma.jobLetter.create({
       data: {
@@ -206,6 +215,26 @@ export class SurveyActivityService {
         subSurveyActivityId: input.subSurveyActivityId,
         region: input.region,
         submitDate: input.submitDate ? new Date(input.submitDate) : undefined,
+      },
+    });
+  }
+
+  async getAllJobLetters(): Promise<JobLetter[]> {
+    return this.prisma.jobLetter.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { user: true, subSurveyActivity: true },
+    });
+  }
+
+  async updateJobLetterStatus(
+    input: UpdateJobLetterStatusInput,
+  ): Promise<JobLetter> {
+    return this.prisma.jobLetter.update({
+      where: { id: input.id },
+      data: {
+        agreeState: input.status,
+        rejectNote: input.rejectNote ?? undefined,
+        approveDate: input.status === 'Disetujui' ? new Date() : undefined,
       },
     });
   }

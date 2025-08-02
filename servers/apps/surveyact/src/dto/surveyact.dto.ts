@@ -1,4 +1,5 @@
 import { InputType, Field, ID } from '@nestjs/graphql';
+import { AgreeState } from '@prisma/client';
 import { IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 @InputType()
@@ -145,6 +146,18 @@ export class CreateSPJInput {
 }
 
 @InputType()
+export class UpdateSPJStatusInput {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => AgreeState)
+  status: AgreeState;
+
+  @Field({ nullable: true })
+  verifyNote?: string;
+}
+
+@InputType()
 export class CreateJobLetterInput {
   @Field(() => ID)
   @IsUUID()
@@ -162,4 +175,16 @@ export class CreateJobLetterInput {
   @IsOptional()
   @IsDateString()
   submitDate?: string;
+}
+
+@InputType()
+export class UpdateJobLetterStatusInput {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => AgreeState)
+  status: AgreeState;
+
+  @Field({ nullable: true })
+  rejectNote?: string;
 }

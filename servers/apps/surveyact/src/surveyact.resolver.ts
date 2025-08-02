@@ -1,4 +1,11 @@
-import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { SurveyActivityService } from './surveyacts.service';
 import {
   DistrictType,
@@ -16,12 +23,15 @@ import {
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
   CreateUserProgressDTO,
+  UpdateJobLetterStatusInput,
+  UpdateSPJStatusInput,
   UpdateSubSurveyActivityDTO,
   UpdateSurveyActivityDTO,
   UpdateUserProgressDTO,
 } from './dto/surveyact.dto';
 import { User } from 'apps/users/src/entities/users.entity';
-import { UserProgress } from '@prisma/client';
+import { JobLetter, SubmitSPJ, UserProgress } from '@prisma/client';
+import { UserType } from 'apps/users/src/types/users.types';
 
 @Resolver(() => SurveyActivityType)
 export class SurveyActivityResolver {
@@ -84,8 +94,8 @@ export class SurveyActivityResolver {
     return this.service.createUserSurveyProgress(input);
   }
 
-  @ResolveField(() => User, { nullable: true })
-  async user(@Parent() progress: UserProgress): Promise<User | null> {
+  @ResolveField(() => UserType, { nullable: true })
+  async user(@Parent() progress: UserProgress): Promise<UserType | null> {
     const userId = progress.userId;
     try {
       // Ambil data user dari microservice lain (misalnya HTTP)
@@ -93,6 +103,11 @@ export class SurveyActivityResolver {
     } catch (e) {
       return null;
     }
+  }
+
+  @ResolveField(() => UserType, { nullable: true })
+  async userAdministrator(@Parent() spj: SubmitSPJ): Promise<UserType> {
+    return this.service.getUser(spj.userId);
   }
 
   @Query(() => SubSurveyProgressType)
@@ -106,7 +121,9 @@ export class SurveyActivityResolver {
   async userProgressBySubSurveyActivityId(
     @Args('subSurveyActivityId') subSurveyActivityId: string,
   ) {
-    return this.service.getUserProgressBySubSurveyActivityId(subSurveyActivityId);
+    return this.service.getUserProgressBySubSurveyActivityId(
+      subSurveyActivityId,
+    );
   }
 
   @Mutation(() => UserProgressType)
@@ -128,16 +145,40 @@ export class SurveyActivityResolver {
   }
 
   @Mutation(() => SubmitSPJType)
-async createSPJ(
-  @Args('input') input: CreateSPJInput
-): Promise<SubmitSPJType> {
-  return this.service.createSPJ(input);
-}
+  async createSPJ(
+    @Args('input') input: CreateSPJInput,
+  ): Promise<SubmitSPJType> {
+    return this.service.createSPJ(input);
+  }
 
-@Mutation(() => JobLetterType)
-async createJobLetter(
-  @Args('input') input: CreateJobLetterInput
-): Promise<JobLetterType> {
-  return this.service.createJobLetter(input);
-}
+  @Query(() => [SubmitSPJType])
+  async getAllSPJ(): Promise<SubmitSPJ[]> {
+    return this.service.getAllSPJ();
+  }
+
+  @Mutation(() => SubmitSPJType)
+  async updateSPJStatus(
+    @Args('input') input: UpdateSPJStatusInput,
+  ): Promise<SubmitSPJ> {
+    return this.service.updateSPJStatus(input);
+  }
+
+  @Mutation(() => JobLetterType)
+  async createJobLetter(
+    @Args('input') input: CreateJobLetterInput,
+  ): Promise<JobLetterType> {
+    return this.service.createJobLetter(input);
+  }
+
+  @Query(() => [JobLetterType])
+  async getAllJobLetters(): Promise<JobLetter[]> {
+    return this.service.getAllJobLetters();
+  }
+
+  @Mutation(() => JobLetterType)
+  async updateJobLetterStatus(
+    @Args('input') input: UpdateJobLetterStatusInput,
+  ): Promise<JobLetter> {
+    return this.service.updateJobLetterStatus(input);
+  }
 }
