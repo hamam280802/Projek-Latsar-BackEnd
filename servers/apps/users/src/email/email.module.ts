@@ -19,7 +19,7 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
           },
         },
         defaults: {
-          from: 'SiCepat',
+          from: 'SIMANIS',
         },
         template: {
           dir: join(__dirname, '../../../../servers/email-templates'),

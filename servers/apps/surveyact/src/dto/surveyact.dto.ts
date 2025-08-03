@@ -122,7 +122,7 @@ export class CreateDistrictDTO {
 } 
 
 @InputType()
-export class CreateSPJInput {
+export class CreateSPJDTO {
   @Field(() => ID)
   @IsUUID()
   userId: string;
@@ -146,7 +146,7 @@ export class CreateSPJInput {
 }
 
 @InputType()
-export class UpdateSPJStatusInput {
+export class UpdateSPJStatusDTO {
   @Field(() => ID)
   id: string;
 
@@ -158,7 +158,7 @@ export class UpdateSPJStatusInput {
 }
 
 @InputType()
-export class CreateJobLetterInput {
+export class CreateJobLetterDTO {
   @Field(() => ID)
   @IsUUID()
   userId: string;
@@ -178,7 +178,7 @@ export class CreateJobLetterInput {
 }
 
 @InputType()
-export class UpdateJobLetterStatusInput {
+export class UpdateJobLetterStatusDTO {
   @Field(() => ID)
   id: string;
 

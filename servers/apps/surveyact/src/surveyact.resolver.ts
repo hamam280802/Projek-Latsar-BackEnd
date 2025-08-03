@@ -18,13 +18,13 @@ import {
 } from './types/surveyact.types';
 import {
   CreateDistrictDTO,
-  CreateJobLetterInput,
-  CreateSPJInput,
+  CreateJobLetterDTO,
+  CreateSPJDTO,
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
   CreateUserProgressDTO,
-  UpdateJobLetterStatusInput,
-  UpdateSPJStatusInput,
+  UpdateJobLetterStatusDTO,
+  UpdateSPJStatusDTO,
   UpdateSubSurveyActivityDTO,
   UpdateSurveyActivityDTO,
   UpdateUserProgressDTO,
@@ -82,6 +82,11 @@ export class SurveyActivityResolver {
     return this.service.findSubSurveyActivityTypeBySurveyActivityId(
       surveyActivityId,
     );
+  }
+
+  @Query(() => [SubSurveyActivityType], { name: 'allSubSurveyActivities' })
+  async allSubSurveyActivities() {
+    return this.service.findAllSubSurveyActivity();
   }
 
   @Query(() => SubSurveyActivityType, { name: 'subSurveyActivityBySlug' })
@@ -146,7 +151,7 @@ export class SurveyActivityResolver {
 
   @Mutation(() => SubmitSPJType)
   async createSPJ(
-    @Args('input') input: CreateSPJInput,
+    @Args('input') input: CreateSPJDTO,
   ): Promise<SubmitSPJType> {
     return this.service.createSPJ(input);
   }
@@ -158,14 +163,14 @@ export class SurveyActivityResolver {
 
   @Mutation(() => SubmitSPJType)
   async updateSPJStatus(
-    @Args('input') input: UpdateSPJStatusInput,
+    @Args('input') input: UpdateSPJStatusDTO,
   ): Promise<SubmitSPJ> {
     return this.service.updateSPJStatus(input);
   }
 
   @Mutation(() => JobLetterType)
   async createJobLetter(
-    @Args('input') input: CreateJobLetterInput,
+    @Args('input') input: CreateJobLetterDTO,
   ): Promise<JobLetterType> {
     return this.service.createJobLetter(input);
   }
@@ -177,7 +182,7 @@ export class SurveyActivityResolver {
 
   @Mutation(() => JobLetterType)
   async updateJobLetterStatus(
-    @Args('input') input: UpdateJobLetterStatusInput,
+    @Args('input') input: UpdateJobLetterStatusDTO,
   ): Promise<JobLetter> {
     return this.service.updateJobLetterStatus(input);
   }

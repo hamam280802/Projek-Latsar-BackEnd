@@ -124,7 +124,7 @@ function Admin() {
 
   const { data: userData } = useQuery(GET_ALL_USERS);
 
-  const [ fetchUserProgress, { data: userProgressData }] = useLazyQuery(
+  const [fetchUserProgress, { data: userProgressData }] = useLazyQuery(
     GET_USER_PROGRESS_BY_SUBSURVEY_ID
   );
 
@@ -390,7 +390,7 @@ function Admin() {
       });
     }
   }, [updateStateF2.surveyActivityId, fetchSubForSubSurveys]);
-  
+
   useEffect(() => {
     if (userProgressForm.surveyActivityId) {
       fetchSubForSubmitUP({
@@ -430,8 +430,10 @@ function Admin() {
 
   return (
     <div className="px-8 py-4 space-y-4 font-Poppins">
+      {/* Form Tambah Tim */}
       <div className="bg-orange-50 rounded-lg p-4 shadow-md">
         <form onSubmit={handleSubmitSurveyAct} className="space-y-4">
+          <h3 className="text-lg font-bold">Tambahkan Tim</h3>
           <div>
             <label htmlFor="name" className="block text-sm font-bold mb-2">
               Nama Tim
@@ -465,45 +467,63 @@ function Admin() {
           </button>
         </form>
       </div>
+      {/* Form Update Tim */}
       <div className="bg-blue-50 rounded-lg p-4 shadow-md">
         <form onSubmit={handleUpdateSurveyAct} className="space-y-4">
           <h3 className="text-lg font-bold">Update Tim</h3>
-          <select
-            id="surveyActivityId"
-            value={updateStateF1.surveyActivityId}
-            onChange={handleChangeUpdateF1}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="">-- Pilih Tim --</option>
-            {data?.allSurveyActivities.map((s: SurveyActivity) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            id="name"
-            placeholder="Nama baru"
-            value={updateStateF1.name}
-            onChange={handleChangeUpdateF1}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="text"
-            id="slug"
-            placeholder="Slug baru"
-            value={updateStateF1.slug}
-            onChange={handleChangeUpdateF1}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
+          <div>
+            <label htmlFor="name" className="block text-sm font-bold mb-2">
+              Nama Tim
+            </label>
+            <select
+              id="surveyActivityId"
+              value={updateStateF1.surveyActivityId}
+              onChange={handleChangeUpdateF1}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">-- Pilih Tim --</option>
+              {data?.allSurveyActivities.map((s: SurveyActivity) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="name" className="block text-sm font-bold mb-2">
+              Nama Tim Baru
+            </label>
+            <input
+              type="text"
+              id="name"
+              placeholder="Nama baru"
+              value={updateStateF1.name}
+              onChange={handleChangeUpdateF1}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label htmlFor="slug" className="block text-sm font-bold mb-2">
+              Nama Slug Baru
+            </label>
+            <input
+              type="text"
+              id="slug"
+              placeholder="Slug baru"
+              value={updateStateF1.slug}
+              onChange={handleChangeUpdateF1}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
           <button type="submit" className={`${styles.button} my-2 text-white`}>
             Update Tim
           </button>
         </form>
       </div>
+      {/* Form Tambah Kegiatan */}
       <div className="bg-orange-50 rounded-lg p-4 shadow-md">
         <form onSubmit={handleSubmitSubSurveyAct} className="space-y-4">
+          <h3 className="text-lg font-bold">Tambah Kegiatan</h3>
           <div>
             <label htmlFor="name" className="block text-sm font-bold mb-2">
               Nama Kegiatan
@@ -600,231 +620,403 @@ function Admin() {
           </button>
         </form>
       </div>
+      {/* Form Update Kegiatan */}
       <div className="bg-blue-50 rounded-lg p-4 shadow-md">
         <form onSubmit={handleUpdateSubSurveyAct} className="space-y-4">
           <h3 className="text-lg font-bold">Update Kegiatan</h3>
-          <select
-            id="surveyActivityId"
-            value={updateStateF2.surveyActivityId}
-            onChange={handleChangeUpdateF2}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="">-- Pilih Tim --</option>
-            {data?.allSurveyActivities.map((s: SurveyActivity) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-          <select
-            id="subSurveyActivityId"
-            value={updateStateF2.subSurveyActivityId}
-            onChange={handleChangeUpdateF2}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="">-- Pilih Kegiatan --</option>
-            {SubSurveydata?.subSurveyActivityById?.map((sub: SubSurveyActivity) => (
-              <option key={sub.id} value={sub.id}>
-                {sub.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            id="name"
-            placeholder="Nama baru"
-            value={updateStateF2.name}
-            onChange={handleChangeUpdateF2}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="text"
-            id="slug"
-            placeholder="Slug baru"
-            value={updateStateF2.slug}
-            onChange={handleChangeUpdateF2}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="date"
-            id="startDate"
-            value={updateStateF2.startDate}
-            onChange={handleChangeUpdateF2}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="date"
-            id="endDate"
-            value={updateStateF2.endDate}
-            onChange={handleChangeUpdateF2}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="number"
-            id="targetSample"
-            value={updateStateF2.targetSample}
-            onChange={handleChangeUpdateF2}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
+          <div>
+            <label
+              htmlFor="surveyActivityId"
+              className="block text-sm font-bold mb-2"
+            >
+              Tim Penyelenggara Kegiatan
+            </label>
+            <select
+              id="surveyActivityId"
+              value={updateStateF2.surveyActivityId}
+              onChange={handleChangeUpdateF2}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">-- Pilih Tim --</option>
+              {data?.allSurveyActivities.map((s: SurveyActivity) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="subSurveyActivityId"
+              className="block text-sm font-bold mb-2"
+            >
+              Kegiatan Survei
+            </label>
+            <select
+              id="subSurveyActivityId"
+              value={updateStateF2.subSurveyActivityId}
+              onChange={handleChangeUpdateF2}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">-- Pilih Kegiatan --</option>
+              {SubSurveydata?.subSurveyActivityById?.map(
+                (sub: SubSurveyActivity) => (
+                  <option key={sub.id} value={sub.id}>
+                    {sub.name}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="name" className="block text-sm font-bold mb-2">
+              Nama Kegiatan Baru
+            </label>
+            <input
+              type="text"
+              id="name"
+              placeholder="Nama baru"
+              value={updateStateF2.name}
+              onChange={handleChangeUpdateF2}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label htmlFor="slug" className="block text-sm font-bold mb-2">
+              Nama Slug Baru
+            </label>
+            <input
+              type="text"
+              id="slug"
+              placeholder="Slug baru"
+              value={updateStateF2.slug}
+              onChange={handleChangeUpdateF2}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label htmlFor="startDate" className="block text-sm font-bold mb-2">
+              Tanggal Mulai
+            </label>
+            <input
+              type="date"
+              id="startDate"
+              value={updateStateF2.startDate}
+              onChange={handleChangeUpdateF2}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label htmlFor="endDate" className="block text-sm font-bold mb-2">
+              Tanggal Selesai
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              value={updateStateF2.endDate}
+              onChange={handleChangeUpdateF2}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="targetSample"
+              className="block text-sm font-bold mb-2"
+            >
+              Target Sample
+            </label>
+            <input
+              type="number"
+              id="targetSample"
+              value={updateStateF2.targetSample}
+              onChange={handleChangeUpdateF2}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
           <button type="submit" className={`${styles.button} my-2 text-white`}>
             Update Kegiatan
           </button>
         </form>
       </div>
+      {/* Form Tambah UserProgress */}
       <div className="bg-orange-50 rounded-lg p-4 shadow-md">
-        <h3 className="text-lg font-bold">Tambah UserProgress</h3>
         <form onSubmit={handleSubmitUserProgress} className="space-y-3">
-          <select
-            id="surveyActivityId"
-            value={userProgressForm.surveyActivityId}
-            onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="">-- Pilih Tim --</option>
-            {data?.allSurveyActivities.map((s: SurveyActivity) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-          <select
-            id="subSurveyActivityId"
-            value={userProgressForm.subSurveyActivityId}
-            onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="">-- Pilih Kegiatan --</option>
-            {SubmitUPData?.subSurveyActivityById?.map((sub: SubSurveyActivity) => (
-              <option key={sub.id} value={sub.id}>
-                {sub.name}
-              </option>
-            ))}
-          </select>
-          <select
-            id="userId"
-            value={userProgressForm.userId}
-            onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="">-- Pilih Pengguna --</option>
-            {userData?.getUsers?.map((user: User) => (
-              <option key={user.id} value={user.id}>
-                {user.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            id="totalAssigned"
-            placeholder="Total Assigned"
-            value={userProgressForm.totalAssigned}
-            onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="number"
-            id="submitCount"
-            placeholder="Submit Count"
-            value={userProgressForm.submitCount}
-            onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="number"
-            id="approvedCount"
-            placeholder="Approved Count"
-            value={userProgressForm.approvedCount}
-            onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="number"
-            id="rejectedCount"
-            placeholder="Rejected Count"
-            value={userProgressForm.rejectedCount}
-            onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="date"
-            id="lastUpdated"
-            value={userProgressForm.lastUpdated}
-            onChange={handleChangeUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
+          <h3 className="text-lg font-bold">Tambah UserProgress</h3>
+          <div>
+            <label
+              htmlFor="surveyActivityId"
+              className="block text-sm font-bold mb-2"
+            >
+              Tim Penyelenggara Kegiatan
+            </label>
+            <select
+              id="surveyActivityId"
+              value={userProgressForm.surveyActivityId}
+              onChange={handleChangeUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">-- Pilih Tim --</option>
+              {data?.allSurveyActivities.map((s: SurveyActivity) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="subSurveyActivityId"
+              className="block text-sm font-bold mb-2"
+            >
+              Kegiatan Survei
+            </label>
+            <select
+              id="subSurveyActivityId"
+              value={userProgressForm.subSurveyActivityId}
+              onChange={handleChangeUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">-- Pilih Kegiatan --</option>
+              {SubmitUPData?.subSurveyActivityById?.map(
+                (sub: SubSurveyActivity) => (
+                  <option key={sub.id} value={sub.id}>
+                    {sub.name}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="userId" className="block text-sm font-bold mb-2">
+              Petugas
+            </label>
+            <select
+              id="userId"
+              value={userProgressForm.userId}
+              onChange={handleChangeUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">-- Pilih Pengguna --</option>
+              {userData?.getUsers?.map((user: User) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="totalAssigned"
+              className="block text-sm font-bold mb-2"
+            >
+              Total Assigned
+            </label>
+            <input
+              type="number"
+              id="totalAssigned"
+              placeholder="Total Assigned"
+              value={userProgressForm.totalAssigned}
+              onChange={handleChangeUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="submitCount"
+              className="block text-sm font-bold mb-2"
+            >
+              Submit Count
+            </label>
+            <input
+              type="number"
+              id="submitCount"
+              placeholder="Submit Count"
+              value={userProgressForm.submitCount}
+              onChange={handleChangeUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="approvedCount"
+              className="block text-sm font-bold mb-2"
+            >
+              Approved Count
+            </label>
+            <input
+              type="number"
+              id="approvedCount"
+              placeholder="Approved Count"
+              value={userProgressForm.approvedCount}
+              onChange={handleChangeUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="rejectedCount"
+              className="block text-sm font-bold mb-2"
+            >
+              Rejected Count
+            </label>
+            <input
+              type="number"
+              id="rejectedCount"
+              placeholder="Rejected Count"
+              value={userProgressForm.rejectedCount}
+              onChange={handleChangeUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="lastUpdated"
+              className="block text-sm font-bold mb-2"
+            >
+              Last Updated
+            </label>
+            <input
+              type="date"
+              id="lastUpdated"
+              value={userProgressForm.lastUpdated}
+              onChange={handleChangeUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
           <button type="submit" className={`${styles.button} my-2 text-white`}>
             Tambah
           </button>
         </form>
       </div>
+      {/* Form Update UserProgress */}
       <div className="bg-blue-100 rounded-lg p-4 shadow-md">
-        <h3 className="text-lg font-bold">Update UserProgress</h3>
         <form onSubmit={handleUpdateUserProgress} className="space-y-3">
-          <select
-            id="subSurveyActivityId"
-            value={updateUserProgressForm.subSurveyActivityId}
-            onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="">-- Pilih Kegiatan --</option>
-            {UpdateUPData?.subSurveyActivityById?.map((sub: SubSurveyActivity) => (
-              <option key={sub.id} value={sub.id}>
-                {sub.name}
-              </option>
-            ))}
-          </select>
-          <select
-            id="userProgressId"
-            value={updateUserProgressForm.userProgressId}
-            onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="">-- Pilih UserProgress --</option>
-            {userProgressData?.userProgressBySubSurveyActivityId?.map((up: UserProgressWithUser) => (
-              <option key={up.id} value={up.id}>
-                {up.user?.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            id="totalAssigned"
-            placeholder="Total Assigned"
-            value={updateUserProgressForm.totalAssigned}
-            onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="number"
-            id="submitCount"
-            placeholder="Submit Count"
-            value={updateUserProgressForm.submitCount}
-            onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="number"
-            id="approvedCount"
-            placeholder="Approved Count"
-            value={updateUserProgressForm.approvedCount}
-            onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="number"
-            id="rejectedCount"
-            placeholder="Rejected Count"
-            value={updateUserProgressForm.rejectedCount}
-            onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
-          <input
-            type="date"
-            id="lastUpdated"
-            value={updateUserProgressForm.lastUpdated}
-            onChange={handleChangeUpdateUserProgress}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
+          <h3 className="text-lg font-bold">Update UserProgress</h3>
+          <div>
+            <label
+              htmlFor="subSurveyActivityId"
+              className="block text-sm font-bold mb-2"
+            >
+              Kegiatan Survei
+            </label>
+            <select
+              id="subSurveyActivityId"
+              value={updateUserProgressForm.subSurveyActivityId}
+              onChange={handleChangeUpdateUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">-- Pilih Kegiatan --</option>
+              {UpdateUPData?.subSurveyActivityById?.map(
+                (sub: SubSurveyActivity) => (
+                  <option key={sub.id} value={sub.id}>
+                    {sub.name}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="userProgressId"
+              className="block text-sm font-bold mb-2"
+            >
+              Petugas
+            </label>
+            <select
+              id="userProgressId"
+              value={updateUserProgressForm.userProgressId}
+              onChange={handleChangeUpdateUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">-- Pilih UserProgress --</option>
+              {userProgressData?.userProgressBySubSurveyActivityId?.map(
+                (up: UserProgressWithUser) => (
+                  <option key={up.id} value={up.id}>
+                    {up.user?.name}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="totalAssigned"
+              className="block text-sm font-bold mb-2"
+            >
+              Total Assigned
+            </label>
+            <input
+              type="number"
+              id="totalAssigned"
+              placeholder="Total Assigned"
+              value={updateUserProgressForm.totalAssigned}
+              onChange={handleChangeUpdateUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="submitCount"
+              className="block text-sm font-bold mb-2"
+            >
+              Submit Count
+            </label>
+            <input
+              type="number"
+              id="submitCount"
+              placeholder="Submit Count"
+              value={updateUserProgressForm.submitCount}
+              onChange={handleChangeUpdateUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="approvedCount"
+              className="block text-sm font-bold mb-2"
+            >
+              Approved Count
+            </label>
+            <input
+              type="number"
+              id="approvedCount"
+              placeholder="Approved Count"
+              value={updateUserProgressForm.approvedCount}
+              onChange={handleChangeUpdateUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="rejectedCount"
+              className="block text-sm font-bold mb-2"
+            >
+              Rejected Count
+            </label>
+            <input
+              type="number"
+              id="rejectedCount"
+              placeholder="Rejected Count"
+              value={updateUserProgressForm.rejectedCount}
+              onChange={handleChangeUpdateUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="lastUpdated"
+              className="block text-sm font-bold mb-2"
+            >
+              Last Updated
+            </label>
+            <input
+              type="date"
+              id="lastUpdated"
+              value={updateUserProgressForm.lastUpdated}
+              onChange={handleChangeUpdateUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
           <button type="submit" className={`${styles.button} my-2 text-white`}>
             Update
           </button>

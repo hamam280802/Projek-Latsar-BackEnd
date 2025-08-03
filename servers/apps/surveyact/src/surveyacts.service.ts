@@ -2,13 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
   CreateDistrictDTO,
-  CreateJobLetterInput,
-  CreateSPJInput,
+  CreateJobLetterDTO,
+  CreateSPJDTO,
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
   CreateUserProgressDTO,
-  UpdateJobLetterStatusInput,
-  UpdateSPJStatusInput,
+  UpdateJobLetterStatusDTO,
+  UpdateSPJStatusDTO,
   UpdateSubSurveyActivityDTO,
   UpdateSurveyActivityDTO,
   UpdateUserProgressDTO,
@@ -92,6 +92,10 @@ export class SurveyActivityService {
     return this.prisma.subSurveyActivity.findMany({
       where: { surveyActivityId },
     });
+  }
+
+  async findAllSubSurveyActivity() {
+    return this.prisma.subSurveyActivity.findMany();
   }
 
   async createUserSurveyProgress(input: CreateUserProgressDTO) {
@@ -178,7 +182,7 @@ export class SurveyActivityService {
     return this.prisma.district.findMany();
   }
 
-  async createSPJ(input: CreateSPJInput): Promise<SubmitSPJ> {
+  async createSPJ(input: CreateSPJDTO): Promise<SubmitSPJ> {
     return this.prisma.submitSPJ.create({
       data: {
         userId: input.userId,
@@ -197,7 +201,7 @@ export class SurveyActivityService {
     });
   }
 
-  async updateSPJStatus(input: UpdateSPJStatusInput): Promise<SubmitSPJ> {
+  async updateSPJStatus(input: UpdateSPJStatusDTO): Promise<SubmitSPJ> {
     return this.prisma.submitSPJ.update({
       where: { id: input.id },
       data: {
@@ -208,7 +212,7 @@ export class SurveyActivityService {
     });
   }
 
-  async createJobLetter(input: CreateJobLetterInput): Promise<JobLetter> {
+  async createJobLetter(input: CreateJobLetterDTO): Promise<JobLetter> {
     return this.prisma.jobLetter.create({
       data: {
         userId: input.userId,
@@ -227,7 +231,7 @@ export class SurveyActivityService {
   }
 
   async updateJobLetterStatus(
-    input: UpdateJobLetterStatusInput,
+    input: UpdateJobLetterStatusDTO,
   ): Promise<JobLetter> {
     return this.prisma.jobLetter.update({
       where: { id: input.id },

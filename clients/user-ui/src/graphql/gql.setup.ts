@@ -17,7 +17,7 @@ const splitLink = split(
       definition.kind === 'OperationDefinition' &&
       typeof definition.name?.value === "string"
     ) {
-      return definition.name.value.toLowerCase().includes('survey');
+      return definition.name.value.toLowerCase().includes('survey') || definition.name.value.toLowerCase().includes('spj') || definition.name.value.toLowerCase().includes('jobletter');
     }
     return false; // fallback, selalu return boolean
   },

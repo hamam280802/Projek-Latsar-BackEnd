@@ -42,7 +42,7 @@ export const SideBar = () => {
           </div>
         ) : (
           <h1 className={`w-[90%] m-auto h-[44px] flex px-16 pb-4 text-2xl text-white ${styles.logo}`}>
-                SiCepat
+                SIMANIS
           </h1>
         )}
         <NavItems isMinimized={isMinimized}/>
