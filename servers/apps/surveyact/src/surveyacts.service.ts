@@ -98,6 +98,15 @@ export class SurveyActivityService {
     return this.prisma.subSurveyActivity.findMany();
   }
 
+  async findSubSurveyActivityById(subSurveyActivityId: string) {
+    const subSurveyActivity = await this.prisma.subSurveyActivity.findUnique({
+      where: { id: subSurveyActivityId },
+    });
+    if (!subSurveyActivity)
+      throw new NotFoundException('SubSurveyActivity not found');
+    return subSurveyActivity;
+  }
+
   async createUserSurveyProgress(input: CreateUserProgressDTO) {
     return this.prisma.userProgress.create({
       data: input,

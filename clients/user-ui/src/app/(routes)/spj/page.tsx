@@ -40,6 +40,7 @@ function SPJ() {
     endDate: string;
     submitState: string;
     submitDate: string;
+    approveDate: string;
     eviDocumentUrl: string;
     verifyNote: string;
     user: User;
@@ -67,12 +68,8 @@ function SPJ() {
   ] = useMutation(UPDATE_SPJ_STATUS);
   const { data: userData } = useQuery(GET_ALL_USERS);
   const { data: subSurveyData } = useQuery(GET_ALL_OF_SUB_SURVEY_ACTIVITIES);
-  const { data: SPJData, loading: SPJLoading, error: SPJError } = useQuery(GET_ALL_SPJ);
+  const { data: SPJData } = useQuery(GET_ALL_SPJ);
   
-console.log("SPJData:", SPJData);
-console.log("SPJ loading:", SPJLoading);
-console.log("SPJ error:", SPJError);
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {

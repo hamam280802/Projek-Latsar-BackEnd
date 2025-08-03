@@ -1,4 +1,10 @@
-import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache, split } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloLink,
+  createHttpLink,
+  InMemoryCache,
+  split,
+} from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
 import Cookies from "js-cookie";
 
@@ -13,18 +19,18 @@ const surveyLink = createHttpLink({
 const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
-
+    console.log("Running query:", definition.name?.value);
     if (
-      definition.kind === 'OperationDefinition' &&
-      definition.name &&
-      typeof definition.name.value === 'string'
+      definition.kind === "OperationDefinition" &&
+      typeof definition.name?.value === "string"
     ) {
-      const name = definition.name.value.toLowerCase();
-      console.log("Running query:", name); // Harus tampil seperti "getallspj"
-      return name.includes("survey") || name.includes("spj") || name.includes("jobletter");
+      return (
+        definition.name.value.toLowerCase().includes("survey") ||
+        definition.name.value.toLowerCase().includes("spj") ||
+        definition.name.value.toLowerCase().includes("jobletter")
+      );
     }
-
-    return false; // fallback ke userLink
+    return false; // fallback, selalu return boolean
   },
   surveyLink,
   userLink
@@ -34,8 +40,8 @@ const splitLink = split(
 const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
     headers: {
-      accesstoken: Cookies.get('access_token'),
-      refreshtoken: Cookies.get('refresh_token')
+      accesstoken: Cookies.get("access_token"),
+      refreshtoken: Cookies.get("refresh_token"),
     },
   });
   return forward(operation);

@@ -89,6 +89,11 @@ export class SurveyActivityResolver {
     return this.service.findAllSubSurveyActivity();
   }
 
+  @ResolveField(() => SubSurveyActivityType, { nullable: true })
+async subSurveyActivity(@Parent() spj: SubmitSPJ): Promise<SubSurveyActivityType> {
+  return this.service.findSubSurveyActivityById(spj.subSurveyActivityId);
+}
+
   @Query(() => SubSurveyActivityType, { name: 'subSurveyActivityBySlug' })
   async subSurveyActivityBySlug(@Args('slug') slug: string) {
     return this.service.findSubSurveyActivityBySlug(slug);
