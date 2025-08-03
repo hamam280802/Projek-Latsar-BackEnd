@@ -1,7 +1,8 @@
-import { gql, useQuery } from "@apollo/client";
+"use client"
+import { DocumentNode, gql } from "@apollo/client";
 
-export const GET_ALL_SPJ = gql`
-  query GetSPJs {
+export const GET_ALL_SPJ: DocumentNode = gql`
+  query GetAllSPJ {
     getAllSPJ {
       id
       userId

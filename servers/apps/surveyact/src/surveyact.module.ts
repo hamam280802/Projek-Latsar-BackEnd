@@ -2,9 +2,20 @@ import { Module } from '@nestjs/common';
 import { SurveyActivityService } from './surveyacts.service';
 import { SurveyActivityResolver } from './surveyact.resolver';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { GraphQLModule } from '@nestjs/graphql';
+import { GraphQLModule, registerEnumType } from '@nestjs/graphql';
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 import { HttpModule } from '@nestjs/axios';
+import { AgreeState, StatusST } from '@prisma/client';
+
+registerEnumType(AgreeState, {
+  name: 'AgreeState',
+  description: 'Status pengajuan SPJ',
+});
+
+registerEnumType(StatusST, {
+  name: 'StatusST',
+  description: 'Status surat tugas',
+});
 
 @Module({
   imports: [

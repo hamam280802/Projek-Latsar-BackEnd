@@ -13,13 +13,18 @@ const surveyLink = createHttpLink({
 const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
+
     if (
       definition.kind === 'OperationDefinition' &&
-      typeof definition.name?.value === "string"
+      definition.name &&
+      typeof definition.name.value === 'string'
     ) {
-      return definition.name.value.toLowerCase().includes('survey') || definition.name.value.toLowerCase().includes('spj') || definition.name.value.toLowerCase().includes('jobletter');
+      const name = definition.name.value.toLowerCase();
+      console.log("Running query:", name); // Harus tampil seperti "getallspj"
+      return name.includes("survey") || name.includes("spj") || name.includes("jobletter");
     }
-    return false; // fallback, selalu return boolean
+
+    return false; // fallback ke userLink
   },
   surveyLink,
   userLink

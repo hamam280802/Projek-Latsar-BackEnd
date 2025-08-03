@@ -123,6 +123,9 @@ export class SubmitSPJType {
   @Field(() => ID)
   userId: string;
 
+  @Field(() => SubSurveyActivityType)
+  subSurveyActivity?: SubSurveyActivityType;
+
   @Field(() => ID)
   subSurveyActivityId: string;
 

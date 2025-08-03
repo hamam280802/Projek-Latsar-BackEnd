@@ -1,6 +1,14 @@
-import { InputType, Field, ID } from '@nestjs/graphql';
-import { AgreeState } from '@prisma/client';
+import { InputType, Field, ID, registerEnumType } from '@nestjs/graphql';
+import { AgreeState, StatusST } from '@prisma/client';
 import { IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+
+registerEnumType(AgreeState, {
+  name: 'AgreeState', // ini akan muncul di GraphQL schema
+});
+
+registerEnumType(StatusST, {
+  name: 'StatusST',
+})
 
 @InputType()
 export class CreateSurveyActivityDTO {

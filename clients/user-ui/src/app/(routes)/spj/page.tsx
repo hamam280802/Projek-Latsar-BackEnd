@@ -38,8 +38,9 @@ function SPJ() {
     subSurveyActivityId: string;
     startDate: string;
     endDate: string;
+    submitState: string;
+    submitDate: string;
     eviDocumentUrl: string;
-    status: string;
     verifyNote: string;
     user: User;
     subSurveyActivity: SubSurveyActivity;
@@ -66,8 +67,11 @@ function SPJ() {
   ] = useMutation(UPDATE_SPJ_STATUS);
   const { data: userData } = useQuery(GET_ALL_USERS);
   const { data: subSurveyData } = useQuery(GET_ALL_OF_SUB_SURVEY_ACTIVITIES);
-  const { data: spjData } = useQuery(GET_ALL_SPJ);
-  console.log("SPJ DATA", spjData);
+  const { data: SPJData, loading: SPJLoading, error: SPJError } = useQuery(GET_ALL_SPJ);
+  
+console.log("SPJData:", SPJData);
+console.log("SPJ loading:", SPJLoading);
+console.log("SPJ error:", SPJError);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -280,7 +284,7 @@ function SPJ() {
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
               <option value="">-- Pilih SPJ --</option>
-              {spjData?.getAllSPJ?.map((spj: SPJ) => (
+              {SPJData?.getAllSPJ?.map((spj: SPJ) => (
                 <option key={spj.id} value={spj.id}>
                   {spj?.user?.name}-{spj?.subSurveyActivity?.name}
                 </option>
