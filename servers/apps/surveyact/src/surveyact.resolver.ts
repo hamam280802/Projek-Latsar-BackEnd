@@ -89,11 +89,6 @@ export class SurveyActivityResolver {
     return this.service.findAllSubSurveyActivity();
   }
 
-  @ResolveField(() => SubSurveyActivityType, { nullable: true })
-async subSurveyActivity(@Parent() spj: SubmitSPJ): Promise<SubSurveyActivityType> {
-  return this.service.findSubSurveyActivityById(spj.subSurveyActivityId);
-}
-
   @Query(() => SubSurveyActivityType, { name: 'subSurveyActivityBySlug' })
   async subSurveyActivityBySlug(@Args('slug') slug: string) {
     return this.service.findSubSurveyActivityBySlug(slug);
@@ -155,14 +150,12 @@ async subSurveyActivity(@Parent() spj: SubmitSPJ): Promise<SubSurveyActivityType
   }
 
   @Mutation(() => SubmitSPJType)
-  async createSPJ(
-    @Args('input') input: CreateSPJDTO,
-  ): Promise<SubmitSPJType> {
+  async createSPJ(@Args('input') input: CreateSPJDTO): Promise<SubmitSPJType> {
     return this.service.createSPJ(input);
   }
 
   @Query(() => [SubmitSPJType])
-  async getAllSPJ(): Promise<SubmitSPJ[]> {
+  async getAllSPJ() {
     return this.service.getAllSPJ();
   }
 

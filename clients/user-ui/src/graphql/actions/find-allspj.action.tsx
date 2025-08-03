@@ -17,15 +17,10 @@ export const GET_ALL_SPJ: DocumentNode = gql`
       user {
         id
         name
-        email
       }
       subSurveyActivity {
         id
         name
-        description
-        startDate
-        endDate
-        surveyActivityId
       }
     }
   }

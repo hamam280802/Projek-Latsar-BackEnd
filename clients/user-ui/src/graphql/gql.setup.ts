@@ -19,7 +19,6 @@ const surveyLink = createHttpLink({
 const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
-    console.log("Running query:", definition.name?.value);
     if (
       definition.kind === "OperationDefinition" &&
       typeof definition.name?.value === "string"

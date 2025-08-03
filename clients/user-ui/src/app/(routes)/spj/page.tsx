@@ -43,8 +43,17 @@ function SPJ() {
     approveDate: string;
     eviDocumentUrl: string;
     verifyNote: string;
-    user: User;
-    subSurveyActivity: SubSurveyActivity;
+  };
+
+  type SPJWithUserNSubSurvey = SPJ & {
+    user?: {
+      id: string;
+      name: string;
+    };
+    subSurveyActivity?: {
+      id: string;
+      name: string;
+    };
   };
 
   const [input, setInput] = useState({
@@ -61,6 +70,12 @@ function SPJ() {
     verifyNote: "",
   });
 
+  const [filter, setFilter] = useState({
+    jenisSurvei: "",
+    statusSuratTugas: "",
+    statusPengajuan: "",
+  });
+
   const [createSPJ, { loading, data, error }] = useMutation(ADD_SPJ);
   const [
     updateStatus,
@@ -69,7 +84,7 @@ function SPJ() {
   const { data: userData } = useQuery(GET_ALL_USERS);
   const { data: subSurveyData } = useQuery(GET_ALL_OF_SUB_SURVEY_ACTIVITIES);
   const { data: SPJData } = useQuery(GET_ALL_SPJ);
-  
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -116,10 +131,11 @@ function SPJ() {
         return;
       }
 
-      await updateStatus({ variables: { input } });
+      await updateStatus({ variables: { input: update } });
       toast.success("SPJ berhasil diperbarui!");
     } catch (error) {
       toast.error("Gagal memperbarui SPJ!");
+      console.error(error);
     }
   };
 
@@ -135,6 +151,9 @@ function SPJ() {
             Jenis Survei
             <select
               id="jenisSurvei"
+              onChange={(e) =>
+                setFilter({ ...filter, jenisSurvei: e.target.value })
+              }
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             ></select>
           </div>
@@ -142,6 +161,9 @@ function SPJ() {
             Status Surat Tugas
             <select
               id="statusSuratTugas"
+              onChange={(e) =>
+                setFilter({ ...filter, statusSuratTugas: e.target.value })
+              }
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             ></select>
           </div>
@@ -149,6 +171,9 @@ function SPJ() {
             Status Pengajuan
             <select
               id="statusPengajuan"
+              onChange={(e) =>
+                setFilter({ ...filter, statusPengajuan: e.target.value })
+              }
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             ></select>
           </div>
@@ -179,7 +204,41 @@ function SPJ() {
               </th>
             </tr>
           </thead>
-          <tbody className="block max-h-96 overflow-y-auto w-full"></tbody>
+          <tbody className="block max-h-96 overflow-y-auto w-full">
+            {SPJData?.getAllSPJ
+              ?.filter((spj: SPJWithUserNSubSurvey) => {
+                const matchesJenis =
+                  filter.jenisSurvei === "" ||
+                  spj.subSurveyActivity?.name?.includes(filter.jenisSurvei);
+                const matchesPengajuan =
+                  filter.statusPengajuan === "" ||
+                  spj.submitState === filter.statusPengajuan;
+                // StatusSuratTugas logic bisa disesuaikan kalau punya field-nya
+                return matchesJenis && matchesPengajuan;
+              })
+              .map((spj: SPJWithUserNSubSurvey) => (
+                <tr
+                  key={spj.id}
+                  className="table w-full table-fixed bg-white border-b"
+                >
+                  <td className="px-6 py-4">{spj?.user?.name || "-"}</td>
+                  <td className="px-6 py-4">
+                    {spj?.subSurveyActivity?.id || "-"}
+                  </td>{" "}
+                  {/* Ganti sesuai field "wilayah" jika ada */}
+                  <td className="px-6 py-4">
+                    {spj?.subSurveyActivity?.name || "-"}
+                  </td>
+                  <td className="px-6 py-4">
+                    {spj?.submitDate
+                      ? "Diserahkan Pada " + spj?.submitDate
+                      : "-"}
+                  </td>
+                  <td className="px-6 py-4">{spj?.submitState}</td>
+                  <td className="px-6 py-4 text-right">—</td>
+                </tr>
+              ))}
+          </tbody>
           <tfoot className="block w-full rounded-b-lg">
             <tr className="text-gray-700 bg-orange-50 table w-full table-fixed">
               <td colSpan={4} className="px-6 py-2">
@@ -281,9 +340,10 @@ function SPJ() {
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
               <option value="">-- Pilih SPJ --</option>
-              {SPJData?.getAllSPJ?.map((spj: SPJ) => (
+              {SPJData?.getAllSPJ?.map((spj: SPJWithUserNSubSurvey) => (
                 <option key={spj.id} value={spj.id}>
-                  {spj?.user?.name}-{spj?.subSurveyActivity?.name}
+                  {spj?.user?.name}-{spj?.subSurveyActivity?.name}-
+                  {spj.submitState}
                 </option>
               ))}
             </select>

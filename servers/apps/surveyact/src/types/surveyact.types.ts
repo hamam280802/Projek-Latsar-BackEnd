@@ -118,7 +118,7 @@ export class SubmitSPJType {
   id: string;
 
   @Field(() => UserType, { nullable: true })
-  userAdministrator?: UserType;
+  user?: UserType;
 
   @Field(() => ID)
   userId: string;

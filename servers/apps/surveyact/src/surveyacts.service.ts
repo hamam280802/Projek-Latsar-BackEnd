@@ -16,6 +16,7 @@ import {
 import { JobLetter, SubmitSPJ, User } from '@prisma/client';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
+import { SubSurveyActivityType } from './types/surveyact.types';
 
 @Injectable()
 export class SurveyActivityService {
@@ -98,13 +99,12 @@ export class SurveyActivityService {
     return this.prisma.subSurveyActivity.findMany();
   }
 
-  async findSubSurveyActivityById(subSurveyActivityId: string) {
-    const subSurveyActivity = await this.prisma.subSurveyActivity.findUnique({
+  async getSubSurvey(
+    subSurveyActivityId: string,
+  ): Promise<SubSurveyActivityType | null> {
+    return this.prisma.subSurveyActivity.findUnique({
       where: { id: subSurveyActivityId },
     });
-    if (!subSurveyActivity)
-      throw new NotFoundException('SubSurveyActivity not found');
-    return subSurveyActivity;
   }
 
   async createUserSurveyProgress(input: CreateUserProgressDTO) {
@@ -203,7 +203,7 @@ export class SurveyActivityService {
     });
   }
 
-  async getAllSPJ(): Promise<SubmitSPJ[]> {
+  async getAllSPJ() {
     return this.prisma.submitSPJ.findMany({
       orderBy: { createdAt: 'desc' },
       include: { user: true, subSurveyActivity: true },
