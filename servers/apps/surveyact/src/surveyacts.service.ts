@@ -232,7 +232,7 @@ export class SurveyActivityService {
     });
   }
 
-  async getAllJobLetters(): Promise<JobLetter[]> {
+  async getAllJobLetters() {
     return this.prisma.jobLetter.findMany({
       orderBy: { createdAt: 'desc' },
       include: { user: true, subSurveyActivity: true },

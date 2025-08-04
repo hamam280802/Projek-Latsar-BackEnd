@@ -115,6 +115,11 @@ export class SurveyActivityResolver {
     return this.service.getUser(spj.userId);
   }
 
+  @ResolveField(() => UserType, { nullable: true })
+  async userJobLetter(@Parent() jobLetter: JobLetter): Promise<UserType> {
+    return this.service.getUser(jobLetter.userId);
+  }
+
   @Query(() => SubSurveyProgressType)
   async subSurveyProgress(
     @Args('subSurveyActivityId') subSurveyActivityId: string,
@@ -174,7 +179,7 @@ export class SurveyActivityResolver {
   }
 
   @Query(() => [JobLetterType])
-  async getAllJobLetters(): Promise<JobLetter[]> {
+  async getAllJobLetters() {
     return this.service.getAllJobLetters();
   }
 

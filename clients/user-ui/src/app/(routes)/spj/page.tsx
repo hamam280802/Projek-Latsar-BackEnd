@@ -76,6 +76,11 @@ function SPJ() {
     statusPengajuan: "",
   });
 
+  const [selectedSPJ, setSelectedSPJ] = useState<SPJWithUserNSubSurvey | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [createSPJ, { loading, data, error }] = useMutation(ADD_SPJ);
   const [
     updateStatus,
@@ -188,9 +193,6 @@ function SPJ() {
                 <div className="flex items-center">Nama Petugas</div>
               </th>
               <th scope="col" className="px-6 py-3 uppercase">
-                <div className="flex items-center">Wilayah</div>
-              </th>
-              <th scope="col" className="px-6 py-3 uppercase">
                 <div className="flex items-center">Jenis Survei</div>
               </th>
               <th scope="col" className="px-6 py-3 uppercase">
@@ -222,9 +224,6 @@ function SPJ() {
                   className="table w-full table-fixed bg-white border-b"
                 >
                   <td className="px-6 py-4">{spj?.user?.name || "-"}</td>
-                  <td className="px-6 py-4">
-                    {spj?.subSurveyActivity?.id || "-"}
-                  </td>{" "}
                   {/* Ganti sesuai field "wilayah" jika ada */}
                   <td className="px-6 py-4">
                     {spj?.subSurveyActivity?.name || "-"}
@@ -232,10 +231,20 @@ function SPJ() {
                   <td className="px-6 py-4">
                     {spj?.submitDate
                       ? "Diserahkan Pada " + spj?.submitDate
-                      : "-"}
+                      : "Menunggu Pengajuan"}
                   </td>
                   <td className="px-6 py-4">{spj?.submitState}</td>
-                  <td className="px-6 py-4 text-right">—</td>
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() => {
+                        setSelectedSPJ(spj);
+                        setIsModalOpen(true);
+                      }}
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Lihat Detail
+                    </button>
+                  </td>
                 </tr>
               ))}
           </tbody>
@@ -381,6 +390,52 @@ function SPJ() {
           </button>
         </form>
       </div>
+      {isModalOpen && selectedSPJ && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg space-y-2">
+            <h2 className="text-xl font-bold mb-4">Detail SPJ</h2>
+            <p>
+              <strong>Nama Petugas:</strong> {selectedSPJ.user?.name || "-"}
+            </p>
+            <p>
+              <strong>Jenis Survei:</strong>{" "}
+              {selectedSPJ.subSurveyActivity?.name || "-"}
+            </p>
+            <p>
+              <strong>Mulai:</strong> {selectedSPJ.startDate}
+            </p>
+            <p>
+              <strong>Selesai:</strong> {selectedSPJ.endDate}
+            </p>
+            <p>
+              <strong>Submit State:</strong> {selectedSPJ.submitState}
+            </p>
+            <p>
+              <strong>Submit Date:</strong> {selectedSPJ.submitDate || "-"}
+            </p>
+            <p>
+              <strong>Approve Date:</strong> {selectedSPJ.approveDate || "-"}
+            </p>
+            <p>
+              <strong>Catatan:</strong> {selectedSPJ.verifyNote || "-"}
+            </p>
+            <p>
+              <a target="_blank" href={selectedSPJ.eviDocumentUrl} className="bg-blue-500 p-1 rounded-md">Lihat Bukti</a>
+            </p>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setSelectedSPJ(null);
+                }}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

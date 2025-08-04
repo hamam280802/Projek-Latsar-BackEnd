@@ -165,6 +165,9 @@ export class JobLetterType {
   @Field(() => ID)
   userId: string;
 
+  @Field(() => SubSurveyActivityType)
+  subSurveyActivity?: SubSurveyActivityType;
+
   @Field(() => ID)
   subSurveyActivityId: string;
 

@@ -15,15 +15,10 @@ export const GET_ALL_JOB_LETTERS = gql`
       user {
         id
         name
-        email
       }
       subSurveyActivity {
         id
         name
-        description
-        startDate
-        endDate
-        surveyActivityId
       }
     }
   }
