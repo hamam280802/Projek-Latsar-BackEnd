@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import styles from "@/src/utils/style";
 import { GET_ALL_USERS } from "@/src/graphql/actions/find-allusers.action";
 import { GET_ALL_OF_SUB_SURVEY_ACTIVITIES } from "@/src/graphql/actions/find-realallsubsurvey.action";
+import { set } from "mongoose";
 
 function Partners() {
   type User = {
@@ -243,7 +244,10 @@ function Partners() {
                 <td className="px-6 py-3">{jobletter.submitDate ? "Sudah Diserahkan Pada Tanggal " + jobletter.submitDate : "Belum Diserahkan"}</td>
                 <td className="px-6 py-3">{jobletter?.agreeState}</td>
                 <td className="px-6 py-3 flex justify-end">
-                  <button className="flex items-center px-2 bg-gray-900 rounded-md border-gray-900 border-2">
+                  <button onClick={() => {
+                    setSelectedJobLetter(jobletter)
+                    setIsModalOpen(true)
+                  }} className="flex items-center px-2 bg-gray-900 rounded-md border-gray-900 border-2">
                     <p className="text-sm font-bold text-white">Detail</p>
                     <div className="pl-1 pb-1"></div>
                   </button>
@@ -377,6 +381,43 @@ function Partners() {
           </button>
         </form>
       </div>
+      {isModalOpen && selectedJobLetter && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg space-y-2">
+            <h2 className="text-xl font-bold mb-4">Detail SPJ</h2>
+            <p>
+              <strong>Nama Petugas:</strong> {selectedJobLetter.user?.name || "-"}
+            </p>
+            <p>
+              <strong>Jenis Survei:</strong>{" "}
+              {selectedJobLetter.subSurveyActivity?.name || "-"}
+            </p>
+            <p>
+              <strong>Submit State:</strong> {selectedJobLetter.agreeState}
+            </p>
+            <p>
+              <strong>Submit Date:</strong> {selectedJobLetter.submitDate || "-"}
+            </p>
+            <p>
+              <strong>Approve Date:</strong> {selectedJobLetter.approveDate || "-"}
+            </p>
+            <p>
+              <strong>Catatan:</strong> {selectedJobLetter.rejectNote || "-"}
+            </p>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setSelectedJobLetter(null);
+                }}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
