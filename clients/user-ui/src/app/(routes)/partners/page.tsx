@@ -39,10 +39,11 @@ function Partners() {
     subSurveyActivityId: string;
     region: string;
     submitDate: string;
-    jobLetterState: string;
     agreeState: string;
     approveDate: string;
     rejectNote: string;
+    eviFieldUrl: string;
+    eviSTUrl: string;
   };
 
   type JobLetterWithUserNSubSurvey = JobLetter & {
@@ -61,6 +62,8 @@ function Partners() {
     subSurveyActivityId: "",
     region: "",
     submitDate: new Date().toISOString(),
+    eviFieldUrl: "",
+    eviSTUrl: "",
   });
 
   const [update, setUpdate] = useState({
@@ -130,7 +133,9 @@ function Partners() {
         !input.userId ||
         !input.subSurveyActivityId ||
         !input.region ||
-        !input.submitDate
+        !input.submitDate ||
+        !input.eviFieldUrl ||
+        !input.eviSTUrl
       ) {
         toast.error("Semua field wajib diisi!");
         return;
@@ -142,6 +147,8 @@ function Partners() {
         subSurveyActivityId: "",
         region: "",
         submitDate: "",
+        eviFieldUrl: "",
+        eviSTUrl: "",
       });
     } catch (error: any) {
       toast.error("Gagal menambahkan Surat Tugas!");
@@ -156,6 +163,7 @@ function Partners() {
         return;
       }
       await updateJobLetterStatus({ variables: { input: update } });
+      setIsModalOpen(false);
       toast.success("Surat Tugas berhasil diperbarui!");
       setUpdate({ id: "", status: "", rejectNote: "" });
     } catch (error) {
@@ -163,6 +171,15 @@ function Partners() {
       console.error(error);
     }
   };
+  const getGoogleDriveFileId = (url: string | undefined) => {
+    if (!url) return undefined;
+    const match = url.match(/\/file\/d\/([^/]+)\//);
+    return match ? match[1] : undefined;
+  };
+  const convertedEviFieldUrl = getGoogleDriveFileId(
+    selectedJobLetter?.eviFieldUrl
+  );
+  const convertedEviSTUrl = getGoogleDriveFileId(selectedJobLetter?.eviSTUrl);
   return (
     <div className="px-8 py-4 space-y-4 font-Poppins">
       <div className="bg-orange-50 rounded-lg p-2 font-bold text-xl flex justify-between shadow-md">
@@ -175,29 +192,43 @@ function Partners() {
             Wilayah
             <select
               id="wilayah"
+              onChange={handleFilter}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            ></select>
+            >
+              <option value="">-- Pilih Wilayah --</option>
+              <option value="Muara Enim">Muara Enim</option>
+              <option value="PALI">PALI</option>
+            </select>
           </div>
           <div className="w-full">
             Jenis Survei
             <select
-              id="jenisSurvei"
+              id="survei"
+              onChange={handleFilter}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            ></select>
-          </div>
-          <div className="w-full">
-            Status Surat Tugas
-            <select
-              id="statusSuratTugas"
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            ></select>
+            >
+              <option value="">-- Pilih Jenis Survei --</option>
+              {dataSubSurvey?.allSubSurveyActivities?.map(
+                (survei: SubSurveyActivity) => (
+                  <option value={survei.name} key={survei.id}>
+                    {survei.name}
+                  </option>
+                )
+              )}
+            </select>
           </div>
           <div className="w-full">
             Status Persetujuan
             <select
-              id="statusPersetujuan"
+              id="statusPengajuan"
+              onChange={handleFilter}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            ></select>
+            >
+              <option value="">-- Pilih Status Persetujuan --</option>
+              <option value="Menunggu">Menunggu</option>
+              <option value="Disetujui">Disetujui</option>
+              <option value="Ditolak">Ditolak</option>
+            </select>
           </div>
         </div>
       </div>
@@ -215,8 +246,8 @@ function Partners() {
               <th scope="col" className="px-6 py-3 uppercase">
                 <div className="flex items-center">Jenis Survei</div>
               </th>
-              <th scope="col" className="px-6 py-3 uppercase">
-                <div className="flex items-center">Surat Tugas</div>
+              <th scope="col" className="px-6 py-3 uppercase text-center">
+                <div className="flex items-center">Status Surat Tugas</div>
               </th>
               <th scope="col" className="px-6 py-3 uppercase">
                 <div className="flex items-center">Status Persetujuan</div>
@@ -227,33 +258,71 @@ function Partners() {
             </tr>
           </thead>
           <tbody className="block max-h-96 overflow-y-auto w-full">
-            {dataJobLetter?.getAllJobLetters?.filter((jobletter: JobLetterWithUserNSubSurvey) => {
-              const matchesRegion = filter.wilayah === "" || jobletter.region === filter.wilayah;
-              const matchesJenisSurvei = filter.survei === "" || jobletter?.subSurveyActivity?.name?.includes(filter.survei);
-              const matchesStatus = filter.statusPengajuan === "" || jobletter.agreeState === filter.statusPengajuan;
-              const matchesStatusPersetujuan = filter.statusSuratTugas === "" || jobletter.agreeState === filter.statusSuratTugas;
-              return matchesRegion && matchesJenisSurvei && matchesStatus && matchesStatusPersetujuan;
-            }).map((jobletter: JobLetterWithUserNSubSurvey) => (
-              <tr
-                key={jobletter.id}
-                className="table w-full table-fixed bg-white border-"
-              >
-                <td className="px-6 py-3">{jobletter?.user?.name}</td>
-                <td className="px-6 py-3">{jobletter?.region}</td>
-                <td className="px-6 py-3">{jobletter?.subSurveyActivity?.name}</td>
-                <td className="px-6 py-3">{jobletter.submitDate ? "Sudah Diserahkan Pada Tanggal " + jobletter.submitDate : "Belum Diserahkan"}</td>
-                <td className="px-6 py-3">{jobletter?.agreeState}</td>
-                <td className="px-6 py-3 flex justify-end">
-                  <button onClick={() => {
-                    setSelectedJobLetter(jobletter)
-                    setIsModalOpen(true)
-                  }} className="flex items-center px-2 bg-gray-900 rounded-md border-gray-900 border-2">
-                    <p className="text-sm font-bold text-white">Detail</p>
-                    <div className="pl-1 pb-1"></div>
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {dataJobLetter?.getAllJobLetters
+              ?.filter((jobletter: JobLetterWithUserNSubSurvey) => {
+                const matchesRegion =
+                  filter.wilayah === "" || jobletter.region === filter.wilayah;
+                const matchesJenisSurvei =
+                  filter.survei === "" ||
+                  jobletter?.subSurveyActivity?.name?.includes(filter.survei);
+                const matchesStatus =
+                  filter.statusPengajuan === "" ||
+                  jobletter.agreeState === filter.statusPengajuan;
+
+                return matchesRegion && matchesJenisSurvei && matchesStatus;
+              })
+              .map((jobletter: JobLetterWithUserNSubSurvey) => (
+                <tr
+                  key={jobletter.id}
+                  className="table w-full table-fixed bg-white text-black"
+                >
+                  <td className="px-6 py-3 font-semibold">{jobletter?.user?.name}</td>
+                  <td className="px-6 py-3 font-semibold">{jobletter?.region}</td>
+                  <td className="px-6 py-3 font-semibold">
+                    {jobletter?.subSurveyActivity?.name}
+                  </td>
+                  <td className="px-6 py-3">
+                    {jobletter?.submitDate ? (
+                      <div>
+                        <span className="inline-block px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-xl">
+                          Diserahkan
+                        </span><br />
+                        <span>{jobletter.submitDate.split("T")[0]}</span>
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="inline-block px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-xl">
+                          Belum Diserahkan
+                        </span>
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-3">
+                    <div>
+                      {jobletter?.agreeState === "Disetujui" ? (
+                        <span className="inline-block px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-xl"> Disetujui</span>
+                      ) : jobletter?.agreeState === "Ditolak" ?(
+                        <span className="inline-block px-2 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-xl">Ditolak</span>
+                      ) : (
+                        <span className="inline-block px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-xl">Menunggu</span>
+                      )}<br />
+                      <span>{jobletter?.approveDate?.split("T")[0]}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3 text-right">
+                    <button
+                      onClick={() => {
+                        setSelectedJobLetter(jobletter);
+                        setUpdate((prev) => ({ ...prev, id: jobletter.id }));
+                        setIsModalOpen(true);
+                      }}
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Lihat Detail
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
           <tfoot className="block w-full rounded-b-lg">
             <tr className="text-gray-700 bg-orange-50 table w-full table-fixed">
@@ -317,6 +386,26 @@ function Partners() {
               <option value="PALI">PALI</option>
             </select>
           </div>
+          <div>
+            <input
+              type="text"
+              id="eviFieldUrl"
+              value={input.eviFieldUrl}
+              placeholder="Link Bukti Lapangan"
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+          <div>
+            <input
+              type="text"
+              id="eviSTUrl"
+              value={input.eviSTUrl}
+              placeholder="Link Bukti ST"
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -327,7 +416,7 @@ function Partners() {
         </form>
       </div>
       {/* Form Status Surat Tugas */}
-      <div className="bg-orange-50 rounded-lg p-4 shadow-md">
+      {/* <div className="bg-orange-50 rounded-lg p-4 shadow-md">
         <h1 className="font-bold text-2xl mb-4">Form Status Surat Tugas</h1>
         <form onSubmit={handleUpdate} className="space-y-4">
           <div>
@@ -380,35 +469,133 @@ function Partners() {
             {loadingUpdate ? "Mengirim..." : "Update Status Surat Tugas"}
           </button>
         </form>
-      </div>
+      </div> */}
       {isModalOpen && selectedJobLetter && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg space-y-2">
-            <h2 className="text-xl font-bold mb-4">Detail SPJ</h2>
-            <p>
-              <strong>Nama Petugas:</strong> {selectedJobLetter.user?.name || "-"}
-            </p>
-            <p>
-              <strong>Jenis Survei:</strong>{" "}
-              {selectedJobLetter.subSurveyActivity?.name || "-"}
-            </p>
-            <p>
-              <strong>Submit State:</strong> {selectedJobLetter.agreeState}
-            </p>
-            <p>
-              <strong>Submit Date:</strong> {selectedJobLetter.submitDate || "-"}
-            </p>
-            <p>
-              <strong>Approve Date:</strong> {selectedJobLetter.approveDate || "-"}
-            </p>
-            <p>
-              <strong>Catatan:</strong> {selectedJobLetter.rejectNote || "-"}
-            </p>
-            <div className="flex justify-end mt-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 font-Poppins">
+          <div className="bg-white w-full max-w-2xl mx-auto rounded-lg shadow-lg overflow-hidden">
+            {/* Header Modal */}
+            <div className="flex justify-between items-center px-6 py-4 border-b">
+              <h2 className="text-xl font-bold text-gray-800">
+                Detail Pengajuan Surat Tugas
+              </h2>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4">
+              <div>
+                <p>
+                  <strong>Nama Petugas:</strong>{" "}
+                  {selectedJobLetter.user?.name || "-"}
+                </p>
+                <p>
+                  <strong>Jenis Survei:</strong>{" "}
+                  {selectedJobLetter.subSurveyActivity?.name || "-"}
+                </p>
+                <p>
+                  <strong>Catatan:</strong>{" "}
+                  {selectedJobLetter.rejectNote || "-"}
+                </p>
+              </div>
+
+              {/* Gambar */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {convertedEviFieldUrl && (
+                  <iframe
+                    src={`https://drive.google.com/file/d/${convertedEviFieldUrl}/preview`}
+                    width="100%"
+                    height="300"
+                    className="rounded-md border"
+                  />
+                )}
+
+                {convertedEviSTUrl && (
+                  <iframe
+                    src={`https://drive.google.com/file/d/${convertedEviSTUrl}/preview`}
+                    width="100%"
+                    height="300"
+                    className="rounded-md border"
+                  />
+                )}
+              </div>
+
+              {/* Status Persetujuan */}
+              <div className="pt-2">
+                <p className="mb-1">
+                  <strong>Status Persetujuan:</strong>
+                </p>
+                <span
+                  className={`inline-block px-3 py-1 text-sm font-semibold rounded-full ${
+                    selectedJobLetter.agreeState === "Disetujui"
+                      ? "bg-green-100 text-green-700"
+                      : selectedJobLetter.agreeState === "Ditolak"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-yellow-100 text-yellow-700"
+                  }`}
+                >
+                  {selectedJobLetter.agreeState}
+                </span>
+              </div>
+
+              {/* Form Update Status */}
+              <form
+                onSubmit={handleUpdate}
+                className="space-y-3 pt-4 border-t mt-4"
+              >
+                <input
+                  type="hidden"
+                  id="id"
+                  onChange={handleChangeUpdate}
+                  value={update.id}
+                />
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Ubah Status Persetujuan
+                  </label>
+                  <select
+                    id="status"
+                    value={update.status}
+                    onChange={handleChangeUpdate}
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="">-- Pilih Status --</option>
+                    <option value="Menunggu">Menunggu</option>
+                    <option value="Disetujui">Disetujui</option>
+                    <option value="Ditolak">Ditolak</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Catatan
+                  </label>
+                  <input
+                    type="text"
+                    id="rejectNote"
+                    value={update.rejectNote}
+                    onChange={handleChangeUpdate}
+                    placeholder="Catatan jika ditolak atau alasan lainnya"
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  />
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={loadingUpdate}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  >
+                    {loadingUpdate ? "Menyimpan..." : "Update Status"}
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div className="flex justify-end px-6 py-4">
               <button
                 onClick={() => {
                   setIsModalOpen(false);
                   setSelectedJobLetter(null);
+                  setUpdate({ id: "", status: "Disetujui", rejectNote: "" });
                 }}
                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
               >

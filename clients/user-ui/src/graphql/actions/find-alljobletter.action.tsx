@@ -7,11 +7,12 @@ export const GET_ALL_JOB_LETTERS = gql`
       userId
       subSurveyActivityId
       region
-      jobLetterState
       submitDate
       agreeState
       approveDate
       rejectNote
+      eviFieldUrl
+      eviSTUrl
       user {
         id
         name

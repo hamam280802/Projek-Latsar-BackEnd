@@ -60,8 +60,6 @@ model SubSurveyActivity {
   startDate        DateTime
   endDate          DateTime
   targetSample     Int
-  districtId       String?
-  district         District?      @relation(fields: [districtId], references: [id])
 
   issues       Issue[]
   UserProgress UserProgress[]
@@ -133,7 +131,6 @@ model District {
   city String
   name String
 
-  SubSurveyActivity SubSurveyActivity[]
   UserProgress      UserProgress[]
 }
 
@@ -144,11 +141,12 @@ model JobLetter {
   subSurveyActivityId String
   subSurveyActivity   SubSurveyActivity @relation(fields: [subSurveyActivityId], references: [id])
   region              String
-  jobLetterState      StatusST          @default(Belum_Diserahkan)
   submitDate          DateTime?
   agreeState          AgreeState        @default(Menunggu)
   approveDate         DateTime?
   rejectNote          String?
+  eviFieldUrl         String?
+  eviSTUrl            String?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
 }
@@ -159,8 +157,6 @@ model SubmitSPJ {
   user                User              @relation(fields: [userId], references: [id])
   subSurveyActivityId String
   subSurveyActivity   SubSurveyActivity @relation(fields: [subSurveyActivityId], references: [id])
-  startDate           DateTime
-  endDate             DateTime
   submitState         AgreeState        @default(Menunggu)
   submitDate          DateTime          @default(now())
   approveDate         DateTime?

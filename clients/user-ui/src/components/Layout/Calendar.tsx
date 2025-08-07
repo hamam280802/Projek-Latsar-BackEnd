@@ -9,6 +9,8 @@ import axios from "axios";
 import Datetime from "react-datetime";
 import "react-datetime/css/react-datetime.css";
 import { AnimatePresence, motion } from "framer-motion";
+import { GET_REAL_ALL_SUB_SURVEY_PROGRESS } from "@/src/graphql/actions/get-allsubsurveyprogress.action";
+import { useQuery } from "@apollo/client";
 
 interface CalendarEvent {
   title: string;
@@ -67,6 +69,22 @@ export default function Calendar() {
     { length: 10 },
     (_, i) => new Date().getFullYear() - 5 + i
   );
+
+  type SubSurveyProgress = {
+    startDate: string;
+    endDate: string;
+    targetSample: number;
+    totalPetugas: number;
+    submitCount: number;
+    approvedCount: number;
+    rejectedCount: number;
+    Name: string;
+    subSurveyActivityId: string;
+  };
+
+  const { data: surveyPogressData } = useQuery<{
+    getAllSubSurveyProgress: SubSurveyProgress[];
+  }>(GET_REAL_ALL_SUB_SURVEY_PROGRESS);
 
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -517,22 +535,17 @@ export default function Calendar() {
                             onChange={(e) => handleChange(e)}
                           >
                             <option value="">Pilih Kegiatan Survei</option>
-                            <option value="Survei Sosial Ekonomi Nasional">
-                              SUSENAS
-                            </option>
-                            <option value="Survei Angkatan Kerja Nasional">
-                              SAKERNAS
-                            </option>
-                            <option value="Survei Industri">
-                              Survei Industri
-                            </option>
-                            <option value="Survei Harga">Survei Harga</option>
-                            <option value="Wilkerstat">Wilkerstat</option>
-                            <option value="Survei Penduduk Antar Sensus">
-                              SUPAS
-                            </option>
-                            <option value="Survei Neraca">Survei Neraca</option>
-                            <option value="Survei Harga">Survei Harga</option>
+                            {[
+                              ...new Set(
+                                surveyPogressData?.getAllSubSurveyProgress.map(
+                                  (item: SubSurveyProgress) => item.Name
+                                )
+                              ),
+                            ].map((name) => (
+                              <option key={name} value={name}>
+                                {name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                         <div>

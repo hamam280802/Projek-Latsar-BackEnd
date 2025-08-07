@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { GET_SURVEY_ACTIVITIES_BY_SLUG } from "@/src/graphql/actions/find-surveyact.action";
 import { GET_ALL_SUB_SURVEY_ACTIVITIES } from "@/src/graphql/actions/find-allsubsurveyact.action";
 import { GET_ALL_SUB_SURVEY_PROGRESS } from "@/src/graphql/actions/find-allsubsurveyprogress.action";
+import { GET_USER_PROGRESS_BY_SUBSURVEY_ID } from "@/src/graphql/actions/find-usersurveyprogress";
 import { useParams } from "next/navigation";
 import { useQuery } from "@apollo/client";
 
@@ -42,8 +43,18 @@ const ProgressTemplate = () => {
     }
   );
 
+  const { data: progressData, loading: loadingProgress } = useQuery(
+    GET_USER_PROGRESS_BY_SUBSURVEY_ID,
+    {
+      variables: { subSurveyActivityId: selectedSubSurvey },
+      skip: !selectedSubSurvey,
+      fetchPolicy: "network-only",
+    }
+  );
+
   const subSurveyActivities = subSurveyDataAll?.subSurveyActivityById || [];
   const progress = subSurveyData?.subSurveyProgress || null;
+  const userProgress = progressData?.userProgressBySubSurveyActivityId || null;
 
   if (loadingSurvey || loadingSubSurveyAll) return <div>Loading...</div>;
   if (!surveyData || !surveyData.surveyActivityBySlug) {
@@ -102,58 +113,41 @@ const ProgressTemplate = () => {
             <div className="bg-slate-400 rounded-lg border w-full flex flex-col p-2 space-y-2 font-semibold">
               <p>Wilayah</p>
               <div className="relative">
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="bg-white focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center shadow-md w-full justify-between"
+                <select
+                  id="wilayah"
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 >
-                  Pilih Wilayah
-                  <svg
-                    className="w-2.5 h-2.5 ms-3"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 10 6"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m1 1 4 4 4-4"
-                    />
-                  </svg>
-                </button>
-                {isDropdownOpen && (
-                  <div className="absolute left-0 mt-2 z-50 bg-white divide-y divide-gray-100 rounded-lg shadow-md w-full">
-                    <ul className="py-2 text-sm text-gray-700">
-                      <li>
-                        <a
-                          href="#"
-                          className="block px-4 py-2 hover:bg-gray-100"
-                        >
-                          CSV
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="block px-4 py-2 hover:bg-gray-100"
-                        >
-                          Excel
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="block px-4 py-2 hover:bg-gray-100"
-                        >
-                          JSON
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                )}
+                  <option value="">-- Pilih Wilayah --</option>
+                  <option value="Muara Enim">Muara Enim</option>
+                  <option value="PALI">PALI</option>
+                </select>
               </div>
+            </div>
+          </div>
+
+          <div className="p-2">
+            <p className="font-semibold text-sm mb-1 border-l-4 border-blue-500 pl-2">
+              Progres kegiatan
+            </p>
+            <div className="w-full bg-gray-200 rounded-full h-3 relative">
+              <div
+                className="bg-blue-600 h-3 rounded-full"
+                style={{
+                  width: `${Math.round(
+                    (progress.submitCount / progress.targetSample) * 100
+                  )}%`,
+                }}
+              />
+              <span className="absolute right-0 top-[-24px] text-blue-600 font-bold text-xs">
+                {Math.round(
+                  (progress.submitCount / progress.targetSample) * 100
+                )}
+                %
+              </span>
+            </div>
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>0%</span>
+              <span>100%</span>
             </div>
           </div>
 
@@ -185,6 +179,76 @@ const ProgressTemplate = () => {
               <p className="font-bold text-2xl text-red-600">
                 {progress.rejectedCount}
               </p>
+            </div>
+          </div>
+
+          <div className="mt-4 bg-orange-50 rounded-lg p-4">
+            <h2 className="text-lg font-semibold mb-2 text-orange-600 border-b border-orange-200 pb-1">
+              Petugas Pendataan Lapangan
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full table-auto text-sm text-left">
+                <thead className="bg-gray-100 text-gray-700 font-semibold">
+                  <tr>
+                    <th className="px-4 py-2">NAMA PETUGAS</th>
+                    <th className="px-4 py-2">WILAYAH TUGAS</th>
+                    <th className="px-4 py-2">TARGET</th>
+                    <th className="px-4 py-2">SUBMIT</th>
+                    <th className="px-4 py-2">APPROVED</th>
+                    <th className="px-4 py-2">REJECTED</th>
+                    <th className="px-4 py-2">PROGRESS</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {userProgress?.map((progress: any) => {
+                    const percent =
+                      progress.totalAssigned > 0
+                        ? Math.round(
+                            (progress.submitCount / progress.totalAssigned) *
+                              100
+                          )
+                        : 0;
+                    return (
+                      <tr key={progress.user.id}>
+                        <td className="px-4 py-3 font-medium text-gray-800">
+                          <div className="flex items-center space-x-2">
+                            <div>
+                              <p>{progress.user.name}</p>
+                              <p className="text-xs text-gray-500">
+                                {progress.user.email}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-700">
+                          {progress.district.name ?? "-"}
+                        </td>
+                        <td className="px-4 py-3">{progress.totalAssigned}</td>
+                        <td className="px-4 py-3">{progress.submitCount}</td>
+                        <td className="px-4 py-3">{progress.approvedCount}</td>
+                        <td className="px-4 py-3">{progress.rejectedCount}</td>
+                        <td className="px-4 py-3">
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className={`h-2 rounded-full ${
+                                percent >= 80
+                                  ? "bg-green-500"
+                                  : percent >= 50
+                                    ? "bg-yellow-400"
+                                    : "bg-red-400"
+                              }`}
+                              style={{ width: `${percent}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {percent}%
+                          </p>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

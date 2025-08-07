@@ -7,8 +7,6 @@ export const GET_ALL_SPJ: DocumentNode = gql`
       id
       userId
       subSurveyActivityId
-      startDate
-      endDate
       submitState
       submitDate
       approveDate

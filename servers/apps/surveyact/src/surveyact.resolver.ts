@@ -10,6 +10,7 @@ import { SurveyActivityService } from './surveyacts.service';
 import {
   DistrictType,
   JobLetterType,
+  MonthlyStatsType,
   SubmitSPJType,
   SubSurveyActivityType,
   SubSurveyProgressType,
@@ -136,6 +137,11 @@ export class SurveyActivityResolver {
     );
   }
 
+  @Query(() => [UserProgressType])
+  async allUserSurveyProgress() {
+    return this.service.getAllUserSurveyProgress();
+  }
+
   @Mutation(() => UserProgressType)
   async updateUserSurveyProgress(
     @Args('userProgressId') userProgressId: string,
@@ -188,5 +194,20 @@ export class SurveyActivityResolver {
     @Args('input') input: UpdateJobLetterStatusDTO,
   ): Promise<JobLetter> {
     return this.service.updateJobLetterStatus(input);
+  }
+
+  @Query(() => [SubSurveyProgressType], { name: 'getAllSubSurveyProgress' })
+  async getAllSubSurveyProgress(): Promise<SubSurveyProgressType[]> {
+    return this.service.getAllSubSurveyProgress();
+  }
+
+  @Query(() => MonthlyStatsType)
+  getMonthlySurveyStats() {
+    return this.service.getMonthlySurveyStats();
+  }
+
+  @Query(() => [DistrictType])
+  async getAllSurveyDistrict() {
+    return this.service.allDistricts();
   }
 }

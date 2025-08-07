@@ -7,6 +7,8 @@ mutation AddJobLetter($input: CreateJobLetterDTO!) {
     subSurveyActivityId
     region
     submitDate
+    eviFieldUrl
+    eviSTUrl
   }
 }
 `;

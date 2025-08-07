@@ -100,6 +100,9 @@ export class CreateUserProgressDTO {
 
   @Field()
   lastUpdated: Date;
+
+  @Field()
+  districtId: string;
 }
 
 @InputType()
@@ -139,14 +142,6 @@ export class CreateSPJDTO {
   @IsUUID()
   subSurveyActivityId: string;
 
-  @Field()
-  @IsDateString()
-  startDate: string;
-
-  @Field()
-  @IsDateString()
-  endDate: string;
-
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
@@ -163,6 +158,11 @@ export class UpdateSPJStatusDTO {
 
   @Field({ nullable: true })
   verifyNote?: string;
+
+  @Field({ nullable: true})
+  @IsOptional()
+  @IsDateString()
+  approveDate?: string;
 }
 
 @InputType()
@@ -183,6 +183,14 @@ export class CreateJobLetterDTO {
   @IsOptional()
   @IsDateString()
   submitDate?: string;
+
+  @Field({ nullable: true })
+  @IsString()
+  eviFieldUrl: string;
+
+  @Field({ nullable: true })
+  @IsString()
+  eviSTUrl: string;
 }
 
 @InputType()

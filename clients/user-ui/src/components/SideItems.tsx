@@ -23,7 +23,7 @@ const sideItems = [
         url: '/partners',
     },
     {
-        title: 'Pengajuan SPJ',
+        title: 'Pengajuan Honor',
         url: '/spj',
     },
     {

@@ -3,6 +3,20 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@apollo/client";
+import { GET_REAL_ALL_SUB_SURVEY_PROGRESS } from "@/src/graphql/actions/get-allsubsurveyprogress.action";
+import { GET_MONTHLY_DASHBOARD_STATS } from "@/src/graphql/actions/get-allmonthlyprogress.action";
+import { GET_REAL_ALL_USER_PROGRESS } from "@/src/graphql/actions/get-alluserprogress.action";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 interface CalendarEvent {
   title: string;
@@ -16,10 +30,93 @@ interface CalendarEvent {
 }
 
 function Dashboard() {
+  type User = {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+    address: string;
+    phone_number: string;
+    updatedAt: string;
+  };
+
+  type SubSurveyActivity = {
+    id: string;
+    name: string;
+    slug: string;
+    surveyActivityId: string;
+    startDate: string;
+    endDate: string;
+    targetSample: number;
+  };
+
+  type SubSurveyProgress = {
+    startDate: string;
+    endDate: string;
+    targetSample: number;
+    totalPetugas: number;
+    submitCount: number;
+    approvedCount: number;
+    rejectedCount: number;
+    Name: string;
+    subSurveyActivityId: string;
+  };
+
+  type UserProgress = {
+    user: {
+      id: string;
+      name: string;
+    };
+    userId: string;
+    subSurveyActivity: {
+      id: string;
+      name: string;
+      slug: string;
+      surveyActivityId: string;
+      startDate: string;
+      endDate: string;
+      targetSample: number;
+    };
+    subSurveyActivityId: string;
+    totalAssigned: number;
+    submitCount: number;
+    approvedCount: number;
+    rejectedCount: number;
+    lastUpdated: string;
+  };
+
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isMinimized, setIsMinimized] = useState<Record<string, boolean>>({});
   const [isCloseTable, setIsCloseTable] = useState(false);
+  const [selectedSurvey, setSelectedSurvey] = useState<string>("");
+  const [selectedSubSurveyId, setSelectedSubSurveyId] = useState<string>("");
+
+  const { data: surveyPogressData } = useQuery<{
+    getAllSubSurveyProgress: SubSurveyProgress[];
+  }>(GET_REAL_ALL_SUB_SURVEY_PROGRESS);
+
+  const { data: monthlyStats } = useQuery(GET_MONTHLY_DASHBOARD_STATS);
+
+  const { data: userProgressData } = useQuery<{
+    allUserSurveyProgress: UserProgress[];
+  }>(GET_REAL_ALL_USER_PROGRESS);
+
+  const filteredProgress = surveyPogressData?.getAllSubSurveyProgress.filter(
+    (item) =>
+      !selectedSurvey ||
+      item.Name.toLowerCase().includes(selectedSurvey.toLowerCase())
+  );
+
+  const subSurveyOptions = [
+    ...new Map(
+      userProgressData?.allUserSurveyProgress?.map((item) => [
+        item.subSurveyActivity.id,
+        item.subSurveyActivity.name,
+      ])
+    ),
+  ];
 
   const toggleTable = (index: string) => {
     setIsMinimized((prev) => ({
@@ -303,16 +400,134 @@ function Dashboard() {
       </div>
       <div className="space-x-4 flex justify-between items-center">
         <div className="p-2 bg-orange-50 rounded-lg shadow-md w-full">
-          <p className="text-md">Petugas Aktif</p>
+          <p className="text-md font-bold">Petugas Aktif</p>
+          <h2 className="font-bold text-2xl">
+            {monthlyStats?.getMonthlySurveyStats?.totalActiveUsers ?? "-"}
+          </h2>
+          <p>Selama sebulan ini</p>
         </div>
         <div className="p-2 bg-orange-50 rounded-lg shadow-md w-full">
-          <p className="text-md">Kendala Petugas</p>
+          <p className="text-md font-bold">Kendala Petugas</p>
+          <h2>-</h2>
+          <p>Selama sebulan ini</p>
         </div>
         <div className="p-2 bg-orange-50 rounded-lg shadow-md w-full">
-          <p className="text-md">Pengumpulan ST</p>
+          <p className="text-md font-bold">Pengumpulan ST</p>
+          <h2 className="font-bold text-2xl">
+            {monthlyStats?.getMonthlySurveyStats?.totalJobLetters ?? "-"}
+          </h2>
+          <p>Selama sebulan ini</p>
         </div>
         <div className="p-2 bg-orange-50 rounded-lg shadow-md w-full">
-          <p className="text-md">Pengajuan SPJ</p>
+          <p className="text-md font-bold">Pengajuan Honor</p>
+          <h2 className="font-bold text-2xl">
+            {monthlyStats?.getMonthlySurveyStats?.totalSPJ ?? "-"}
+          </h2>
+          <p>Selama sebulan ini</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        {/* Bagian kiri: Chart + Filter */}
+        <div className="bg-orange-50 p-4 rounded-lg shadow-md w-full">
+          <div className="mb-4">
+            <label className="font-semibold">Filter Kegiatan Survei:</label>
+            <br />
+            <select
+              className="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white mt-2"
+              onChange={(e) => setSelectedSurvey(e.target.value)}
+              value={selectedSurvey}
+            >
+              <option value="">Semua</option>
+              {[
+                ...new Set(
+                  surveyPogressData?.getAllSubSurveyProgress.map(
+                    (item: SubSurveyProgress) => item.Name
+                  )
+                ),
+              ].map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={filteredProgress}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="Name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="targetSample" fill="#f97316" name="Target Sampel" />
+              <Bar dataKey="submitCount" fill="#3b82f6" name="Submit Sampel" />
+              <Bar dataKey="approvedCount" fill="#22c55e" name="Approved" />
+              <Bar dataKey="rejectedCount" fill="#ef4444" name="Rejected" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Bagian kanan: Pencapaian Petugas */}
+        <div className="bg-orange-50 rounded-lg shadow-md p-4 w-full h-fit">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg font-bold">PENCAPAIAN PETUGAS</h3>
+            <select
+              className="text-sm px-3 py-1 border rounded-md bg-white focus:outline-none"
+              value={selectedSubSurveyId}
+              onChange={(e) => setSelectedSubSurveyId(e.target.value)}
+            >
+              <option value="">Semua Kegiatan</option>
+              {subSurveyOptions.map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
+            {userProgressData?.allUserSurveyProgress
+              ?.filter(
+                (progress) =>
+                  !selectedSubSurveyId ||
+                  progress.subSurveyActivity.id === selectedSubSurveyId
+              )
+              .map((progress) => {
+                const percent =
+                  progress.totalAssigned > 0
+                    ? Math.round(
+                        (progress.submitCount / progress.totalAssigned) * 100
+                      )
+                    : 0;
+
+                return (
+                  <div key={progress.user.id} className="space-y-1">
+                    <div className="flex justify-between font-semibold text-sm">
+                      <span>{progress.user.name}</span>
+                      <span>{percent}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className={`h-2 rounded-full ${
+                          percent >= 80
+                            ? "bg-green-500"
+                            : percent >= 50
+                              ? "bg-yellow-400"
+                              : "bg-red-400"
+                        }`}
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-600">
+                      Target: {progress.totalAssigned} sampel, Selesai:{" "}
+                      {progress.submitCount} sampel
+                    </p>
+                  </div>
+                );
+              })}
+          </div>
         </div>
       </div>
     </div>

@@ -110,9 +110,9 @@ const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
       logo: Users,
     },
     {
-      title: "Pengajuan SPJ",
+      title: "Pengajuan Honor",
       url: "/spj",
-      hovertitle: "Pengajuan SPJ",
+      hovertitle: "Pengajuan Honor",
       logo: FileText,
     },
     {

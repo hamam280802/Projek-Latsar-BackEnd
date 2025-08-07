@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
-export const GET_USER_PROGRESS_BY_SUBSURVEY_ID = gql`
-  query UserProgressBySubSurveyActivityId($subSurveyActivityId: String!) {
-    userProgressBySubSurveyActivityId(subSurveyActivityId: $subSurveyActivityId) {
+export const GET_REAL_ALL_USER_PROGRESS = gql`
+  query AllUserSurveyProgress {
+    allUserSurveyProgress {
       id
       userId
       subSurveyActivityId
@@ -16,10 +16,6 @@ export const GET_USER_PROGRESS_BY_SUBSURVEY_ID = gql`
         name
       }
       subSurveyActivity {
-        id
-        name
-      }
-      district {
         id
         name
       }

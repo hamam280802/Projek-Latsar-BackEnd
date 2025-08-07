@@ -16,7 +16,10 @@ import {
 import { JobLetter, SubmitSPJ, User } from '@prisma/client';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
-import { SubSurveyActivityType } from './types/surveyact.types';
+import {
+  SubSurveyActivityType,
+  SubSurveyProgressType,
+} from './types/surveyact.types';
 
 @Injectable()
 export class SurveyActivityService {
@@ -163,6 +166,17 @@ export class SurveyActivityService {
       where: { subSurveyActivityId },
       include: {
         user: true, // Include user data if needed
+        subSurveyActivity: true,
+        district: true,
+      },
+    });
+  }
+
+  async getAllUserSurveyProgress() {
+    return this.prisma.userProgress.findMany({
+      include: {
+        user: true, // Include user data if needed
+        subSurveyActivity: true,
       },
     });
   }
@@ -196,8 +210,6 @@ export class SurveyActivityService {
       data: {
         userId: input.userId,
         subSurveyActivityId: input.subSurveyActivityId,
-        startDate: new Date(input.startDate),
-        endDate: new Date(input.endDate),
         eviDocumentUrl: input.eviDocumentUrl || null,
       },
     });
@@ -227,7 +239,9 @@ export class SurveyActivityService {
         userId: input.userId,
         subSurveyActivityId: input.subSurveyActivityId,
         region: input.region,
-        submitDate: input.submitDate ? new Date(input.submitDate) : undefined,
+        eviFieldUrl: input.eviFieldUrl,
+        eviSTUrl: input.eviSTUrl,
+        submitDate: input.submitDate,
       },
     });
   }
@@ -250,5 +264,97 @@ export class SurveyActivityService {
         approveDate: input.status === 'Disetujui' ? new Date() : undefined,
       },
     });
+  }
+
+  async getAllSubSurveyProgress(): Promise<SubSurveyProgressType[]> {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const subSurveys = await this.prisma.subSurveyActivity.findMany({
+      where: {
+        startDate: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+      include: {
+        UserProgress: true,
+      },
+    });
+
+    const result = subSurveys.map((subSurvey) => {
+      const totalPetugas = subSurvey.UserProgress.length;
+      const submitCount = subSurvey.UserProgress.reduce(
+        (acc, p) => acc + p.submitCount,
+        0,
+      );
+      const approvedCount = subSurvey.UserProgress.reduce(
+        (acc, p) => acc + p.approvedCount,
+        0,
+      );
+      const rejectedCount = subSurvey.UserProgress.reduce(
+        (acc, p) => acc + p.rejectedCount,
+        0,
+      );
+      const Name = subSurvey.name;
+      const SubSurveyId = subSurvey.id;
+
+      return {
+        startDate: subSurvey.startDate,
+        endDate: subSurvey.endDate,
+        targetSample: subSurvey.targetSample,
+        totalPetugas,
+        submitCount,
+        approvedCount,
+        rejectedCount,
+        Name,
+        subSurveyActivityId: SubSurveyId,
+      };
+    });
+
+    return result;
+  }
+
+  async getMonthlySurveyStats() {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const [jobLetters, spj, userProgress] = await Promise.all([
+      this.prisma.jobLetter.count({
+        where: {
+          createdAt: {
+            gte: startOfMonth,
+            lte: endOfMonth,
+          },
+        },
+      }),
+      this.prisma.submitSPJ.count({
+        where: {
+          createdAt: {
+            gte: startOfMonth,
+            lte: endOfMonth,
+          },
+        },
+      }),
+      this.prisma.userProgress.count({
+        where: {
+          lastUpdated: {
+            gte: startOfMonth,
+            lte: endOfMonth,
+          },
+        },
+      }),
+    ]);
+
+    return {
+      totalJobLetters: jobLetters,
+      totalSPJ: spj,
+      totalActiveUsers: userProgress,
+    };
+  }
+
+  async allDistricts() {
+    return this.prisma.district.findMany();
   }
 }

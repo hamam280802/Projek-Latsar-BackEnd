@@ -14,11 +14,18 @@ import { CREATE_USER_PROGRESS } from "@/src/graphql/actions/create-userprogress.
 import { UPDATE_USER_PROGRESS } from "@/src/graphql/actions/update-userprogress.action";
 import { GET_ALL_USERS } from "@/src/graphql/actions/find-allusers.action";
 import { GET_USER_PROGRESS_BY_SUBSURVEY_ID } from "@/src/graphql/actions/find-usersurveyprogress";
+import { GET_ALL_DISTRICT } from "@/src/graphql/actions/find-alldistrict.action";
 
 type SurveyActivity = {
   id: string;
   name: string;
   slug: string;
+};
+
+type District = {
+  id: string;
+  city: string;
+  name: string;
 };
 
 type SubSurveyActivity = {
@@ -50,6 +57,8 @@ type UserProgress = {
   submitCount: number;
   approvedCount: number;
   rejectedCount: number;
+  lastUpdated: string;
+  districtId: string;
 };
 
 type UserProgressWithUser = UserProgress & { user?: { name: string } };
@@ -94,6 +103,7 @@ function Admin() {
     approvedCount: 0,
     rejectedCount: 0,
     lastUpdated: "",
+    districtId: "",
   });
 
   const [updateUserProgressForm, setUpdateUserProgressForm] = useState({
@@ -123,6 +133,7 @@ function Admin() {
   );
 
   const { data: userData } = useQuery(GET_ALL_USERS);
+  const { data: districtData } = useQuery(GET_ALL_DISTRICT);
 
   const [fetchUserProgress, { data: userProgressData }] = useLazyQuery(
     GET_USER_PROGRESS_BY_SUBSURVEY_ID
@@ -335,6 +346,7 @@ function Admin() {
             approvedCount: Number(userProgressForm.approvedCount),
             rejectedCount: Number(userProgressForm.rejectedCount),
             lastUpdated: new Date(userProgressForm.lastUpdated).toISOString(),
+            districtId: userProgressForm.districtId,
           },
         },
       });
@@ -348,6 +360,7 @@ function Admin() {
         approvedCount: 0,
         rejectedCount: 0,
         lastUpdated: "",
+        districtId: "",
       });
     } catch (err) {
       toast.error("Gagal tambah user progress");
@@ -882,6 +895,24 @@ function Admin() {
               onChange={handleChangeUserProgress}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
+          </div>
+          <div>
+            <label htmlFor="districtId" className="block text-sm font-bold">
+              Kecamatan
+            </label>
+            <select
+              id="districtId"
+              value={userProgressForm.districtId}
+              onChange={handleChangeUserProgress}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">-- Pilih Kecamatan --</option>
+              {districtData?.getAllSurveyDistrict?.map((district: District) => (
+                <option key={district.id} value={district.id}>
+                  {district.name}
+                </option>
+              ))}
+            </select>
           </div>
           <button type="submit" className={`${styles.button} my-2 text-white`}>
             Tambah

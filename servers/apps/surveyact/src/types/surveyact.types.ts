@@ -23,6 +23,18 @@ export class SurveyActivityType {
 }
 
 @ObjectType()
+export class DistrictType {
+  @Field(() => ID)
+  id: string;
+
+  @Field()
+  city: string;
+
+  @Field()
+  name: string;
+}
+
+@ObjectType()
 export class SubSurveyActivityType {
   @Field(() => ID)
   id: string;
@@ -60,6 +72,15 @@ export class UserProgressType {
   @Field(() => ID)
   subSurveyActivityId: string;
 
+  @Field(() => SubSurveyActivityType, { nullable: true })
+  subSurveyActivity?: SubSurveyActivityType;
+
+  @Field(() => ID)
+  districtId: string;
+
+  @Field(() => DistrictType, { nullable: true })
+  district?: DistrictType;
+
   @Field()
   totalAssigned: number;
 
@@ -78,6 +99,12 @@ export class UserProgressType {
 
 @ObjectType()
 export class SubSurveyProgressType {
+  @Field(() => String)
+  Name: string;
+
+  @Field(() => ID)
+  subSurveyActivityId: string;
+
   @Field(() => Date, { nullable: true })
   startDate?: Date;
 
@@ -101,18 +128,6 @@ export class SubSurveyProgressType {
 }
 
 @ObjectType()
-export class DistrictType {
-  @Field(() => ID)
-  id: string;
-
-  @Field()
-  city: string;
-
-  @Field()
-  name: string;
-}
-
-@ObjectType()
 export class SubmitSPJType {
   @Field(() => ID)
   id: string;
@@ -128,12 +143,6 @@ export class SubmitSPJType {
 
   @Field(() => ID)
   subSurveyActivityId: string;
-
-  @Field()
-  startDate: Date;
-
-  @Field()
-  endDate: Date;
 
   @Field(() => AgreeState)
   submitState: AgreeState;
@@ -174,9 +183,6 @@ export class JobLetterType {
   @Field()
   region: string;
 
-  @Field(() => StatusST)
-  jobLetterState: StatusST;
-
   @Field(() => Date, { nullable: true })
   submitDate: Date | null;
 
@@ -189,6 +195,24 @@ export class JobLetterType {
   @Field(() => String, { nullable: true })
   rejectNote: string | null;
 
+  @Field(() => String, { nullable: true })
+  eviFieldUrl: string | null;
+
+  @Field(() => String, { nullable: true })
+  eviSTUrl: string | null;
+
   @Field()
   createdAt: Date;
+}
+
+@ObjectType()
+export class MonthlyStatsType {
+  @Field(() => Int)
+  totalJobLetters: number;
+
+  @Field(() => Int)
+  totalSPJ: number;
+
+  @Field(() => Int)
+  totalActiveUsers: number;
 }
