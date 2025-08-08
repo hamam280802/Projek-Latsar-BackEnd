@@ -13,7 +13,7 @@ import { GET_ALL_SUB_SURVEY_ACTIVITIES } from "@/src/graphql/actions/find-allsub
 import { CREATE_USER_PROGRESS } from "@/src/graphql/actions/create-userprogress.action";
 import { UPDATE_USER_PROGRESS } from "@/src/graphql/actions/update-userprogress.action";
 import { GET_ALL_USERS } from "@/src/graphql/actions/find-allusers.action";
-import { GET_USER_PROGRESS_BY_SUBSURVEY_ID } from "@/src/graphql/actions/find-usersurveyprogress";
+import { GET_USER_PROGRESS_BY_SUBSURVEY_ID } from "@/src/graphql/actions/find-usersurveyprogress.action";
 import { GET_ALL_DISTRICT } from "@/src/graphql/actions/find-alldistrict.action";
 
 type SurveyActivity = {

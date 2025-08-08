@@ -4,16 +4,19 @@ import React, { useState } from "react";
 import { GET_SURVEY_ACTIVITIES_BY_SLUG } from "@/src/graphql/actions/find-surveyact.action";
 import { GET_ALL_SUB_SURVEY_ACTIVITIES } from "@/src/graphql/actions/find-allsubsurveyact.action";
 import { GET_ALL_SUB_SURVEY_PROGRESS } from "@/src/graphql/actions/find-allsubsurveyprogress.action";
-import { GET_USER_PROGRESS_BY_SUBSURVEY_ID } from "@/src/graphql/actions/find-usersurveyprogress";
+import { GET_USER_PROGRESS_BY_SUBSURVEY_ID } from "@/src/graphql/actions/find-usersurveyprogress.action";
 import { useParams } from "next/navigation";
 import { useQuery } from "@apollo/client";
+import useUser from "@/src/hooks/useUser";
 
 const ProgressTemplate = () => {
+  const { user } = useUser();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { slug } = useParams() as { slug: string };
   const [selectedSubSurvey, setSelectedSubSurvey] = useState<string | null>(
     null
   );
+  const [selectedName, setSelectedName] = useState<string | null>(null);
 
   const { data: surveyData, loading: loadingSurvey } = useQuery(
     GET_SURVEY_ACTIVITIES_BY_SLUG,
@@ -73,7 +76,7 @@ const ProgressTemplate = () => {
           {subSurveyActivities.map((subSurvey: any) => (
             <button
               key={subSurvey.id}
-              onClick={() => setSelectedSubSurvey(subSurvey.id)}
+              onClick={() => {setSelectedSubSurvey(subSurvey.id); setSelectedName(subSurvey.name)}}
               className={`p-2 rounded-md border font-semibold w-[12%] ${
                 selectedSubSurvey === subSurvey.id
                   ? "bg-orange-500 text-white"
@@ -88,7 +91,7 @@ const ProgressTemplate = () => {
 
       {selectedSubSurvey && progress && (
         <div className="bg-orange-50 rounded-lg p-2 w-full shadow-md">
-          <h1 className="text-xl font-bold">Nama Survei</h1>
+          <h1 className="text-xl font-bold">{selectedName}</h1>
           <div className="p-2 space-x-4 flex justify-between items-center">
             <div className="bg-slate-400 rounded-lg border w-full flex flex-col p-3 space-y-3 font-semibold">
               <p>Periode</p>

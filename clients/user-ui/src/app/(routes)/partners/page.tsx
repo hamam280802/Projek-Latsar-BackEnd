@@ -10,6 +10,7 @@ import styles from "@/src/utils/style";
 import { GET_ALL_USERS } from "@/src/graphql/actions/find-allusers.action";
 import { GET_ALL_OF_SUB_SURVEY_ACTIVITIES } from "@/src/graphql/actions/find-realallsubsurvey.action";
 import { set } from "mongoose";
+import useUser from "@/src/hooks/useUser";
 
 function Partners() {
   type User = {
@@ -56,6 +57,8 @@ function Partners() {
       name: string;
     };
   };
+
+  const { user } = useUser();
 
   const [input, setInput] = useState({
     userId: "",
@@ -260,6 +263,9 @@ function Partners() {
           <tbody className="block max-h-96 overflow-y-auto w-full">
             {dataJobLetter?.getAllJobLetters
               ?.filter((jobletter: JobLetterWithUserNSubSurvey) => {
+                if (user?.role !== "Admin" && jobletter.userId !== user?.id) {
+                  return false;
+                }
                 const matchesRegion =
                   filter.wilayah === "" || jobletter.region === filter.wilayah;
                 const matchesJenisSurvei =
@@ -276,8 +282,12 @@ function Partners() {
                   key={jobletter.id}
                   className="table w-full table-fixed bg-white text-black"
                 >
-                  <td className="px-6 py-3 font-semibold">{jobletter?.user?.name}</td>
-                  <td className="px-6 py-3 font-semibold">{jobletter?.region}</td>
+                  <td className="px-6 py-3 font-semibold">
+                    {jobletter?.user?.name}
+                  </td>
+                  <td className="px-6 py-3 font-semibold">
+                    {jobletter?.region}
+                  </td>
                   <td className="px-6 py-3 font-semibold">
                     {jobletter?.subSurveyActivity?.name}
                   </td>
@@ -286,7 +296,8 @@ function Partners() {
                       <div>
                         <span className="inline-block px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-xl">
                           Diserahkan
-                        </span><br />
+                        </span>
+                        <br />
                         <span>{jobletter.submitDate.split("T")[0]}</span>
                       </div>
                     ) : (
@@ -300,12 +311,20 @@ function Partners() {
                   <td className="px-6 py-3">
                     <div>
                       {jobletter?.agreeState === "Disetujui" ? (
-                        <span className="inline-block px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-xl"> Disetujui</span>
-                      ) : jobletter?.agreeState === "Ditolak" ?(
-                        <span className="inline-block px-2 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-xl">Ditolak</span>
+                        <span className="inline-block px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-xl">
+                          {" "}
+                          Disetujui
+                        </span>
+                      ) : jobletter?.agreeState === "Ditolak" ? (
+                        <span className="inline-block px-2 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-xl">
+                          Ditolak
+                        </span>
                       ) : (
-                        <span className="inline-block px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-xl">Menunggu</span>
-                      )}<br />
+                        <span className="inline-block px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-xl">
+                          Menunggu
+                        </span>
+                      )}
+                      <br />
                       <span>{jobletter?.approveDate?.split("T")[0]}</span>
                     </div>
                   </td>
@@ -324,18 +343,6 @@ function Partners() {
                 </tr>
               ))}
           </tbody>
-          <tfoot className="block w-full rounded-b-lg">
-            <tr className="text-gray-700 bg-orange-50 table w-full table-fixed">
-              <td colSpan={4} className="px-6 py-2">
-                <div className="flex justify-end items-center">
-                  <button className="flex items-center px-2 bg-gray-900 rounded-md border-gray-900 border-2">
-                    <p className="text-sm font-bold text-white">Tutup Jadwal</p>
-                    <div className="pl-1 pb-1"></div>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tfoot>
         </table>
       </div>
       {/* Form Pengajuan Surat Tugas */}
@@ -415,61 +422,6 @@ function Partners() {
           </button>
         </form>
       </div>
-      {/* Form Status Surat Tugas */}
-      {/* <div className="bg-orange-50 rounded-lg p-4 shadow-md">
-        <h1 className="font-bold text-2xl mb-4">Form Status Surat Tugas</h1>
-        <form onSubmit={handleUpdate} className="space-y-4">
-          <div>
-            <select
-              id="id"
-              value={update.id}
-              onChange={handleChangeUpdate}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            >
-              <option value="">-- Pilih Surat Tugas --</option>
-              {dataJobLetter?.getAllJobLetters?.map(
-                (jobLetter: JobLetterWithUserNSubSurvey) => (
-                  <option key={jobLetter.id} value={jobLetter.id}>
-                    {jobLetter?.user?.name} -{" "}
-                    {jobLetter?.subSurveyActivity?.name} - {jobLetter.region} -{" "}
-                    {jobLetter.agreeState}
-                  </option>
-                )
-              )}
-            </select>
-          </div>
-          <div>
-            <select
-              id="status"
-              value={update.status}
-              onChange={handleChangeUpdate}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            >
-              <option value="">-- Pilih Status --</option>
-              <option value="Menunggu">Menunggu</option>
-              <option value="Disetujui">Disetujui</option>
-              <option value="Ditolak">Ditolak</option>
-            </select>
-          </div>
-          <div>
-            <input
-              type="text"
-              id="rejectNote"
-              placeholder="Catatan Persetujuan"
-              value={update.rejectNote}
-              onChange={handleChangeUpdate}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loadingUpdate}
-            className={`${styles.button} my-2 text-white`}
-          >
-            {loadingUpdate ? "Mengirim..." : "Update Status Surat Tugas"}
-          </button>
-        </form>
-      </div> */}
       {isModalOpen && selectedJobLetter && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 font-Poppins">
           <div className="bg-white w-full max-w-2xl mx-auto rounded-lg shadow-lg overflow-hidden">
@@ -537,58 +489,60 @@ function Partners() {
               </div>
 
               {/* Form Update Status */}
-              <form
-                onSubmit={handleUpdate}
-                className="space-y-3 pt-4 border-t mt-4"
-              >
-                <input
-                  type="hidden"
-                  id="id"
-                  onChange={handleChangeUpdate}
-                  value={update.id}
-                />
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ubah Status Persetujuan
-                  </label>
-                  <select
-                    id="status"
-                    value={update.status}
-                    onChange={handleChangeUpdate}
-                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  >
-                    <option value="">-- Pilih Status --</option>
-                    <option value="Menunggu">Menunggu</option>
-                    <option value="Disetujui">Disetujui</option>
-                    <option value="Ditolak">Ditolak</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Catatan
-                  </label>
+              {user?.role === "Admin" && (
+                <form
+                  onSubmit={handleUpdate}
+                  className="space-y-3 pt-4 border-t mt-4"
+                >
                   <input
-                    type="text"
-                    id="rejectNote"
-                    value={update.rejectNote}
+                    type="hidden"
+                    id="id"
                     onChange={handleChangeUpdate}
-                    placeholder="Catatan jika ditolak atau alasan lainnya"
-                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    value={update.id}
                   />
-                </div>
 
-                <div className="flex justify-end">
-                  <button
-                    type="submit"
-                    disabled={loadingUpdate}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                  >
-                    {loadingUpdate ? "Menyimpan..." : "Update Status"}
-                  </button>
-                </div>
-              </form>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Ubah Status Persetujuan
+                    </label>
+                    <select
+                      id="status"
+                      value={update.status}
+                      onChange={handleChangeUpdate}
+                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    >
+                      <option value="">-- Pilih Status --</option>
+                      <option value="Menunggu">Menunggu</option>
+                      <option value="Disetujui">Disetujui</option>
+                      <option value="Ditolak">Ditolak</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Catatan
+                    </label>
+                    <input
+                      type="text"
+                      id="rejectNote"
+                      value={update.rejectNote}
+                      onChange={handleChangeUpdate}
+                      placeholder="Catatan jika ditolak atau alasan lainnya"
+                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={loadingUpdate}
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                      {loadingUpdate ? "Menyimpan..." : "Update Status"}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
             <div className="flex justify-end px-6 py-4">
               <button

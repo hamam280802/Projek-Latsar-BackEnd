@@ -138,6 +138,11 @@ export class SurveyActivityResolver {
   }
 
   @Query(() => [UserProgressType])
+  async userProgressSurveyByUserId(@Args('userId') userId: string) {
+    return this.service.getUserProgressSurveyByUserId(userId);
+  }
+
+  @Query(() => [UserProgressType])
   async allUserSurveyProgress() {
     return this.service.getAllUserSurveyProgress();
   }

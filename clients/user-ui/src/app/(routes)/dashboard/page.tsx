@@ -408,7 +408,7 @@ function Dashboard() {
         </div>
         <div className="p-2 bg-orange-50 rounded-lg shadow-md w-full">
           <p className="text-md font-bold">Kendala Petugas</p>
-          <h2>-</h2>
+          <h2 className="font-bold text-2xl">0</h2>
           <p>Selama sebulan ini</p>
         </div>
         <div className="p-2 bg-orange-50 rounded-lg shadow-md w-full">

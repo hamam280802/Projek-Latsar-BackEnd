@@ -9,6 +9,7 @@ import styles from "@/src/utils/style";
 import { GET_ALL_USERS } from "@/src/graphql/actions/find-allusers.action";
 import { GET_ALL_OF_SUB_SURVEY_ACTIVITIES } from "@/src/graphql/actions/find-realallsubsurvey.action";
 import toast from "react-hot-toast";
+import useUser from "@/src/hooks/useUser";
 
 function SPJ() {
   type User = {
@@ -84,6 +85,8 @@ function SPJ() {
   const { data: userData } = useQuery(GET_ALL_USERS);
   const { data: subSurveyData } = useQuery(GET_ALL_OF_SUB_SURVEY_ACTIVITIES);
   const { data: SPJData } = useQuery(GET_ALL_SPJ);
+
+  const { user } = useUser();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -199,6 +202,9 @@ function SPJ() {
           <tbody className="block max-h-96 overflow-y-auto w-full">
             {SPJData?.getAllSPJ
               ?.filter((spj: SPJWithUserNSubSurvey) => {
+                if (user?.role !== "Admin" && spj.userId !== user?.id) {
+                  return false;
+                }
                 const matchesJenis =
                   !filter.jenisSurvei ||
                   spj.subSurveyActivity?.name === filter.jenisSurvei;
@@ -210,7 +216,7 @@ function SPJ() {
               .map((spj: SPJWithUserNSubSurvey) => (
                 <tr
                   key={spj.id}
-                  className="table w-full table-fixed bg-white border-b"
+                  className="table w-full table-fixed bg-white border-b text-black font-semibold"
                 >
                   <td className="px-6 py-4">{spj?.user?.name || "-"}</td>
                   <td className="px-6 py-4">
@@ -244,21 +250,10 @@ function SPJ() {
                 </tr>
               ))}
           </tbody>
-          <tfoot className="block w-full rounded-b-lg">
-            <tr className="text-gray-700 bg-orange-50 table w-full table-fixed">
-              <td colSpan={4} className="px-6 py-2">
-                <div className="flex justify-end items-center">
-                  <button className="flex items-center px-2 bg-gray-900 rounded-md border-gray-900 border-2">
-                    <p className="text-sm font-bold text-white">Tutup Jadwal</p>
-                    <div className="pl-1 pb-1"></div>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tfoot>
         </table>
       </div>
       {/* Form Pengajuan Honor */}
+      { user?.role === "Admin" && (
       <div className="bg-orange-50 rounded-lg p-4 shadow-md">
         <h1 className="text-2xl font-bold mb-4">Form Pengajuan Honor</h1>
         <form onSubmit={handleSubmit} className="space-y-4 ">
@@ -313,59 +308,7 @@ function SPJ() {
           </button>
         </form>
       </div>
-      {/* Form Status SPJ */}
-      {/* <div className="bg-orange-50 rounded-lg p-4 shadow-md">
-        <h1 className="text-2xl font-bold mb-4">Form Status SPJ</h1>
-        <form onSubmit={handleUpdate} className="space-y-4">
-          <div>
-            <select
-              id="id"
-              value={update.id}
-              onChange={handleChangeUpdate}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            >
-              <option value="">-- Pilih SPJ --</option>
-              {SPJData?.getAllSPJ?.map((spj: SPJWithUserNSubSurvey) => (
-                <option key={spj.id} value={spj.id}>
-                  {spj?.user?.name}-{spj?.subSurveyActivity?.name}-
-                  {spj.submitState}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <select
-              id="status"
-              value={update.status}
-              onChange={(e) => setUpdate({ ...update, status: e.target.value })}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            >
-              <option value="Menunggu">Menunggu</option>
-              <option value="Disetujui">Disetujui</option>
-              <option value="Ditolak">Ditolak</option>
-            </select>
-          </div>
-          <div>
-            <input
-              type="text"
-              id="verifyNote"
-              placeholder="Catatan"
-              value={update.verifyNote}
-              onChange={(e) =>
-                setUpdate({ ...update, verifyNote: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={newloading}
-            className={`${styles.button} my-2 text-white`}
-          >
-            {newloading ? "Mengirim..." : "Ubah Status SPJ"}
-          </button>
-        </form>
-      </div> */}
+      )}
       {isModalOpen && selectedSPJ && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg space-y-4 overflow-y-auto max-h-[90vh]">
@@ -416,6 +359,7 @@ function SPJ() {
                   {selectedSPJ.submitState}
                 </span>
               </div>
+            { user?.role === "Admin" && (
             <form
               onSubmit={handleUpdate}
               className="space-y-3 pt-4 border-t mt-4"
@@ -469,6 +413,7 @@ function SPJ() {
                 {newloading ? "Menyimpan..." : "Simpan Perubahan"}
               </button>
             </form>
+            )}
             <div className="flex justify-end mt-4">
               <button
                 onClick={() => {
@@ -484,7 +429,6 @@ function SPJ() {
           </div>
         </div>
       )}
-      ...
     </div>
   );
 }

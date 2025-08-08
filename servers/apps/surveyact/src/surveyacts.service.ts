@@ -172,6 +172,17 @@ export class SurveyActivityService {
     });
   }
 
+  async getUserProgressSurveyByUserId(userId: string) {
+    return this.prisma.userProgress.findMany({
+      where: { userId },
+      include: {
+        user: true, // Include user data if needed
+        subSurveyActivity: true,
+        district: true,
+      },
+    });
+  }
+
   async getAllUserSurveyProgress() {
     return this.prisma.userProgress.findMany({
       include: {

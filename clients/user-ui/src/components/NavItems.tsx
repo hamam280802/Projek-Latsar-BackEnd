@@ -19,8 +19,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { GET_ALL_SURVEY_ACTIVITIES } from "@/src/graphql/actions/find-allsurveyact.action";
 import { useQuery } from "@apollo/client";
+import useUser from "../hooks/useUser";
 
 const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
+  const { user } = useUser();
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [activeSubItem, setActiveSubItem] = useState<string | null>(null);
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -56,13 +58,15 @@ const NavItems = ({ isMinimized = false }: { isMinimized?: boolean }) => {
       style: "border-b-2 border-t-2 border-white py-2",
       logo: House,
     },
-    {
+    ...(user?.role === "Admin"
+    ? [{
       title: "Admin",
       hovertitle: "Admin",
       url: "/admin",
       logo: User,
       style: "border-b-2 border-white pb-2",
-    },
+    }]
+    : []),
     {
       title: "KEGIATAN LAPANGAN",
       url: "#kegiatanlapangan",
