@@ -118,13 +118,13 @@ const Login = ({ setActiveState }: { setActiveState: (e: string) => void }) => {
         <h5 className="text-center pt-6 font-Poppins text-[14px]">
           Or join with
         </h5>
-        <div
+        {/* <div
           className="flex items-center justify-center my-2"
           onClick={() => signIn()}
-        >
-          <FcGoogle size={30} className="cursor-pointer mr-2" />
+        > */}
+          {/* <FcGoogle size={30} className="cursor-pointer mr-2" /> */}
           {/* <AiFillGithub size={30} className="cursor-pointer ml-2" /> */}
-        </div>
+        {/* </div> */}
         <h5 className="text-center pt-2 font-Poppins text-[14px] ">
           Belum punya akun?
           <span
