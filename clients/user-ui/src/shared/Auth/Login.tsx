@@ -115,9 +115,9 @@ const Login = ({ setActiveState }: { setActiveState: (e: string) => void }) => {
             className={`${styles.button} my-2 text-white`}
           />
         </div>
-        <h5 className="text-center pt-6 font-Poppins text-[14px]">
+        {/* <h5 className="text-center pt-6 font-Poppins text-[14px]">
           Or join with
-        </h5>
+        </h5> */}
         {/* <div
           className="flex items-center justify-center my-2"
           onClick={() => signIn()}
