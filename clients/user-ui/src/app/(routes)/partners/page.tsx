@@ -237,6 +237,7 @@ function Partners() {
       </div>
       <div className="font-bold text-xl">Daftar Petugas</div>
       <div className="relative shadow-md">
+        <div className="overflow-x-auto">
         <table className="table-fixed w-full text-sm text-left text-gray-500">
           <thead className="text-gray-700 bg-orange-50 block w-full sm:rounded-t-lg">
             <tr className="table w-full table-fixed">
@@ -344,6 +345,7 @@ function Partners() {
               ))}
           </tbody>
         </table>
+        </div>
       </div>
       {/* Form Pengajuan Surat Tugas */}
       <div className="bg-orange-50 rounded-lg p-4 shadow-md">
@@ -423,17 +425,17 @@ function Partners() {
         </form>
       </div>
       {isModalOpen && selectedJobLetter && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 font-Poppins">
-          <div className="bg-white w-full max-w-2xl mx-auto rounded-lg shadow-lg overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black bg-opacity-50 font-Poppins overflow-y-auto py-6">
+          <div className="bg-white w-full max-w-2xl mx-auto rounded-lg shadow-lg max-h-[90vh] flex flex-col">
             {/* Header Modal */}
-            <div className="flex justify-between items-center px-6 py-4 border-b">
+            <div className="flex justify-between items-center px-6 py-4 border-b shrink-0">
               <h2 className="text-xl font-bold text-gray-800">
                 Detail Pengajuan Surat Tugas
               </h2>
             </div>
 
-            {/* Body */}
-            <div className="p-6 space-y-4">
+            {/* Body: ini yang di-scroll */}
+            <div className="p-6 space-y-4 overflow-y-auto">
               <div>
                 <p>
                   <strong>Nama Petugas:</strong>{" "}
@@ -454,18 +456,13 @@ function Partners() {
                 {convertedEviFieldUrl && (
                   <iframe
                     src={`https://drive.google.com/file/d/${convertedEviFieldUrl}/preview`}
-                    width="100%"
-                    height="300"
-                    className="rounded-md border"
+                    className="w-full h-72 rounded-md border"
                   />
                 )}
-
                 {convertedEviSTUrl && (
                   <iframe
                     src={`https://drive.google.com/file/d/${convertedEviSTUrl}/preview`}
-                    width="100%"
-                    height="300"
-                    className="rounded-md border"
+                    className="w-full h-72 rounded-md border"
                   />
                 )}
               </div>
@@ -480,8 +477,8 @@ function Partners() {
                     selectedJobLetter.agreeState === "Disetujui"
                       ? "bg-green-100 text-green-700"
                       : selectedJobLetter.agreeState === "Ditolak"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-yellow-100 text-yellow-700"
                   }`}
                 >
                   {selectedJobLetter.agreeState}
@@ -544,7 +541,9 @@ function Partners() {
                 </form>
               )}
             </div>
-            <div className="flex justify-end px-6 py-4">
+
+            {/* Footer */}
+            <div className="flex justify-end px-6 py-4 border-t shrink-0">
               <button
                 onClick={() => {
                   setIsModalOpen(false);

@@ -229,8 +229,8 @@ function SPJ() {
                 spj.submitState === "Disetujui"
                   ? "bg-green-100 text-green-700"
                   : spj.submitState === "Ditolak"
-                    ? "bg-red-100 text-red-700"
-                    : "bg-yellow-100 text-yellow-700"
+                  ? "bg-red-100 text-red-700"
+                  : "bg-yellow-100 text-yellow-700"
               }`}
                     >
                       {spj?.submitState}
@@ -253,97 +253,107 @@ function SPJ() {
         </table>
       </div>
       {/* Form Pengajuan Honor */}
-      { user?.role === "Admin" && (
-      <div className="bg-orange-50 rounded-lg p-4 shadow-md">
-        <h1 className="text-2xl font-bold mb-4">Form Pengajuan Honor</h1>
-        <form onSubmit={handleSubmit} className="space-y-4 ">
-          <div>
-            <select
-              id="userId"
-              value={input.userId}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            >
-              <option value="">-- Pilih Pengguna --</option>
-              {userData?.getUsers?.map((user: User) => (
-                <option key={user.id} value={user.id}>
-                  {user.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <select
-              id="subSurveyActivityId"
-              value={input.subSurveyActivityId}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            >
-              <option value="">-- Pilih Kegiatan --</option>
-              {subSurveyData?.allSubSurveyActivities?.map(
-                (sub: SubSurveyActivity) => (
-                  <option key={sub.id} value={sub.id}>
-                    {sub.name}
+      {user?.role === "Admin" && (
+        <div className="bg-orange-50 rounded-lg p-4 shadow-md">
+          <h1 className="text-2xl font-bold mb-4">Form Pengajuan Honor</h1>
+          <form onSubmit={handleSubmit} className="space-y-4 ">
+            <div>
+              <select
+                id="userId"
+                value={input.userId}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              >
+                <option value="">-- Pilih Pengguna --</option>
+                {userData?.getUsers?.map((user: User) => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
                   </option>
-                )
-              )}
-            </select>
-          </div>
-          <div>
-            <input
-              type="text"
-              id="eviDocumentUrl"
-              placeholder="Link Bukti Pengeluaran"
-              value={input.eviDocumentUrl}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className={`${styles.button} my-2 text-white`}
-          >
-            {loading ? "Mengirim..." : "Ajukan SPJ"}
-          </button>
-        </form>
-      </div>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                id="subSurveyActivityId"
+                value={input.subSurveyActivityId}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              >
+                <option value="">-- Pilih Kegiatan --</option>
+                {subSurveyData?.allSubSurveyActivities?.map(
+                  (sub: SubSurveyActivity) => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.name}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+            <div>
+              <input
+                type="text"
+                id="eviDocumentUrl"
+                placeholder="Link Bukti Pengajuan Honor"
+                value={input.eviDocumentUrl}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`${styles.button} my-2 text-white`}
+            >
+              {loading ? "Mengirim..." : "Ajukan SPJ"}
+            </button>
+          </form>
+        </div>
       )}
       {isModalOpen && selectedSPJ && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg space-y-4 overflow-y-auto max-h-[90vh]">
-            <div className="flex justify-between pb-2 border-b">
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center overflow-y-auto py-6"
+          role="dialog"
+          aria-modal="true"
+        >
+          {/* Card modal */}
+          <div className="bg-white w-[90%] max-w-lg rounded-lg shadow-lg max-h-[90vh] flex flex-col">
+            {/* Header (tetap di atas) */}
+            <div className="flex justify-between items-center px-6 py-4 border-b shrink-0">
               <h2 className="text-xl font-bold">Detail SPJ</h2>
-            <p>
-              <a
-                target="_blank"
-                href={selectedSPJ.eviDocumentUrl}
-                className="bg-blue-500 text-white p-1 rounded-md"
-              >
-                Lihat Bukti
-              </a>
-            </p>
+              <p>
+                <a
+                  target="_blank"
+                  href={selectedSPJ.eviDocumentUrl}
+                  className="bg-blue-500 text-white px-2 py-1 rounded-md"
+                >
+                  Lihat Bukti
+                </a>
+              </p>
             </div>
-            <p>
-              <strong>Nama Petugas:</strong> {selectedSPJ.user?.name || "-"}
-            </p>
-            <p>
-              <strong>Jenis Survei:</strong>{" "}
-              {selectedSPJ.subSurveyActivity?.name || "-"}
-            </p>
-            <p>
-              <strong>Submit State:</strong> {selectedSPJ.submitState}
-            </p>
-            <p>
-              <strong>Submit Date:</strong> {selectedSPJ.submitDate || "-"}
-            </p>
-            <p>
-              <strong>Approve Date:</strong> {selectedSPJ.approveDate || "-"}
-            </p>
-            <p>
-              <strong>Catatan:</strong> {selectedSPJ.verifyNote || "-"}
-            </p>
-            <div className="pt-2">
+
+            {/* Body (bagian ini yang scroll) */}
+            <div className="p-6 space-y-3 overflow-y-auto">
+              <p>
+                <strong>Nama Petugas:</strong> {selectedSPJ.user?.name || "-"}
+              </p>
+              <p>
+                <strong>Jenis Survei:</strong>{" "}
+                {selectedSPJ.subSurveyActivity?.name || "-"}
+              </p>
+              <p>
+                <strong>Submit State:</strong> {selectedSPJ.submitState}
+              </p>
+              <p>
+                <strong>Submit Date:</strong> {selectedSPJ.submitDate || "-"}
+              </p>
+              <p>
+                <strong>Approve Date:</strong> {selectedSPJ.approveDate || "-"}
+              </p>
+              <p>
+                <strong>Catatan:</strong> {selectedSPJ.verifyNote || "-"}
+              </p>
+
+              <div className="pt-2">
                 <p className="mb-1">
                   <strong>Status Persetujuan:</strong>
                 </p>
@@ -352,69 +362,77 @@ function SPJ() {
                     selectedSPJ.submitState === "Disetujui"
                       ? "bg-green-100 text-green-700"
                       : selectedSPJ.submitState === "Ditolak"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-yellow-100 text-yellow-700"
                   }`}
                 >
                   {selectedSPJ.submitState}
                 </span>
               </div>
-            { user?.role === "Admin" && (
-            <form
-              onSubmit={handleUpdate}
-              className="space-y-3 pt-4 border-t mt-4"
-            >
-              <h3 className="font-semibold">Form Ubah Status SPJ</h3>
-              <input
-                type="hidden"
-                id="id"
-                value={update.id}
-                onChange={handleChangeUpdate}
-              />
-              <div>
-                <select
-                  id="status"
-                  value={update.status}
-                  onChange={(e) =>
-                    setUpdate({
-                      ...update,
-                      status: e.target.value,
-                      id: selectedSPJ.id,
-                    })
-                  }
-                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+
+              {user?.role === "Admin" && (
+                <form
+                  onSubmit={handleUpdate}
+                  className="space-y-3 pt-4 border-t mt-4"
                 >
-                  <option value="Menunggu">Menunggu</option>
-                  <option value="Disetujui">Disetujui</option>
-                  <option value="Ditolak">Ditolak</option>
-                </select>
-              </div>
-              <div>
-                <input
-                  type="text"
-                  id="verifyNote"
-                  placeholder="Catatan"
-                  value={update.verifyNote}
-                  onChange={(e) =>
-                    setUpdate({
-                      ...update,
-                      verifyNote: e.target.value,
-                      id: selectedSPJ.id,
-                    })
-                  }
-                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={newloading}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-              >
-                {newloading ? "Menyimpan..." : "Simpan Perubahan"}
-              </button>
-            </form>
-            )}
-            <div className="flex justify-end mt-4">
+                  <h3 className="font-semibold">Form Ubah Status SPJ</h3>
+
+                  <input
+                    type="hidden"
+                    id="id"
+                    value={update.id}
+                    onChange={handleChangeUpdate}
+                  />
+
+                  <div>
+                    <select
+                      id="status"
+                      value={update.status}
+                      onChange={(e) =>
+                        setUpdate({
+                          ...update,
+                          status: e.target.value,
+                          id: selectedSPJ.id,
+                        })
+                      }
+                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    >
+                      <option value="Menunggu">Menunggu</option>
+                      <option value="Disetujui">Disetujui</option>
+                      <option value="Ditolak">Ditolak</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <input
+                      type="text"
+                      id="verifyNote"
+                      placeholder="Catatan"
+                      value={update.verifyNote}
+                      onChange={(e) =>
+                        setUpdate({
+                          ...update,
+                          verifyNote: e.target.value,
+                          id: selectedSPJ.id,
+                        })
+                      }
+                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={newloading}
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                  >
+                    {newloading ? "Menyimpan..." : "Simpan Perubahan"}
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* Footer (tetap di bawah) */}
+            <div className="flex justify-end gap-2 px-6 py-4 border-t shrink-0">
               <button
                 onClick={() => {
                   setIsModalOpen(false);
