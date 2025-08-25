@@ -1,19 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
+  CreateContentIssueDto,
   CreateDistrictDTO,
+  createIssueCommentDto,
   CreateJobLetterDTO,
   CreateSPJDTO,
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
   CreateUserProgressDTO,
+  UpdateContentIssueDto,
+  updateIssueCommentDto,
   UpdateJobLetterStatusDTO,
   UpdateSPJStatusDTO,
   UpdateSubSurveyActivityDTO,
   UpdateSurveyActivityDTO,
   UpdateUserProgressDTO,
 } from './dto/surveyact.dto';
-import { JobLetter, SubmitSPJ, User } from '@prisma/client';
+import { IssueStatus, JobLetter, SubmitSPJ, User } from '@prisma/client';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import {
@@ -367,5 +371,139 @@ export class SurveyActivityService {
 
   async allDistricts() {
     return this.prisma.district.findMany();
+  }
+
+  async createContentIssue(input: CreateContentIssueDto) {
+    // catatan: sebaiknya reporterId diambil dari auth (req.user.id) di resolver/guard
+    return this.prisma.contentIssue.create({
+      data: {
+        content: input.content,
+        reporterId: input.reporterId,
+        subSurveyActivityId: input.subSurveyActivityId,
+        issueStatus: input.issueStatus ?? IssueStatus.Waiting,
+      },
+      include: {
+        reporter: true,
+        subSurveyActivity: true,
+        IssueComment: true,
+      },
+    });
+  }
+
+  async getContentIssueById(id: string) {
+    const issue = await this.prisma.contentIssue.findUnique({
+      where: { id },
+      include: {
+        reporter: true,
+        subSurveyActivity: true,
+        IssueComment: {
+          include: { user: true },
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+    });
+    if (!issue) throw new NotFoundException('ContentIssue not found');
+    return issue;
+  }
+
+  async listContentIssues(params?: {
+    subSurveyActivityId?: string;
+    status?: IssueStatus;
+    search?: string;
+    skip?: number;
+    take?: number;
+  }) {
+    const { subSurveyActivityId, status, search, skip, take } = params ?? {};
+    return this.prisma.contentIssue.findMany({
+      where: {
+        subSurveyActivityId: subSurveyActivityId ?? undefined,
+        issueStatus: status ?? undefined,
+        ...(search
+          ? {
+              OR: [
+                { content: { contains: search, mode: 'insensitive' } },
+                { reporter: { name: { contains: search, mode: 'insensitive' } } },
+              ],
+            }
+          : {}),
+      },
+      orderBy: { updatedAt: 'desc' },
+      skip,
+      take,
+      include: {
+        reporter: true,
+        subSurveyActivity: true,
+        _count: { select: { IssueComment: true } },
+      },
+    });
+  }
+
+  async updateContentIssue(input: UpdateContentIssueDto) {
+    // hanya field yang diisi yang dipakai
+    const cleaned = Object.fromEntries(
+      Object.entries(input).filter(([k, v]) => k !== 'id' && v != null),
+    );
+
+    // NOTE: pembatasan "issueStatus hanya admin" sebaiknya di guard/resolver
+    return this.prisma.contentIssue.update({
+      where: { id: input.id },
+      data: cleaned,
+      include: {
+        reporter: true,
+        subSurveyActivity: true,
+        _count: { select: { IssueComment: true } },
+      },
+    });
+  }
+
+  async addIssueComment(input: createIssueCommentDto) {
+    // catatan: userId juga sebaiknya dari auth di resolver
+    // validasi: pastikan contentIssue ada
+    await this.ensureIssueExists(input.contentId);
+
+    const comment = await this.prisma.issueComment.create({
+      data: {
+        message: input.message,
+        contentId: input.contentId,
+        userId: input.userId,
+        subSurveyActivityId: input.subSurveyActivityId,
+      },
+      include: { user: true, content: true, subSurveyActivity: true },
+    });
+
+    // sekadar menyentuh updatedAt di ContentIssue biar naik ke atas daftar
+    await this.prisma.contentIssue.update({
+      where: { id: input.contentId },
+      data: { updatedAt: new Date() },
+    });
+
+    return comment;
+  }
+
+  async updateIssueComment(input: updateIssueCommentDto) {
+    await this.ensureCommentExists(input.id);
+    return this.prisma.issueComment.update({
+      where: { id: input.id },
+      data: { message: input.message },
+      include: { user: true, content: true, subSurveyActivity: true },
+    });
+  }
+
+  async listIssueCommentsByContent(contentId: string) {
+    return this.prisma.issueComment.findMany({
+      where: { contentId },
+      orderBy: { createdAt: 'asc' },
+      include: { user: true, subSurveyActivity: true },
+    });
+  }
+
+  private async ensureIssueExists(id: string) {
+    const exists = await this.prisma.contentIssue.findUnique({ where: { id } });
+    if (!exists) throw new NotFoundException('ContentIssue not found');
+  }
+
+  private async ensureCommentExists(id: string) {
+    const exists = await this.prisma.issueComment.findUnique({ where: { id } });
+    if (!exists) throw new NotFoundException('IssueComment not found');
   }
 }

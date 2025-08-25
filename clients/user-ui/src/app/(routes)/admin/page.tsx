@@ -260,6 +260,7 @@ function Admin() {
         },
       });
       toast.success("Tim berhasil diupdate!");
+      setUpdateStateF1({ surveyActivityId: "", name: "", slug: "" });
     } catch (err) {
       toast.error("Gagal update Tim.");
       console.error(err);
@@ -307,6 +308,15 @@ function Admin() {
         },
       });
       toast.success("Kegiatan berhasil diupdate!");
+      setUpdateStateF2({
+        subSurveyActivityId: "",
+        name: "",
+        slug: "",
+        surveyActivityId: "",
+        startDate: "",
+        endDate: "",
+        targetSample: 0,
+      })
     } catch (err) {
       toast.error("Gagal update kegiatan.");
       console.error(err);
@@ -388,6 +398,17 @@ function Admin() {
         },
       });
       toast.success("UserProgress berhasil diupdate!");
+      setUpdateUserProgressForm({
+        userProgressId: "",
+        subSurveyActivityId: "",
+        surveyActivityId: "",
+        userId: "",
+        totalAssigned: 0,
+        submitCount: 0,
+        approvedCount: 0,
+        rejectedCount: 0,
+        lastUpdated: "",
+      });
     } catch (err) {
       toast.error("Gagal update user progress");
       console.error(err);

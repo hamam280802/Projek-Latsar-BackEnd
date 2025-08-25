@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID, Int, registerEnumType } from '@nestjs/graphql';
-import { AgreeState, StatusST } from '@prisma/client';
+import { AgreeState, IssueStatus, StatusST } from '@prisma/client';
 import { UserType } from 'apps/users/src/types/users.types';
 
 registerEnumType(AgreeState, {
@@ -9,6 +9,10 @@ registerEnumType(AgreeState, {
 registerEnumType(StatusST, {
   name: 'StatusST',
 })
+
+registerEnumType(IssueStatus, {
+  name: 'IssueStatus', // akan muncul di GraphQL schema
+});
 
 @ObjectType()
 export class SurveyActivityType {
@@ -215,4 +219,64 @@ export class MonthlyStatsType {
 
   @Field(() => Int)
   totalActiveUsers: number;
+}
+
+@ObjectType()
+export class IssueCommentType {
+  @Field(() => ID)
+  id: string;
+
+  @Field()
+  message: string;
+
+  @Field(() => ID)
+  contentId: string;
+
+  @Field(() => UserType, { nullable: true })
+  user?: UserType;
+
+  @Field(() => ID)
+  userId: string;
+
+  @Field(() => SubSurveyActivityType, { nullable: true })
+  subSurveyActivity?: SubSurveyActivityType;
+
+  @Field(() => ID)
+  subSurveyActivityId: string;
+
+  @Field()
+  createdAt: Date;
+}
+
+@ObjectType()
+export class ContentIssueType {
+  @Field(() => ID)
+  id: string;
+
+  @Field()
+  content: string;
+
+  @Field(() => IssueStatus)
+  issueStatus: IssueStatus;
+
+  @Field(() => UserType, { nullable: true })
+  reporter?: UserType;
+
+  @Field(() => ID)
+  reporterId: string;
+
+  @Field(() => SubSurveyActivityType, { nullable: true })
+  subSurveyActivity?: SubSurveyActivityType;
+
+  @Field(() => ID)
+  subSurveyActivityId: string;
+
+  @Field(() => [IssueCommentType], { nullable: true })
+  IssueComment?: IssueCommentType[];
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
 }

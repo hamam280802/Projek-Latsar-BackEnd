@@ -1,5 +1,5 @@
 import { InputType, Field, ID, registerEnumType } from '@nestjs/graphql';
-import { AgreeState, StatusST } from '@prisma/client';
+import { AgreeState, IssueStatus, StatusST } from '@prisma/client';
 import { IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 registerEnumType(AgreeState, {
@@ -203,4 +203,66 @@ export class UpdateJobLetterStatusDTO {
 
   @Field({ nullable: true })
   rejectNote?: string;
+}
+
+@InputType()
+export class CreateContentIssueDto {
+  @Field()
+  @IsString()
+  content: string;
+
+  @Field(()=> ID)
+  @IsUUID()
+  reporterId: string;
+
+  @Field(() => ID)
+  @IsUUID()
+  subSurveyActivityId: string;
+
+  @Field(() => IssueStatus)
+  issueStatus: IssueStatus;
+}
+
+@InputType()
+export class UpdateContentIssueDto {
+  @Field(() => ID)
+  @IsUUID()
+  id: string;
+
+  @Field()
+  @IsString()
+  content: string;
+
+  @Field(() => IssueStatus)
+  issueStatus: IssueStatus;
+}
+
+@InputType()
+export class createIssueCommentDto {
+  @Field()
+  @IsString()
+  message: string;
+
+  @Field(() => ID)
+  @IsUUID()
+  contentId: string;
+
+  @Field(() => ID)
+  @IsUUID()
+  userId: string;
+
+  @Field(() => ID)
+  @IsUUID()
+  subSurveyActivityId: string;
+}
+
+@InputType()
+export class updateIssueCommentDto {
+  @Field(() => ID)
+  @IsUUID()
+  id: string;
+  
+  @Field()
+  @IsString()
+  message: string;
 }

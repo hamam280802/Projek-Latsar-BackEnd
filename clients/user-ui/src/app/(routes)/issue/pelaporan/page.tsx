@@ -1,137 +1,149 @@
 "use client";
+
 import React, { useState } from "react";
-import {Funnel} from "lucide-react";
+import { useMutation, useQuery, ApolloError } from "@apollo/client";
+import {
+  CREATE_CONTENT_ISSUE,
+  UPDATE_CONTENT_ISSUE,
+  ADD_ISSUE_COMMENT,
+  CONTENT_ISSUES,
+} from "@/src/graphql/actions/issue.action";
+import { GET_ALL_OF_SUB_SURVEY_ACTIVITIES } from "@/src/graphql/actions/find-realallsubsurvey.action";
+import useUser from "@/src/hooks/useUser";
+import toast from "react-hot-toast";
 
-const Issue = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+export default function ContentIssueForm() {
+  type SubSurveyActivity = { id: string; name: string };
+  const { user } = useUser();
+
+  // State untuk form ContentIssue
+  const [contentInput, setContentInput] = useState({
+    content: "",
+    issueStatus: "Waiting", // default tanpa enum FE
+    subSurveyActivityId: "",
+  });
+
+  // State untuk komentar
+  const [commentInput, setCommentInput] = useState({
+    contentId: "",
+    message: "",
+    subSurveyActivityId: "",
+  });
+
+  const [createContentIssue] = useMutation(CREATE_CONTENT_ISSUE, {
+    refetchQueries: [{ query: CONTENT_ISSUES }],
+    awaitRefetchQueries: true,
+  });
+  const [updateContentIssue] = useMutation(UPDATE_CONTENT_ISSUE);
+  const [addIssueComment] = useMutation(ADD_ISSUE_COMMENT, {
+    refetchQueries: [{ query: CONTENT_ISSUES }],
+    awaitRefetchQueries: true,
+  });
+
+  const { data: subSurveyData } = useQuery(GET_ALL_OF_SUB_SURVEY_ACTIVITIES);
+
+  // Handler submit laporan kendala
+  const handleSubmitContentIssue = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (!contentInput.content || !contentInput.subSurveyActivityId) {
+        toast.error("Isi laporan dan pilih kegiatan!");
+        return;
+      }
+
+      await createContentIssue({
+        variables: { input: { ...contentInput, reporterId: user?.id } },
+      });
+
+      toast.success("Laporan kendala berhasil dikirim");
+      setContentInput({ content: "", issueStatus: "Waiting", subSurveyActivityId: "" });
+    } catch (error) {
+      toast.error("Gagal membuat laporan");
+      const err = error as ApolloError;
+  console.log("GQL errors:", err.graphQLErrors);
+  console.log("Network error:", err.networkError);
+  console.log("Message:", err.message);
+    }
+  };
+
+  // Handler submit komentar
+  const handleSubmitComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (!commentInput.message || !commentInput.contentId) {
+        toast.error("Pesan komentar wajib diisi!");
+        return;
+      }
+
+      await addIssueComment({
+        variables: { input: { ...commentInput, userId: user?.id } },
+      });
+
+      toast.success("Komentar berhasil ditambahkan");
+      setCommentInput({ contentId: "", message: "", subSurveyActivityId: "" });
+    } catch (error) {
+      toast.error("Gagal menambahkan komentar");
+    }
+  };
+
   return (
-    <div className="px-8 py-4 space-y-4 font-Poppins">
-      <div className="bg-orange-50 rounded-lg p-2 font-bold text-xl flex justify-between shadow-md">
-        Pelaporan
-      </div>
-      <div className="bg-orange-50 rounded-lg p-4 shadow-md space-y-8">
-        <h2 className="font-bold text-xl">Filter Petugas</h2>
-        <div className="flex justify-between space-x-4">
-          <div className="space-y-2 w-[20%] font-semibold text-sm">
-            <label htmlFor="wilayah">Wilayah</label>
-            <br />
-            <select
-              name="wilayah"
-              id="wilayah"
-              className="w-full border focus:border-1 p-2 rounded-md bg-white shadow-md"
-            ></select>
-          </div>
-          <div className="space-y-2 w-[20%] font-semibold text-sm">
-            <label htmlFor="survei">Jenis Survei</label>
-            <br />
-            <select
-              name="survei"
-              id="survei"
-              className="w-full border focus:border-1 p-2 rounded-md bg-white shadow-md"
-            ></select>
-          </div>
-          <div className="space-y-2 w-[20%] font-semibold text-sm">
-            <label htmlFor="status">Status Kendala</label>
-            <br />
-            <select
-              name="status"
-              id="status"
-              className="w-full border focus:border-1 p-2 rounded-md bg-white shadow-md"
-            ></select>
-          </div>
-          <div className="space-y-2 w-[20%] font-semibold text-sm">
-            <label htmlFor="jenis">Jenis Kendala</label>
-            <br />
-            <select
-              name="jenis"
-              id="jenis"
-              className="w-full border focus:border-1 p-2 rounded-md bg-white shadow-md"
-            ></select>
-          </div>
-        </div>
-        <div className="flex justify-end">
-          <button className="px-6 py-2 bg-orange-700 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition">
-            <Funnel className="inline mr-2" size={16} />
-            Terapkan Filter
-          </button>
-        </div>
-      </div>
-      <div className="py-10 space-y-2">
-        <div className="flex justify-between">
-          <h1 className="font-bold text-xl">Daftar Petugas</h1>
-          <div className="relative">
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="bg-orange-50 hover:bg-orange-100 focus:ring-4 focus:ring-white focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center shadow-md"
-            >
-              Ekspor
-              <svg
-                className="w-2.5 h-2.5 ms-3"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 10 6"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 1 4 4 4-4"
-                />
-              </svg>
-            </button>
+    <div className="space-y-6">
+      {/* Form Laporan Kendala */}
+      <div className="bg-orange-50 rounded-lg p-4 shadow-md">
+        <h2 className="text-lg font-bold mb-4">Form Laporan Kendala</h2>
+        <form onSubmit={handleSubmitContentIssue} className="space-y-3">
+          <select
+            value={contentInput.subSurveyActivityId}
+            onChange={(e) =>
+              setContentInput({ ...contentInput, subSurveyActivityId: e.target.value })
+            }
+            className="w-full border px-3 py-2 rounded bg-white"
+          >
+            <option value="">-- Pilih Kegiatan --</option>
+            {subSurveyData?.allSubSurveyActivities?.map((sub: SubSurveyActivity) => (
+              <option key={sub.id} value={sub.id}>
+                {sub.name}
+              </option>
+            ))}
+          </select>
 
-            {isDropdownOpen && (
-              <div className="absolute left-0 mt-2 z-50 bg-white divide-y divide-gray-100 rounded-lg shadow-md w-28">
-                <ul className="py-2 text-sm text-gray-700">
-                  <li>
-                    <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                      CSV
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                      Excel
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                      JSON
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
-          <table className="w-full text-md text-center text-gray-500">
-            <thead className="rounded-lg bg-orange-50 text-gray-700 uppercase">
-              <tr>
-                <th scope="col" className="py-3 px-6">
-                  NAMA PETUGAS
-                </th>
-                <th scope="col" className="py-3 px-6">
-                  WILAYAH
-                </th>
-                <th scope="col" className="py-3 px-6">
-                  JENIS SURVEI
-                </th>
-                <th scope="col" className="py-3 px-6">
-                  STATUS
-                </th>
-                <th scope="col" className="py-3 px-6">
-                  AKSI
-                </th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+          <textarea
+            value={contentInput.content}
+            onChange={(e) => setContentInput({ ...contentInput, content: e.target.value })}
+            placeholder="Tuliskan kendala..."
+            className="w-full border px-3 py-2 rounded bg-white"
+          />
+
+          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+            Kirim Laporan
+          </button>
+        </form>
+      </div>
+
+      {/* Form Tambah Komentar */}
+      <div className="bg-orange-50 rounded-lg p-4 shadow-md">
+        <h2 className="text-lg font-bold mb-4">Form Komentar Kendala</h2>
+        <form onSubmit={handleSubmitComment} className="space-y-3">
+          <input
+            type="text"
+            placeholder="ID Laporan Kendala"
+            value={commentInput.contentId}
+            onChange={(e) => setCommentInput({ ...commentInput, contentId: e.target.value })}
+            className="w-full border px-3 py-2 rounded bg-white"
+          />
+
+          <textarea
+            value={commentInput.message}
+            onChange={(e) => setCommentInput({ ...commentInput, message: e.target.value })}
+            placeholder="Tulis komentar..."
+            className="w-full border px-3 py-2 rounded bg-white"
+          />
+
+          <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
+            Kirim Komentar
+          </button>
+        </form>
       </div>
     </div>
   );
-};
-
-export default Issue;
+}

@@ -1,5 +1,6 @@
 import {
   Args,
+  ID,
   Mutation,
   Parent,
   Query,
@@ -8,7 +9,9 @@ import {
 } from '@nestjs/graphql';
 import { SurveyActivityService } from './surveyacts.service';
 import {
+  ContentIssueType,
   DistrictType,
+  IssueCommentType,
   JobLetterType,
   MonthlyStatsType,
   SubmitSPJType,
@@ -18,12 +21,16 @@ import {
   UserProgressType,
 } from './types/surveyact.types';
 import {
+  CreateContentIssueDto,
   CreateDistrictDTO,
+  createIssueCommentDto,
   CreateJobLetterDTO,
   CreateSPJDTO,
   CreateSubSurveyActivityDTO,
   CreateSurveyActivityDTO,
   CreateUserProgressDTO,
+  UpdateContentIssueDto,
+  updateIssueCommentDto,
   UpdateJobLetterStatusDTO,
   UpdateSPJStatusDTO,
   UpdateSubSurveyActivityDTO,
@@ -31,8 +38,9 @@ import {
   UpdateUserProgressDTO,
 } from './dto/surveyact.dto';
 import { User } from 'apps/users/src/entities/users.entity';
-import { JobLetter, SubmitSPJ, UserProgress } from '@prisma/client';
+import { IssueStatus, JobLetter, SubmitSPJ, UserProgress } from '@prisma/client';
 import { UserType } from 'apps/users/src/types/users.types';
+import { NotFoundException } from '@nestjs/common';
 
 @Resolver(() => SurveyActivityType)
 export class SurveyActivityResolver {
@@ -214,5 +222,58 @@ export class SurveyActivityResolver {
   @Query(() => [DistrictType])
   async getAllSurveyDistrict() {
     return this.service.allDistricts();
+  }
+
+  @Mutation(() => ContentIssueType)
+  async createContentIssue(@Args('input') input: CreateContentIssueDto) {
+    // idealnya reporterId diambil dari context auth
+    return this.service.createContentIssue(input);
+  }
+
+  @Query(() => ContentIssueType)
+  async contentIssueById(@Args('id', { type: () => ID }) id: string) {
+    return this.service.getContentIssueById(id);
+  }
+
+  @Query(() => [ContentIssueType])
+  async contentIssues(
+    @Args('subSurveyActivityId', { type: () => ID, nullable: true })
+    subSurveyActivityId?: string,
+    @Args('status', { type: () => IssueStatus, nullable: true })
+    status?: IssueStatus,
+    @Args('search', { nullable: true }) search?: string,
+    @Args('skip', { nullable: true }) skip?: number,
+    @Args('take', { nullable: true }) take?: number,
+  ) {
+    return this.service.listContentIssues({
+      subSurveyActivityId,
+      status,
+      search,
+      skip,
+      take,
+    });
+  }
+
+  @Mutation(() => ContentIssueType)
+  async updateContentIssue(@Args('input') input: UpdateContentIssueDto) {
+    return this.service.updateContentIssue(input);
+  }
+
+  @Mutation(() => IssueCommentType)
+  async addIssueComment(@Args('input') input: createIssueCommentDto) {
+    // idealnya userId dari context auth
+    return this.service.addIssueComment(input);
+  }
+
+  @Mutation(() => IssueCommentType)
+  async updateIssueComment(@Args('input') input: updateIssueCommentDto) {
+    return this.service.updateIssueComment(input);
+  }
+
+  @Query(() => [IssueCommentType])
+  async issueCommentsByContent(
+    @Args('contentId', { type: () => ID }) contentId: string,
+  ) {
+    return this.service.listIssueCommentsByContent(contentId);
   }
 }
